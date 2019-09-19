@@ -1,0 +1,35 @@
+<component name="libraryTable">
+  <library name="commons-codec-1.10">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/commons-codec-1.10.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-io-2.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-lang3-3.8.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-logging-1.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-net-3.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-text-1.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/htmlunit-2.33.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/htmlunit-core-js-2.33.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/htmlunit-cssparser-1.2.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/httpclient-4.5.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/httpcore-4.4.10.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/httpmime-4.5.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jetty-client-9.4.12.v20180830.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jetty-http-9.4.12.v20180830.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jetty-io-9.4.12.v20180830.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jetty-util-9.4.12.v20180830.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jetty-xml-9.4.12.v20180830.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/neko-htmlunit-2.33.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/serializer-2.7.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/websocket-api-9.4.12.v20180830.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/websocket-client-9.4.12.v20180830.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/websocket-common-9.4.12.v20180830.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/xalan-2.7.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/xercesImpl-2.12.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/xml-apis-1.4.01.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ideaLibSources/htmlunit-2.33-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
