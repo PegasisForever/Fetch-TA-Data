@@ -1,5 +1,6 @@
 import modes.archive
 import modes.getMarks
+import modes.startServer
 import modes.testAll
 import java.util.logging.Level
 
@@ -18,6 +19,9 @@ fun main(args: Array<String>) {
         }
         "archive" -> {
             archive()
+        }
+        "server" -> {
+            startServer()
         }
         else -> println("Unknown mode")
     }

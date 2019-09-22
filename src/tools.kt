@@ -1,6 +1,11 @@
 import com.gargoylesoftware.htmlunit.WebClient
+import com.sun.net.httpserver.HttpExchange
 import org.apache.commons.io.FileUtils
+import org.json.simple.JSONArray
+import org.json.simple.JSONObject
+import org.json.simple.parser.JSONParser
 import java.io.File
+import java.nio.charset.StandardCharsets
 import java.util.regex.Pattern
 
 fun find(str: String, regex: String, allowBlank: Boolean = false): ArrayList<String> {
@@ -67,3 +72,28 @@ val ANSI_BLUE = "\u001B[34m"
 val ANSI_PURPLE = "\u001B[35m"
 val ANSI_CYAN = "\u001B[36m"
 val ANSI_WHITE = "\u001B[37m"
+
+fun log(msg:String){
+
+}
+
+val jsonParser = JSONParser()
+fun HttpExchange.getReqJSONObject()=jsonParser.parse(
+    String(
+        requestBody.readAllBytes(),
+        StandardCharsets.UTF_8
+    )
+) as JSONObject
+
+fun HttpExchange.getReqJSONArray()=jsonParser.parse(
+    String(
+        requestBody.readAllBytes(),
+        StandardCharsets.UTF_8
+    )
+) as JSONArray
+
+fun HttpExchange.send(statusCode:Int,body:String){
+    sendResponseHeaders(statusCode, body.length.toLong())
+    responseBody.write(body.toByteArray())
+    responseBody.close()
+}

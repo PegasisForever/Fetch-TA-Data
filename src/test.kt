@@ -1,24 +1,20 @@
-import com.gargoylesoftware.htmlunit.html.HtmlPage
-import webpage.DetailPage
-import webpage.SummaryPage
-import java.io.File
-import java.util.logging.Level
-
+import models.User
+import org.json.simple.JSONObject
 
 fun main() {
-    java.util.logging.Logger.getLogger("com.gargoylesoftware").level = Level.ALL
+    User.init()
 
-
-    val dir = File("./ta-archive/")
-    dir.listFiles()?.forEach { file ->
-        println(file.name)
-        if (file.name.indexOf("summary") != -1) {
-            val summaryPage = getWebClient().getPage<HtmlPage>(file.toURL())
-            println(SummaryPage(summaryPage).courses.toJSONString())
-        } else {
-            val detailPage = getWebClient().getPage<HtmlPage>(file.toURL())
-            println(DetailPage(detailPage, "").details.toJSONString())
-        }
-        println("--------------------------------")
-    }
+    val user= User.fromClient(jsonParser.parse("""
+        {
+"user":{
+	"number": "349891234",
+	"password":"43z955n9",
+	"displayname":"me",
+	"receive":true
+},
+"token":"token"
+}
+    """) as JSONObject)
+    User.remove(user)
+    User.save()
 }

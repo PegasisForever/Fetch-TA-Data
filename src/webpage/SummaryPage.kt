@@ -50,7 +50,7 @@ class SummaryPage(val htmlPage: HtmlPage) {
         return DetailPage(pageAnchor.click(), (courses[index] as JSONObject)["code"] as String)
     }
 
-    fun fillDetails() {
+    fun fillDetails():SummaryPage {
         for (i in 0 until courses.size) {
             val course = courses[i] as JSONObject
             if (course["overall_mark"] != "N/A") {
@@ -59,5 +59,6 @@ class SummaryPage(val htmlPage: HtmlPage) {
                 course["mark_detail"] = detailPage.details
             }
         }
+        return this
     }
 }

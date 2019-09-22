@@ -6,10 +6,9 @@ import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput
 import find
 import getWebClient
+import models.LoginException
 
 class LoginPage {
-    val htmlPage: HtmlPage = getWebClient().getPage("https://ta.yrdsb.ca/live/index.php")
-
     init {
         if (htmlPage.titleText != "YRDSB teachassist login") {
             throw Exception("Cannot get correct page.")
@@ -25,10 +24,14 @@ class LoginPage {
         val loginBtn = htmlPage.getElementByName<HtmlSubmitInput>("submit")
         val summaryHtmlPage = loginBtn.click<HtmlPage>()
         if (summaryHtmlPage.titleText != "Student Reports") {
-            val errorMsg = find(summaryHtmlPage.url.toString(), "\\d")[0]
-            throw Exception("Login error, code: ${errorMsg}")
+            val errorCode = find(summaryHtmlPage.url.toString(), "\\d")[0].toInt()
+            throw LoginException(errorCode)
         }
         return SummaryPage(summaryHtmlPage)
+    }
+
+    companion object{
+        val htmlPage: HtmlPage = getWebClient().getPage("https://ta.yrdsb.ca/live/index.php")
     }
 
 }

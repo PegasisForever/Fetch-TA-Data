@@ -1,8 +1,6 @@
 <component name="libraryTable">
   <library name="htmlunit-nojs">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/lib/htmlunit-nojs.jar!/" />
-    </CLASSES>
+    <CLASSES />
     <JAVADOC />
     <SOURCES />
   </library>
