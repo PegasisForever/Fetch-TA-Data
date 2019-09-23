@@ -12,16 +12,13 @@ import getReqJSONObject
 import java.net.InetSocketAddress
 import models.LoginException
 import models.User
-import org.json.simple.JSONArray
-import org.json.simple.JSONObject
-import org.json.simple.parser.JSONParser
 import org.json.simple.parser.ParseException
 import send
 import webpage.LoginPage
-import java.nio.charset.StandardCharsets
 
 
 fun startServer() {
+    User.init()
 
     val server = HttpServer.create(InetSocketAddress(1560), 0)
 
@@ -31,30 +28,77 @@ fun startServer() {
 
         try {
             val req = exchange.getReqJSONObject()
-            val user = User(req["user"] as JSONObject)
-            val token = req["token"] as String
 
             res = LoginPage()
-                .gotoSummaryPage(user.number, user.password)
+                .gotoSummaryPage(req["number"] as String, req["password"] as String)
                 .fillDetails()
                 .courses
                 .toJSONString()
         } catch (e: LoginException) {
-            println(e.stackTrace)
+            e.printStackTrace()
             statusCode = 401
         } catch (e: ParseException) {
-            println(e.stackTrace)
+            e.printStackTrace()
             statusCode = 400
         } catch (e: Exception) {
-            println(e.stackTrace)
+            e.printStackTrace()
             statusCode = 500
         }
 
         exchange.send(statusCode, res)
     }
 
-    server.start()
+    server.createContext("/regi"){ exchange ->
+        var statusCode = 200  //200:success  400:bad request  401:pwd incorrect  500:internal error
+        var res = ""
 
+        try {
+            val req = exchange.getReqJSONObject()
+            val user = User.fromClient(req)
+
+            res = LoginPage()
+                .gotoSummaryPage(user.number, user.password)
+                .courses
+                .toJSONString()
+
+            if (user.receiveNotification){
+                User.add(user)
+            }
+        } catch (e: LoginException) {
+            e.printStackTrace()
+            statusCode = 401
+        } catch (e: ParseException) {
+            e.printStackTrace()
+            statusCode = 400
+        } catch (e: Exception) {
+            e.printStackTrace()
+            statusCode = 500
+        }
+
+        exchange.send(statusCode, res)
+    }
+
+    server.createContext("/deregi"){ exchange ->
+        var statusCode = 200  //200:success  400:bad request  500:internal error
+
+        try {
+            val req = exchange.getReqJSONObject()
+            val user = User.fromClient(req)
+
+            User.remove(user)
+        } catch (e: ParseException) {
+            e.printStackTrace()
+            statusCode = 400
+        } catch (e: Exception) {
+            e.printStackTrace()
+            statusCode = 500
+        }
+
+        exchange.send(statusCode, "")
+    }
+
+    server.start()
+    println("Server started.")
 }
 
 fun sendNotification() {

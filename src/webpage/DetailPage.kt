@@ -38,6 +38,7 @@ class DetailPage(val htmlPage: HtmlPage, val courseCode: String) {
 
                 val categoryDetailText = cell.asText()
                 categoryDetail["available"] = true
+                //TODO decimal
                 categoryDetail["get"] = find(categoryDetailText, "^\\d+(?= / )")[0]
                 categoryDetail["total"] = find(categoryDetailText, "(?<= / )\\d+(?= = )")[0]
                 categoryDetail["weight"] = find(categoryDetailText, "(?<=weight=)\\d+\$")[0]
