@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="8e3a8eef-6059-44a5-b24d-3bfbdd5ea7df" name="i.pegasis.site" url="http://i.pegasis.site">
+        <fileTransfer host="i.pegasis.site" port="22" privateKey="$USER_HOME$/.ssh/pegasis" accessType="SFTP" keyPair="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

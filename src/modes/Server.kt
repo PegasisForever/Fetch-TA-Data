@@ -38,7 +38,7 @@ fun startServer() {
 
     User.init()
 
-    val server = HttpServer.create(InetSocketAddress(1560), 0)
+    val server = HttpServer.create(InetSocketAddress(5004), 0)
 
     server.createContext("/getmark") { exchange ->
         var statusCode = 200  //200:success  400:bad request  401:pwd incorrect  500:internal error
