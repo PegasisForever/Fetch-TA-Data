@@ -1,12 +1,17 @@
 import com.gargoylesoftware.htmlunit.WebClient
 import com.sun.net.httpserver.HttpExchange
 import org.apache.commons.io.FileUtils
+import org.apache.commons.lang3.exception.ExceptionUtils
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.util.regex.Pattern
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
+
 
 fun find(str: String, regex: String, allowBlank: Boolean = false): ArrayList<String> {
     val result = ArrayList<String>()
@@ -21,7 +26,7 @@ fun find(str: String, regex: String, allowBlank: Boolean = false): ArrayList<Str
     if (result.size == 0) {
         result.add("")
         if (!allowBlank) {
-            println("${ANSI_YELLOW}Regex not found: /${regex}/ in \"${str}\"${ANSI_RESET}")
+            log(LogLevel.WARN,"Regex not found: /${regex}/ in \"${str}\"")
         }
     }
 
@@ -30,6 +35,10 @@ fun find(str: String, regex: String, allowBlank: Boolean = false): ArrayList<Str
 
 fun String.writeToFile(path: String) {
     FileUtils.writeStringToFile(File(path), this, "UTF-8")
+}
+
+fun String.appendToFile(path: String) {
+    FileUtils.write(File(path), this, "UTF-8", true);
 }
 
 object W {
@@ -73,27 +82,54 @@ val ANSI_PURPLE = "\u001B[35m"
 val ANSI_CYAN = "\u001B[36m"
 val ANSI_WHITE = "\u001B[37m"
 
-fun log(msg:String){
-
-}
-
 val jsonParser = JSONParser()
-fun HttpExchange.getReqJSONObject()=jsonParser.parse(
-    String(
-        requestBody.readAllBytes(),
-        StandardCharsets.UTF_8
-    )
-) as JSONObject
+fun HttpExchange.getReqString()=String(
+    requestBody.readAllBytes(),
+    StandardCharsets.UTF_8
+)
 
-fun HttpExchange.getReqJSONArray()=jsonParser.parse(
-    String(
-        requestBody.readAllBytes(),
-        StandardCharsets.UTF_8
-    )
-) as JSONArray
-
-fun HttpExchange.send(statusCode:Int,body:String){
+fun HttpExchange.send(statusCode: Int, body: String) {
     sendResponseHeaders(statusCode, body.length.toLong())
     responseBody.write(body.toByteArray())
     responseBody.close()
+}
+
+enum class LogLevel {
+    DEBUG,
+    INFO,
+    WARN,
+    ERROR,
+    FATAL
+}
+
+var sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
+fun log(level: LogLevel, msg: String,throwable:Throwable?=null) {
+    val time = sdf.format(Date())
+    var logText = "$time\t|\t${level.name}\t|\t${Thread.currentThread().name}\t|\t${msg.replace("\n","\\n")}\n"
+    if ((level == LogLevel.FATAL || level == LogLevel.ERROR) && throwable!=null) {
+        logText += ExceptionUtils.getStackTrace(throwable)
+    }
+
+    logText.appendToFile("data/server_log.log")
+
+    val color=when(level){
+        LogLevel.DEBUG -> ANSI_BLACK
+        LogLevel.INFO -> ANSI_BLUE
+        LogLevel.WARN -> ANSI_YELLOW
+        LogLevel.ERROR -> ANSI_RED
+        LogLevel.FATAL -> ANSI_RED
+    }
+    logText=color+logText+ANSI_RESET
+    print(logText)
+}
+
+fun logUnhandled(thread: Thread?,throwable: Throwable){
+    val time = sdf.format(Date())
+    var logText = "$time\t|\t${LogLevel.FATAL.name}\t|\t${thread?.name}\t|\tUnhandled Error\n"
+    logText+=ExceptionUtils.getStackTrace(throwable)
+
+    logText.appendToFile("data/server_log.log")
+
+    logText=ANSI_RED+logText+ANSI_RESET
+    print(logText)
 }
