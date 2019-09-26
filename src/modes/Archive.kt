@@ -15,6 +15,7 @@ fun archive() {
         val students = jsonParser.parse(reader) as JSONArray
 
         for (student in students) if (student is JSONObject) {
+            println(student["id"].toString())
             val summaryPage = LoginPage().gotoSummaryPage(student["id"].toString(), student["pwd"].toString())
             summaryPage.htmlPage.webResponse.contentAsString
                 .writeToFile("./ta-archive/${Date().time}-${student["id"]}-summary.html")

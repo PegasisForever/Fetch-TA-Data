@@ -1,3 +1,4 @@
+import com.gargoylesoftware.htmlunit.Page
 import com.gargoylesoftware.htmlunit.html.HtmlPage
 import webpage.DetailPage
 import webpage.SummaryPage
@@ -22,6 +23,7 @@ fun main() {
 //        println("--------------------------------")
 //    }
 
-    val summaryPage = getWebClient().getPage<HtmlPage>(File("ta-archive/1568926274697-350100749-detail-MCR3U1-04.html").toURL())
-    println(DetailPage(summaryPage,"").details.toJSONString())
+    val summaryPage = getWebClient()
+        .getPage<HtmlPage>(File("ta-archive/1569347104867-349912170-summary.html").toURL())
+    println(SummaryPage(summaryPage).courses.toJSONString())
 }

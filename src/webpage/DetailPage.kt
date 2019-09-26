@@ -37,10 +37,17 @@ class DetailPage(val htmlPage: HtmlPage, val courseCode: String) {
                 val categoryDetail = assignment[categoryName.name] as JSONObject
 
                 val categoryDetailText = cell.asText()
-                categoryDetail["available"] = true
-                categoryDetail["get"] = find(categoryDetailText, "^[^ ]+(?= / )")[0]
-                categoryDetail["total"] = find(categoryDetailText, "(?<= / )[^ ]+(?= = )")[0]
-                categoryDetail["weight"] = find(categoryDetailText, "(?<=weight=)[^ ]+$")[0]
+                if (categoryDetailText!=""){
+                    categoryDetail["available"] = true
+                    categoryDetail["get"] = find(categoryDetailText, "^[^ ]+(?= / )")[0].toDouble()
+                    categoryDetail["total"] = find(categoryDetailText, "(?<= / )[^ ]+(?= = )")[0].toDouble()
+                    categoryDetail["weight"] = if (categoryDetailText.indexOf("no weight") != -1) {
+                        0.0
+                    } else {
+                        find(categoryDetailText, "(?<=weight=)[^ ]+$")[0].toDouble()
+                    }
+                }
+
             }
 
             assignments.add(assignment)
@@ -62,16 +69,16 @@ class DetailPage(val htmlPage: HtmlPage, val courseCode: String) {
             }
 
             val weightRow = JSONObject()
-            weightRow[W.name] = find(row.getCell(1).asText(), "^[^%]+")[0]
-            weightRow[CW.name] = find(row.getCell(2).asText(), "^[^%]+")[0]
-            weightRow[SA.name] = find(row.getCell(3).asText(), "^[^%]+")[0]
+            weightRow[W.name] = find(row.getCell(1).asText(), "^[^%]+")[0].toDouble()
+            weightRow[CW.name] = find(row.getCell(2).asText(), "^[^%]+")[0].toDouble()
+            weightRow[SA.name] = find(row.getCell(3).asText(), "^[^%]+")[0].toDouble()
 
             weights[name!!.name] = weightRow
         }
         val finalRow = weightsTable.getRow(6)
         val finalWeightRow = JSONObject()
-        finalWeightRow[CW.name] = find(finalRow.getCell(1).asText(), "^[^%]+")[0]
-        finalWeightRow[SA.name] = find(finalRow.getCell(2).asText(), "^[^%]+")[0]
+        finalWeightRow[CW.name] = find(finalRow.getCell(1).asText(), "^[^%]+")[0].toDouble()
+        finalWeightRow[SA.name] = find(finalRow.getCell(2).asText(), "^[^%]+")[0].toDouble()
         weights[F.name] = finalWeightRow
 
         details["weights"] = weights
@@ -102,9 +109,9 @@ fun getAssignmentTemplate(): JSONObject {
     enumValues<Category>().forEach {
         val categoryDetailTemplate = JSONObject()
         categoryDetailTemplate["available"] = false
-        categoryDetailTemplate["get"] = 0
-        categoryDetailTemplate["total"] = 0
-        categoryDetailTemplate["weight"] = 0
+        categoryDetailTemplate["get"] = 0.0
+        categoryDetailTemplate["total"] = 0.0
+        categoryDetailTemplate["weight"] = 0.0
 
         template[it.name] = categoryDetailTemplate
     }

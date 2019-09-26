@@ -3,6 +3,7 @@ package modes
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
+import webpage.LoginPage
 import java.io.FileReader
 
 
@@ -14,7 +15,9 @@ fun testAll() {
 
         for (student in students) if (student is JSONObject) {
             println(student["id"].toString())
-            getMarks(student["id"].toString(), student["pwd"].toString())
+            LoginPage()
+                .gotoSummaryPage(student["id"].toString(), student["pwd"].toString())
+                .fillDetails()
             println("--------------------------------")
         }
     }

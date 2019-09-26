@@ -5,7 +5,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlTable
 import find
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
-import kotlinx.coroutines.*
 
 class SummaryPage(val htmlPage: HtmlPage) {
     val courses = JSONArray()
@@ -31,9 +30,9 @@ class SummaryPage(val htmlPage: HtmlPage) {
             val markText = row.getCell(2).asText()
 
             if (markText.indexOf("current mark") == -1) {
-                course["overall_mark"] = "N/A"
+                course["overall_mark"] = null
             } else {
-                course["overall_mark"] = find(markText, "(?<=current mark = )[^%]+")[0]
+                course["overall_mark"] = find(markText, "(?<=current mark = )[^%]+")[0].toDouble()
             }
 
             course["mark_detail"] = JSONObject()
@@ -54,7 +53,7 @@ class SummaryPage(val htmlPage: HtmlPage) {
     fun fillDetails():SummaryPage {
         for (i in 0 until courses.size) {
             val course = courses[i] as JSONObject
-            if (course["overall_mark"] != "N/A") {
+            if (course["overall_mark"] != null) {
                     val detailPage = gotoDetailPage(i)
                     detailPages.add(detailPage)
                     course["mark_detail"] = detailPage.details
