@@ -88,6 +88,7 @@ fun startServer() {
 
             res = LoginPage()
                 .gotoSummaryPage(user.number, user.password)
+                .fillDetails()
                 .courses
                 .toJSONString()
 

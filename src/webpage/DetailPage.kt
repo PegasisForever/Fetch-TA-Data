@@ -37,10 +37,16 @@ class DetailPage(val htmlPage: HtmlPage, val courseCode: String) {
                 val categoryDetail = assignment[categoryName.name] as JSONObject
 
                 val categoryDetailText = cell.asText()
+
                 if (categoryDetailText!=""){
                     categoryDetail["available"] = true
-                    categoryDetail["get"] = find(categoryDetailText, "^[^ ]+(?= / )")[0].toDouble()
-                    categoryDetail["total"] = find(categoryDetailText, "(?<= / )[^ ]+(?= = )")[0].toDouble()
+                    categoryDetail["get"] = if(find(categoryDetailText, "^[^ ]+(?= / )")[0]!=""){
+                        find(categoryDetailText, "^[^ ]+(?= / )")[0].toDouble()
+                    }else{
+                        categoryDetail["finished"]=false
+                        0.0
+                    }
+                    categoryDetail["total"] = find(categoryDetailText, "(?<=/ )[^ ]+(?= = )")[0].toDouble()
                     categoryDetail["weight"] = if (categoryDetailText.indexOf("no weight") != -1) {
                         0.0
                     } else {
@@ -109,6 +115,7 @@ fun getAssignmentTemplate(): JSONObject {
     enumValues<Category>().forEach {
         val categoryDetailTemplate = JSONObject()
         categoryDetailTemplate["available"] = false
+        categoryDetailTemplate["finished"] = true
         categoryDetailTemplate["get"] = 0.0
         categoryDetailTemplate["total"] = 0.0
         categoryDetailTemplate["weight"] = 0.0
