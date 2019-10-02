@@ -1,5 +1,6 @@
 package models
 
+import exceptions.UserParseException
 import jsonParser
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
@@ -47,12 +48,18 @@ class User() {
         fun fromClient(JSON: JSONObject):User{
             val user=User()
 
-            val userDataJSON = JSON["user"] as JSONObject
-            user.number = userDataJSON["number"] as String
-            user.password = userDataJSON["password"] as String
-            user.receiveNotification = userDataJSON["receive"] as Boolean
+            try{
+                val userDataJSON = JSON["user"] as JSONObject
+                user.number = userDataJSON["number"] as String
+                user.password = userDataJSON["password"] as String
+                user.receiveNotification = userDataJSON["receive"] as Boolean
 
-            user.tokenNames[JSON["token"] as String] = userDataJSON["displayname"] as String
+                if (JSON["token"]!=null){
+                    user.tokenNames[JSON["token"] as String] = userDataJSON["displayname"] as String
+                }
+            }catch (e:Exception){
+                throw UserParseException()
+            }
 
             return user
         }
@@ -70,10 +77,6 @@ class User() {
         }
 
         fun save() {
-            allUsers.removeIf { user ->
-                user.tokenNames.size < 1
-            }
-
             val array = JSONArray()
             allUsers.forEach { user ->
                 array.add(user.toJSONObject())
