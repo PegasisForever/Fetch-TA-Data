@@ -1,6 +1,6 @@
 import modes.archive
 import modes.getMarks
-import modes.startServer
+import modes.server.startServer
 import modes.testAll
 import java.util.logging.Level
 

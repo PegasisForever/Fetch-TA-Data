@@ -133,3 +133,12 @@ fun logUnhandled(thread: Thread?,throwable: Throwable){
     logText=ANSI_RED+logText+ANSI_RESET
     print(logText)
 }
+
+fun fileExists(path:String):Boolean{
+    val tmpDir = File(path)
+    return tmpDir.exists()
+}
+
+fun String.fill(str:String):String{
+    return replace("%s",str)
+}

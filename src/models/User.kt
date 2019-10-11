@@ -64,8 +64,8 @@ class User() {
             return user
         }
 
-        val allUsers = ArrayList<User>()
-        val fileName="./data/users.json"
+        private val allUsers = ArrayList<User>()
+        private const val fileName="./data/users.json"
 
         fun init() {
             FileReader(fileName).use { reader ->

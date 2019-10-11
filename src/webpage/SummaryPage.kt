@@ -18,9 +18,9 @@ class SummaryPage(val htmlPage: HtmlPage) {
 
             val classText = row.getCell(0).asText()
             course["code"] = find(classText, "^[^ ]+")[0]
-            course["name"] = find(classText, "(?<= : )[^\\n]*(?= )")[0]
+            course["name"] = find(classText, "(?<= : )[^\\n]*(?= )",true)[0]
             course["block"] = find(classText, "(?<=Block: )\\d")[0]
-            course["room"] = find(classText, "(?<=rm\\. )\\d+")[0]
+            course["room"] = find(classText, "(?<=rm\\. )\\d+",true)[0]
 
             val timeText = row.getCell(1).asText()
             val times = find(timeText, "\\d+-\\d+-\\d+")
