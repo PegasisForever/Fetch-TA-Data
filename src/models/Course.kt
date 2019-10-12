@@ -25,7 +25,7 @@ fun CategoryFrom(str: String): Category {
         str.indexOf("Appli") != -1 -> Category.A
         str.indexOf("Other") != -1 -> Category.O
         str.indexOf("Final") != -1 -> Category.F
-        else -> throw Exception() //todo specify exception
+        else -> throw Exception("Can't prase category. Text: ${str}")
     }
 }
 
@@ -51,7 +51,7 @@ class SmallMark(var category: Category) {
 class Assignment {
     val smallMarks = ArrayList<SmallMark>()
     var name = ""
-    var time = ZonedDateTime.now() //TODO use ZonedDateTime
+    var time = ZonedDateTime.now()
 
     fun toJSONObject(): JSONObject {
         val obj = JSONObject()

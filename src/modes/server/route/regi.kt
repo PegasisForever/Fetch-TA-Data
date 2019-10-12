@@ -7,6 +7,7 @@ import jsonParser
 import log
 import models.LoginException
 import models.User
+import models.toJSONArray
 import org.json.simple.JSONObject
 import org.json.simple.parser.ParseException
 import send
@@ -28,8 +29,9 @@ var regiRoute={ exchange:HttpExchange ->
         res = LoginPage()
             .gotoSummaryPage(user.number, user.password)
             .fillDetails()
-            .courses.toString()
-//            .toJSONString() //TODO
+            .courses
+            .toJSONArray()
+            .toJSONString()
 
         log(LogLevel.INFO, "Request #$hash /regi :: User verified successfully")
 
