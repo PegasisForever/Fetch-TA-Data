@@ -1,5 +1,6 @@
 package modes.server.route
 
+import LogLevel
 import com.sun.net.httpserver.HttpExchange
 import exceptions.UserParseException
 import getReqString

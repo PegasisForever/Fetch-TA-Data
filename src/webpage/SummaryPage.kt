@@ -5,7 +5,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlTable
 import find
 import models.Course
 import java.time.LocalDate
-import kotlin.collections.ArrayList
 
 class SummaryPage(val htmlPage: HtmlPage) {
     val courses = ArrayList<Course>()

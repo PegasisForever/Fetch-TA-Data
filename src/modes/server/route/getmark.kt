@@ -1,8 +1,8 @@
 package modes.server.route
 
+import LogLevel
 import com.sun.net.httpserver.HttpExchange
 import getReqString
-import gzip
 import jsonParser
 import log
 import models.LoginException
@@ -10,7 +10,6 @@ import models.toJSONArray
 import org.json.simple.JSONObject
 import org.json.simple.parser.ParseException
 import send
-import ungzip
 import webpage.LoginPage
 
 val getmarkRoute={ exchange: HttpExchange ->

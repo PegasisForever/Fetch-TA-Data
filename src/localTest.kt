@@ -1,7 +1,4 @@
-import com.gargoylesoftware.htmlunit.Page
 import com.gargoylesoftware.htmlunit.html.HtmlPage
-import webpage.DetailPage
-import webpage.SummaryPage
 import java.io.File
 import java.util.logging.Level
 

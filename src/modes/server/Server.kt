@@ -1,12 +1,15 @@
 package modes.server
 
+import LogLevel
 import com.sun.net.httpserver.HttpServer
 import log
 import logUnhandled
-import java.net.InetSocketAddress
 import models.User
-import modes.server.route.*
+import modes.server.route.deregiRoute
+import modes.server.route.getmarkRoute
+import modes.server.route.regiRoute
 import java.lang.Thread.setDefaultUncaughtExceptionHandler
+import java.net.InetSocketAddress
 
 
 fun startServer() {

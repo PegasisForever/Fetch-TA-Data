@@ -4,8 +4,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage
 import com.gargoylesoftware.htmlunit.html.HtmlTable
 import find
 import models.*
-import models.Category.*
-import org.json.simple.JSONObject
+import models.Category.F
 
 class DetailPage(val htmlPage: HtmlPage, val courseCode: String) {
     val assignments = ArrayList<Assignment>()

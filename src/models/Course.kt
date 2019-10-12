@@ -2,11 +2,9 @@ package models
 
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
-import java.lang.Exception
 import java.time.LocalDate
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import kotlin.collections.ArrayList
 
 enum class Category(val displayName: String) {
     KU("Knowledge / Understanding"),
