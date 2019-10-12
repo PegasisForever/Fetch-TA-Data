@@ -53,5 +53,5 @@ var regiRoute={ exchange:HttpExchange ->
     }
 
     log(LogLevel.INFO, "Request #$hash /regi -> $ipAddress, api version=$reqApiVersion, status=$statusCode, data=$res")
-    exchange.send(statusCode, res, apiVersion = reqApiVersion)
+    exchange.send(statusCode, res)
 }

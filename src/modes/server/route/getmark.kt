@@ -47,5 +47,5 @@ val getmarkRoute = { exchange: HttpExchange ->
         LogLevel.INFO,
         "Request #$hash /getmark -> $ipAddress, status=$statusCode, data=$res"
     )
-    exchange.send(statusCode, res, apiVersion = reqApiVersion)
+    exchange.send(statusCode, res,reqApiVersion>1)
 }

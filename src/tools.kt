@@ -91,11 +91,7 @@ fun HttpExchange.getReqString() = String(
     UTF_8
 )
 
-fun HttpExchange.send(statusCode: Int, body: String, isGzip: Boolean = false, apiVersion: Int? = null) {
-    if (apiVersion != null) {
-        responseHeaders.add("api-version", apiVersion.toString())
-    }
-
+fun HttpExchange.send(statusCode: Int, body: String, isGzip: Boolean = false) {
     if (isGzip) {
         val zippedBody = body.gzip()
         sendResponseHeaders(statusCode, zippedBody.size.toLong())
@@ -119,6 +115,9 @@ fun HttpExchange.getApiVersion(): Int {
     var apiVersion = 1
     try {
         apiVersion = requestHeaders["api-version"]!![0].toInt()
+        if (apiVersion > latestApiVersion) {
+            apiVersion = 1
+        }
     } catch (e: Exception) {
     }
 
@@ -181,6 +180,6 @@ fun String.gzip(): ByteArray {
     return bos.toByteArray()
 }
 
-fun ByteArray.ungzip(): String {
+fun ByteArray.unGzip(): String {
     return GZIPInputStream(this.inputStream()).bufferedReader(UTF_8).use { it.readText() }
 }
