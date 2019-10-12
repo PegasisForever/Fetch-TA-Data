@@ -1,11 +1,11 @@
 package modes
 
-import models.toJSONArray
+import Serializers.CourseListSerializerV2
 import webpage.LoginPage
 
 
 fun getMarks(studentNumber: String, password: String) {
     val summaryPage = LoginPage().gotoSummaryPage(studentNumber, password)
     summaryPage.fillDetails()
-    println(summaryPage.courses.toJSONArray().toJSONString())
+    println(CourseListSerializerV2.serializeCourseList(summaryPage.courses))
 }

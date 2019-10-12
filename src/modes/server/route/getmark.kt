@@ -1,12 +1,12 @@
 package modes.server.route
 
 import LogLevel
+import Serializers.CourseListSerializers
 import com.sun.net.httpserver.HttpExchange
 import getReqString
 import jsonParser
 import log
 import models.LoginException
-import models.toJSONArray
 import org.json.simple.JSONObject
 import org.json.simple.parser.ParseException
 import send
@@ -24,12 +24,11 @@ val getmarkRoute = { exchange: HttpExchange ->
     try {
         val req = jsonParser.parse(reqString) as JSONObject
 
-        res = LoginPage()
+        val courses = LoginPage()
             .gotoSummaryPage(req["number"] as String, req["password"] as String)
             .fillDetails()
             .courses
-            .toJSONArray()
-            .toJSONString()
+        res=CourseListSerializers[2]?.invoke(courses)!!
         log(LogLevel.INFO, "Request #$hash /getmark :: Fetch successfully")
     } catch (e: LoginException) {
         log(LogLevel.INFO, "Request #$hash /getmark :: Login error")

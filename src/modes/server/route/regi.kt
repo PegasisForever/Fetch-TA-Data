@@ -1,6 +1,7 @@
 package modes.server.route
 
 import LogLevel
+import Serializers.CourseListSerializers
 import com.sun.net.httpserver.HttpExchange
 import exceptions.UserParseException
 import getReqString
@@ -8,7 +9,6 @@ import jsonParser
 import log
 import models.LoginException
 import models.User
-import models.toJSONArray
 import org.json.simple.JSONObject
 import org.json.simple.parser.ParseException
 import send
@@ -27,12 +27,11 @@ var regiRoute={ exchange:HttpExchange ->
         val req = jsonParser.parse(reqString) as JSONObject
         val user = User.fromClient(req)
 
-        res = LoginPage()
+        val courses = LoginPage()
             .gotoSummaryPage(user.number, user.password)
             .fillDetails()
             .courses
-            .toJSONArray()
-            .toJSONString()
+        res= CourseListSerializers[2]?.invoke(courses)!!
 
         log(LogLevel.INFO, "Request #$hash /regi :: User verified successfully")
 
