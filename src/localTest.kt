@@ -25,5 +25,5 @@ fun main() {
 
     val summaryPage = getWebClient()
         .getPage<HtmlPage>(File("ta-archive/1569347104867-349912170-summary.html").toURL())
-    println(SummaryPage(summaryPage).courses.toJSONString())
+//    println(SummaryPage(summaryPage).courses.toJSONString())
 }

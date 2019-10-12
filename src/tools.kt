@@ -2,15 +2,16 @@ import com.gargoylesoftware.htmlunit.WebClient
 import com.sun.net.httpserver.HttpExchange
 import org.apache.commons.io.FileUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
-import org.json.simple.JSONArray
-import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
-import java.io.File
+import java.io.*
 import java.nio.charset.StandardCharsets
 import java.util.regex.Pattern
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.zip.GZIPInputStream
 import kotlin.collections.ArrayList
+import java.util.zip.GZIPOutputStream
+import java.nio.charset.StandardCharsets.UTF_8
 
 
 fun find(str: String, regex: String, allowBlank: Boolean = false): ArrayList<String> {
@@ -26,7 +27,7 @@ fun find(str: String, regex: String, allowBlank: Boolean = false): ArrayList<Str
     if (result.size == 0) {
         result.add("")
         if (!allowBlank) {
-            log(LogLevel.WARN,"Regex not found: /${regex}/ in \"${str}\"")
+            log(LogLevel.WARN, "Regex not found: /${regex}/ in \"${str}\"")
         }
     }
 
@@ -83,14 +84,28 @@ val ANSI_CYAN = "\u001B[36m"
 val ANSI_WHITE = "\u001B[37m"
 
 val jsonParser = JSONParser()
-fun HttpExchange.getReqString()=String(
+fun HttpExchange.getReqString() = String(
     requestBody.readAllBytes(),
-    StandardCharsets.UTF_8
+    UTF_8
 )
 
-fun HttpExchange.send(statusCode: Int, body: String) {
-    sendResponseHeaders(statusCode, body.length.toLong())
-    responseBody.write(body.toByteArray())
+fun HttpExchange.send(statusCode: Int, body: String, isGzip:Boolean=false) {
+    if (isGzip){
+        val zippedBody=body.gzip()
+        sendResponseHeaders(statusCode, zippedBody.size.toLong())
+        responseBody.write(zippedBody)
+        responseBody.close()
+    }else{
+        sendResponseHeaders(statusCode, body.length.toLong())
+        responseBody.write(body.toByteArray())
+        responseBody.close()
+    }
+
+}
+
+fun HttpExchange.send(statusCode: Int, body: ByteArray) {
+    sendResponseHeaders(statusCode, body.size.toLong())
+    responseBody.write(body)
     responseBody.close()
 }
 
@@ -103,42 +118,53 @@ enum class LogLevel {
 }
 
 var sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
-fun log(level: LogLevel, msg: String,throwable:Throwable?=null) {
+fun log(level: LogLevel, msg: String, throwable: Throwable? = null) {
     val time = sdf.format(Date())
-    var logText = "$time\t|\t${level.name}\t|\t${Thread.currentThread().name}\t|\t${msg.replace("\n","\\n")}\n"
-    if ((level == LogLevel.FATAL || level == LogLevel.ERROR) && throwable!=null) {
+    var logText = "$time\t|\t${level.name}\t|\t${Thread.currentThread().name}\t|\t${msg.replace("\n", "\\n")}\n"
+    if ((level == LogLevel.FATAL || level == LogLevel.ERROR) && throwable != null) {
         logText += ExceptionUtils.getStackTrace(throwable)
     }
 
     logText.appendToFile("data/server_log.log")
 
-    val color=when(level){
+    val color = when (level) {
         LogLevel.DEBUG -> ANSI_BLACK
         LogLevel.INFO -> ANSI_BLUE
         LogLevel.WARN -> ANSI_YELLOW
         LogLevel.ERROR -> ANSI_RED
         LogLevel.FATAL -> ANSI_RED
     }
-    logText=color+logText+ANSI_RESET
+    logText = color + logText + ANSI_RESET
     print(logText)
 }
 
-fun logUnhandled(thread: Thread?,throwable: Throwable){
+fun logUnhandled(thread: Thread?, throwable: Throwable) {
     val time = sdf.format(Date())
     var logText = "$time\t|\t${LogLevel.FATAL.name}\t|\t${thread?.name}\t|\tUnhandled Error\n"
-    logText+=ExceptionUtils.getStackTrace(throwable)
+    logText += ExceptionUtils.getStackTrace(throwable)
 
     logText.appendToFile("data/server_log.log")
 
-    logText=ANSI_RED+logText+ANSI_RESET
+    logText = ANSI_RED + logText + ANSI_RESET
     print(logText)
 }
 
-fun fileExists(path:String):Boolean{
+fun fileExists(path: String): Boolean {
     val tmpDir = File(path)
     return tmpDir.exists()
 }
 
-fun String.fill(str:String):String{
-    return replace("%s",str)
+fun String.fill(str: String): String {
+    return replace("%s", str)
+}
+
+fun String.gzip():ByteArray{
+    val bos = ByteArrayOutputStream()
+    GZIPOutputStream(bos).bufferedWriter(UTF_8).use { it.write(this) }
+    return bos.toByteArray()
+}
+
+
+fun ByteArray.ungzip(): String {
+    return GZIPInputStream(this.inputStream()).bufferedReader(UTF_8).use { it.readText() }
 }

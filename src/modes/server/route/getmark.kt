@@ -2,12 +2,15 @@ package modes.server.route
 
 import com.sun.net.httpserver.HttpExchange
 import getReqString
+import gzip
 import jsonParser
 import log
 import models.LoginException
+import models.toJSONArray
 import org.json.simple.JSONObject
 import org.json.simple.parser.ParseException
 import send
+import ungzip
 import webpage.LoginPage
 
 val getmarkRoute={ exchange: HttpExchange ->
@@ -26,6 +29,7 @@ val getmarkRoute={ exchange: HttpExchange ->
             .gotoSummaryPage(req["number"] as String, req["password"] as String)
             .fillDetails()
             .courses
+            .toJSONArray()
             .toJSONString()
         log(LogLevel.INFO, "Request #$hash /getmark :: Fetch successfully")
     } catch (e: LoginException) {

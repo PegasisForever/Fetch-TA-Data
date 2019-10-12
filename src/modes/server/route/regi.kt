@@ -28,8 +28,8 @@ var regiRoute={ exchange:HttpExchange ->
         res = LoginPage()
             .gotoSummaryPage(user.number, user.password)
             .fillDetails()
-            .courses
-            .toJSONString()
+            .courses.toString()
+//            .toJSONString() //TODO
 
         log(LogLevel.INFO, "Request #$hash /regi :: User verified successfully")
 

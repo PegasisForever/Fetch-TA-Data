@@ -8,7 +8,6 @@ import models.Category.*
 import org.json.simple.JSONObject
 
 class DetailPage(val htmlPage: HtmlPage, val courseCode: String) {
-    val details = JSONObject()
     val assignments = ArrayList<Assignment>()
     val weightTable = WeightTable()
 
@@ -82,8 +81,6 @@ class DetailPage(val htmlPage: HtmlPage, val courseCode: String) {
         finalWeight.CW = find(finalRow.getCell(1).asText(), "^[^%]+")[0].toDouble()
         finalWeight.SA = find(finalRow.getCell(2).asText(), "^[^%]+")[0].toDouble()
         weightTable.weightsList.add(finalWeight)
-
-        println()
     }
 
 

@@ -3,39 +3,38 @@ package webpage
 import com.gargoylesoftware.htmlunit.html.HtmlPage
 import com.gargoylesoftware.htmlunit.html.HtmlTable
 import find
-import org.json.simple.JSONArray
-import org.json.simple.JSONObject
+import models.Course
+import java.time.LocalDate
+import kotlin.collections.ArrayList
 
 class SummaryPage(val htmlPage: HtmlPage) {
-    val courses = JSONArray()
+    val courses = ArrayList<Course>()
     val detailPages = ArrayList<DetailPage>()
     private val summaryTable = htmlPage.getElementsByTagName("table")[1] as HtmlTable
 
     init {
         for (i in 1 until summaryTable.rowCount) {
             val row = summaryTable.getRow(i)
-            val course = JSONObject()
+            val course = Course()
 
             val classText = row.getCell(0).asText()
-            course["code"] = find(classText, "^[^ ]+")[0]
-            course["name"] = find(classText, "(?<= : )[^\\n]*(?= )",true)[0]
-            course["block"] = find(classText, "(?<=Block: )\\d")[0]
-            course["room"] = find(classText, "(?<=rm\\. )\\d+",true)[0]
+            course.code = find(classText, "^[^ ]+")[0]
+            course.name = find(classText, "(?<= : )[^\\n]*(?= )", true)[0]
+            course.block = find(classText, "(?<=Block: )\\d")[0]
+            course.room = find(classText, "(?<=rm\\. )\\d+", true)[0]
 
             val timeText = row.getCell(1).asText()
             val times = find(timeText, "\\d+-\\d+-\\d+")
-            course["start_time"] = times[0]
-            course["end_time"] = times[1]
+            course.startTime = LocalDate.parse(times[0])
+            course.endTime = LocalDate.parse(times[1])
 
             val markText = row.getCell(2).asText()
 
             if (markText.indexOf("current mark") == -1) {
-                course["overall_mark"] = null
+                course.overallMark = null
             } else {
-                course["overall_mark"] = find(markText, "(?<=current mark = )[^%]+")[0].toDouble()
+                course.overallMark = find(markText, "(?<=current mark = )[^%]+")[0].toDouble()
             }
-
-            course["mark_detail"] = JSONObject()
 
             courses.add(course)
         }
@@ -47,16 +46,17 @@ class SummaryPage(val htmlPage: HtmlPage) {
             summaryTable.getRow(index + 1).getCell(2)
                 .getElementsByTagName("a")[0].getAttribute("href")
         )
-        return DetailPage(pageAnchor.click(), (courses[index] as JSONObject)["code"] as String)
+        return DetailPage(pageAnchor.click(), courses[index].code)
     }
 
-    fun fillDetails():SummaryPage {
+    fun fillDetails(): SummaryPage {
         for (i in 0 until courses.size) {
-            val course = courses[i] as JSONObject
-            if (course["overall_mark"] != null) {
-                    val detailPage = gotoDetailPage(i)
-                    detailPages.add(detailPage)
-                    course["mark_detail"] = detailPage.details
+            val course = courses[i]
+            if (course.overallMark != null) {
+                val detailPage = gotoDetailPage(i)
+                detailPages.add(detailPage)
+                course.assignments = detailPage.assignments
+                course.weightTable = detailPage.weightTable
 
             }
         }

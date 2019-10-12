@@ -1,5 +1,6 @@
-
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 fun main() {
-    println(fileExists("./file"))
+    println(ZonedDateTime.now().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
 }
