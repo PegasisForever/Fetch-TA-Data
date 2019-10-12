@@ -1,4 +1,4 @@
-package Serializers
+package modes.server.Serializers
 
 import models.*
 import org.json.simple.JSONArray

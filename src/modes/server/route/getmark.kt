@@ -1,8 +1,9 @@
 package modes.server.route
 
 import LogLevel
-import Serializers.CourseListSerializers
+import modes.server.Serializers.CourseListSerializers
 import com.sun.net.httpserver.HttpExchange
+import getApiVersion
 import getReqString
 import jsonParser
 import log
@@ -19,7 +20,8 @@ val getmarkRoute = { exchange: HttpExchange ->
     val hash = exchange.hashCode()
     val reqString = exchange.getReqString()
     val ipAddress = exchange.remoteAddress.address.toString()
-    log(LogLevel.INFO, "Request #$hash /getmark <- $ipAddress, data=$reqString")
+    val reqApiVersion = exchange.getApiVersion()
+    log(LogLevel.INFO, "Request #$hash /getmark <- $ipAddress, api version=$reqApiVersion, data=$reqString")
 
     try {
         val req = jsonParser.parse(reqString) as JSONObject
@@ -28,7 +30,7 @@ val getmarkRoute = { exchange: HttpExchange ->
             .gotoSummaryPage(req["number"] as String, req["password"] as String)
             .fillDetails()
             .courses
-        res=CourseListSerializers[2]?.invoke(courses)!!
+        res = CourseListSerializers[reqApiVersion]?.invoke(courses)!!
         log(LogLevel.INFO, "Request #$hash /getmark :: Fetch successfully")
     } catch (e: LoginException) {
         log(LogLevel.INFO, "Request #$hash /getmark :: Login error")
@@ -43,7 +45,7 @@ val getmarkRoute = { exchange: HttpExchange ->
 
     log(
         LogLevel.INFO,
-        "Request #$hash /getmark -> $ipAddress, api version=$apiVersion, status=$statusCode, data=$res"
+        "Request #$hash /getmark -> $ipAddress, status=$statusCode, data=$res"
     )
-    exchange.send(statusCode, res, apiVersion = apiVersion)
+    exchange.send(statusCode, res, apiVersion = reqApiVersion)
 }

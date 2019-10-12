@@ -2,6 +2,7 @@ package modes.server.route
 
 import LogLevel
 import com.sun.net.httpserver.HttpExchange
+import getApiVersion
 import getReqString
 import jsonParser
 import log
@@ -16,7 +17,8 @@ var deregiRoute={ exchange:HttpExchange ->
     val hash = exchange.hashCode()
     val reqString = exchange.getReqString()
     val ipAddress = exchange.remoteAddress.address.toString()
-    log(LogLevel.INFO, "Request #$hash /deregi <- $ipAddress, data=$reqString")
+    val reqApiVersion = exchange.getApiVersion()
+    log(LogLevel.INFO, "Request #$hash /deregi <- $ipAddress, api version=$reqApiVersion, data=$reqString")
 
     try {
         val req = jsonParser.parse(reqString) as JSONObject
@@ -31,6 +33,6 @@ var deregiRoute={ exchange:HttpExchange ->
         statusCode = 500
     }
 
-    log(LogLevel.INFO, "Request #$hash /deregi -> $ipAddress, api version=$apiVersion, status=$statusCode")
-    exchange.send(statusCode, "", apiVersion = apiVersion)
+    log(LogLevel.INFO, "Request #$hash /deregi -> $ipAddress, api version=$reqApiVersion, status=$statusCode")
+    exchange.send(statusCode, "", apiVersion = reqApiVersion)
 }

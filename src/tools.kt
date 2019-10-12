@@ -1,10 +1,12 @@
 import com.gargoylesoftware.htmlunit.WebClient
 import com.sun.net.httpserver.HttpExchange
+import modes.server.route.latestApiVersion
 import org.apache.commons.io.FileUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.json.simple.parser.JSONParser
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.lang.Exception
 import java.nio.charset.StandardCharsets.UTF_8
 import java.text.SimpleDateFormat
 import java.util.*
@@ -89,17 +91,17 @@ fun HttpExchange.getReqString() = String(
     UTF_8
 )
 
-fun HttpExchange.send(statusCode: Int, body: String, isGzip:Boolean=false,apiVersion:Int?=null) {
-    if (apiVersion!=null){
-        responseHeaders.add("api-version",apiVersion.toString())
+fun HttpExchange.send(statusCode: Int, body: String, isGzip: Boolean = false, apiVersion: Int? = null) {
+    if (apiVersion != null) {
+        responseHeaders.add("api-version", apiVersion.toString())
     }
 
-    if (isGzip){
-        val zippedBody=body.gzip()
+    if (isGzip) {
+        val zippedBody = body.gzip()
         sendResponseHeaders(statusCode, zippedBody.size.toLong())
         responseBody.write(zippedBody)
         responseBody.close()
-    }else{
+    } else {
         sendResponseHeaders(statusCode, body.length.toLong())
         responseBody.write(body.toByteArray())
         responseBody.close()
@@ -112,6 +114,17 @@ fun HttpExchange.send(statusCode: Int, body: ByteArray) {
     responseBody.write(body)
     responseBody.close()
 }
+
+fun HttpExchange.getApiVersion(): Int {
+    var apiVersion = 1
+    try {
+        apiVersion = requestHeaders["api-version"]!![0].toInt()
+    } catch (e: Exception) {
+    }
+
+    return apiVersion
+}
+
 
 enum class LogLevel {
     DEBUG,
@@ -162,12 +175,11 @@ fun String.fill(str: String): String {
     return replace("%s", str)
 }
 
-fun String.gzip():ByteArray{
+fun String.gzip(): ByteArray {
     val bos = ByteArrayOutputStream()
     GZIPOutputStream(bos).bufferedWriter(UTF_8).use { it.write(this) }
     return bos.toByteArray()
 }
-
 
 fun ByteArray.ungzip(): String {
     return GZIPInputStream(this.inputStream()).bufferedReader(UTF_8).use { it.readText() }

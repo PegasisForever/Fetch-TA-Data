@@ -1,9 +1,10 @@
 package modes.server.route
 
 import LogLevel
-import Serializers.CourseListSerializers
+import modes.server.Serializers.CourseListSerializers
 import com.sun.net.httpserver.HttpExchange
 import exceptions.UserParseException
+import getApiVersion
 import getReqString
 import jsonParser
 import log
@@ -21,7 +22,8 @@ var regiRoute={ exchange:HttpExchange ->
     val hash = exchange.hashCode()
     val reqString = exchange.getReqString()
     val ipAddress = exchange.remoteAddress.address.toString()
-    log(LogLevel.INFO, "Request #$hash /regi <- $ipAddress, data=$reqString")
+    val reqApiVersion = exchange.getApiVersion()
+    log(LogLevel.INFO, "Request #$hash /regi <- $ipAddress, api version=$reqApiVersion, data=$reqString")
 
     try {
         val req = jsonParser.parse(reqString) as JSONObject
@@ -31,12 +33,11 @@ var regiRoute={ exchange:HttpExchange ->
             .gotoSummaryPage(user.number, user.password)
             .fillDetails()
             .courses
-        res= CourseListSerializers[2]?.invoke(courses)!!
+        res= CourseListSerializers[reqApiVersion]?.invoke(courses)!!
 
         log(LogLevel.INFO, "Request #$hash /regi :: User verified successfully")
 
         User.add(user)
-
     } catch (e: LoginException) {
         log(LogLevel.INFO, "Request #$hash /regi :: Login error")
         statusCode = 401
@@ -51,6 +52,6 @@ var regiRoute={ exchange:HttpExchange ->
         statusCode = 500
     }
 
-    log(LogLevel.INFO, "Request #$hash /regi -> $ipAddress, api version=$apiVersion, status=$statusCode, data=$res")
-    exchange.send(statusCode, res, apiVersion = apiVersion)
+    log(LogLevel.INFO, "Request #$hash /regi -> $ipAddress, api version=$reqApiVersion, status=$statusCode, data=$res")
+    exchange.send(statusCode, res, apiVersion = reqApiVersion)
 }

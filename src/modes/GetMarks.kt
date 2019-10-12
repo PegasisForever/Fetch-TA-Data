@@ -1,6 +1,6 @@
 package modes
 
-import Serializers.CourseListSerializerV2
+import modes.server.Serializers.CourseListSerializerV2
 import webpage.LoginPage
 
 
