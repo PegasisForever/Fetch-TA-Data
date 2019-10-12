@@ -12,7 +12,7 @@ import org.json.simple.parser.ParseException
 import send
 import webpage.LoginPage
 
-val getmarkRoute={ exchange: HttpExchange ->
+val getmarkRoute = { exchange: HttpExchange ->
     var statusCode = 200  //200:success  400:bad request  401:pwd incorrect  500:internal error
     var res = ""
 
@@ -42,6 +42,9 @@ val getmarkRoute={ exchange: HttpExchange ->
         statusCode = 500
     }
 
-    log(LogLevel.INFO, "Request #$hash /getmark -> $ipAddress, status=$statusCode, data=$res")
-    exchange.send(statusCode, res)
+    log(
+        LogLevel.INFO,
+        "Request #$hash /getmark -> $ipAddress, api version=$apiVersion, status=$statusCode, data=$res"
+    )
+    exchange.send(statusCode, res, apiVersion = apiVersion)
 }

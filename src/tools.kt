@@ -89,7 +89,11 @@ fun HttpExchange.getReqString() = String(
     UTF_8
 )
 
-fun HttpExchange.send(statusCode: Int, body: String, isGzip:Boolean=false) {
+fun HttpExchange.send(statusCode: Int, body: String, isGzip:Boolean=false,apiVersion:Int?=null) {
+    if (apiVersion!=null){
+        responseHeaders.add("api-version",apiVersion.toString())
+    }
+
     if (isGzip){
         val zippedBody=body.gzip()
         sendResponseHeaders(statusCode, zippedBody.size.toLong())

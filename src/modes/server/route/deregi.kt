@@ -31,6 +31,6 @@ var deregiRoute={ exchange:HttpExchange ->
         statusCode = 500
     }
 
-    log(LogLevel.INFO, "Request #$hash /deregi -> $ipAddress, status=$statusCode")
-    exchange.send(statusCode, "")
+    log(LogLevel.INFO, "Request #$hash /deregi -> $ipAddress, api version=$apiVersion, status=$statusCode")
+    exchange.send(statusCode, "", apiVersion = apiVersion)
 }
