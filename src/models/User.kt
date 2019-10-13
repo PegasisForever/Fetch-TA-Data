@@ -129,5 +129,14 @@ class User() {
             }
             save()
         }
+
+        fun get(number:String):User?{
+            allUsers.forEach {
+                if (it.number==number){
+                    return it
+                }
+            }
+            return null
+        }
     }
 }

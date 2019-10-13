@@ -8,6 +8,7 @@ import getReqString
 import jsonParser
 import log
 import models.LoginException
+import modes.server.updater.runAsyncUpdate
 import org.json.simple.JSONObject
 import org.json.simple.parser.ParseException
 import send
@@ -32,6 +33,8 @@ val getmarkRoute = { exchange: HttpExchange ->
             .courses
         res = CourseListSerializers[reqApiVersion]?.invoke(courses)!!
         log(LogLevel.INFO, "Request #$hash /getmark :: Fetch successfully")
+
+        runAsyncUpdate(req["number"] as String, courses, hash)
     } catch (e: LoginException) {
         log(LogLevel.INFO, "Request #$hash /getmark :: Login error")
         statusCode = 401

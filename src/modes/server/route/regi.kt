@@ -10,12 +10,13 @@ import jsonParser
 import log
 import models.LoginException
 import models.User
+import modes.server.updater.runAsyncUpdate
 import org.json.simple.JSONObject
 import org.json.simple.parser.ParseException
 import send
 import webpage.LoginPage
 
-var regiRoute={ exchange:HttpExchange ->
+var regiRoute = { exchange: HttpExchange ->
     var statusCode = 200  //200:success  400:bad request  401:pwd incorrect  500:internal error
     var res = ""
 
@@ -33,18 +34,19 @@ var regiRoute={ exchange:HttpExchange ->
             .gotoSummaryPage(user.number, user.password)
             .fillDetails()
             .courses
-        res= CourseListSerializers[reqApiVersion]?.invoke(courses)!!
+        res = CourseListSerializers[reqApiVersion]?.invoke(courses)!!
 
         log(LogLevel.INFO, "Request #$hash /regi :: User verified successfully")
-
         User.add(user)
+
+        runAsyncUpdate(req["number"] as String, courses, hash)
     } catch (e: LoginException) {
         log(LogLevel.INFO, "Request #$hash /regi :: Login error")
         statusCode = 401
     } catch (e: ParseException) {
         log(LogLevel.INFO, "Request #$hash /regi :: Can't parse request")
         statusCode = 400
-    } catch (e: UserParseException){
+    } catch (e: UserParseException) {
         log(LogLevel.INFO, "Request #$hash /regi :: Can't parse given user")
         statusCode = 400
     } catch (e: Exception) {
@@ -53,5 +55,5 @@ var regiRoute={ exchange:HttpExchange ->
     }
 
     log(LogLevel.INFO, "Request #$hash /regi -> $ipAddress, status=$statusCode, data=$res")
-    exchange.send(statusCode, res,reqApiVersion>1)
+    exchange.send(statusCode, res, reqApiVersion > 1)
 }
