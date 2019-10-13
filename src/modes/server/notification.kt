@@ -8,7 +8,7 @@ import com.google.firebase.messaging.Message
 import com.google.firebase.messaging.Notification
 import java.io.FileInputStream
 
-fun sendNotification() {
+fun sendFCM(token:String,title:String,body:String) {
     val serviceAccount = FileInputStream("data/serviceAccountKey.json")
 
     val options = FirebaseOptions.Builder()
@@ -18,14 +18,11 @@ fun sendNotification() {
 
     FirebaseApp.initializeApp(options)
 
-    val registrationToken =
-        "cIZ9DJvBeiM:APA91bGccS9MCW-T19MbN_M8py54c6KUCZbPhE4LH3kOw49qVxNrmZUP6gNdc86LViiObBzGicmIRStzgKMEujZJx0n-dSnKoR1i9Pc96wm1YrUKEd7rpZscK0_yuqeOClH2QGIvZrV7"
-
     val message = Message.builder()
-        .setNotification(Notification("server", "body"))
-        .setToken(registrationToken)
+        .setNotification(Notification(title, body))
+        .setToken(token)
         .build()
 
     val response = FirebaseMessaging.getInstance().send(message)
-    println("Successfully sent message: $response")
+    println("Sent message: $response")
 }

@@ -86,7 +86,7 @@ class User() {
             return user
         }
 
-        private val allUsers = ArrayList<User>()
+        val allUsers = ArrayList<User>()
         private const val fileName = "data/users.json"
 
         fun init() {
