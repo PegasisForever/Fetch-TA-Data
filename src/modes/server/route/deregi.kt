@@ -2,6 +2,7 @@ package modes.server.route
 
 import LogLevel
 import com.sun.net.httpserver.HttpExchange
+import exceptions.UserParseException
 import getApiVersion
 import getReqString
 import jsonParser
@@ -27,6 +28,9 @@ var deregiRoute={ exchange:HttpExchange ->
         User.remove(user)
     } catch (e: ParseException) {
         log(LogLevel.INFO, "Request #$hash /deregi :: Can't parse request")
+        statusCode = 400
+    } catch (e: UserParseException){
+        log(LogLevel.INFO, "Request #$hash /regi :: Can't parse given user")
         statusCode = 400
     } catch (e: Exception) {
         log(LogLevel.ERROR, "Request #$hash /deregi :: Unknown error: ${e.message}", e)

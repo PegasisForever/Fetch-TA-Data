@@ -1,11 +1,11 @@
-package modes.server.Serializers
+package modes.server.serializers
 
 import models.*
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import java.time.format.DateTimeFormatter
 
-class CourseListSerializerV1 {
+class CourseListSerializerV2 {
     companion object {
         private fun serializeSmallMark(smallMark: SmallMark): JSONObject {
             val obj = JSONObject()
@@ -20,11 +20,10 @@ class CourseListSerializerV1 {
 
         private fun serializeAssignment(assignment: Assignment): JSONObject {
             val obj = JSONObject()
-            enumValues<Category>().forEach { category ->
-                obj[category.name] = serializeSmallMark(SmallMark(category))
-            }
             assignment.smallMarks.forEach { smallMark ->
-                obj[smallMark.category.name] = serializeSmallMark(smallMark)
+                if (smallMark.available){
+                    obj[smallMark.category.name] = serializeSmallMark(smallMark)
+                }
             }
             obj["name"] = assignment.name
             obj["time"] = assignment.time.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
@@ -60,14 +59,11 @@ class CourseListSerializerV1 {
             obj["room"] = course.room
             obj["overall_mark"] = course.overallMark
 
-            val markDetail = JSONObject()
-            markDetail["assignments"] = JSONArray()
+            obj["assignments"] = JSONArray()
             course.assignments?.forEach { assignment ->
-                (markDetail["assignments"] as JSONArray).add(serializeAssignment(assignment))
+                (obj["assignments"] as JSONArray).add(serializeAssignment(assignment))
             }
-            markDetail["weights"] = course.weightTable?.let { serializeWeightTable(it) }
-
-            obj["mark_detail"] = markDetail
+            obj["weight_table"] = course.weightTable?.let { serializeWeightTable(it) }
 
             return obj
         }

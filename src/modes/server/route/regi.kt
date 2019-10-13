@@ -1,7 +1,7 @@
 package modes.server.route
 
 import LogLevel
-import modes.server.Serializers.CourseListSerializers
+import modes.server.serializers.CourseListSerializers
 import com.sun.net.httpserver.HttpExchange
 import exceptions.UserParseException
 import getApiVersion

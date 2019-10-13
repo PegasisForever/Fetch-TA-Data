@@ -24,6 +24,18 @@ fun CategoryFrom(str: String): Category {
     }
 }
 
+fun CategoryFromInitial(str: String): Category {
+    return when(str) {
+        "KU" -> Category.KU
+        "T" -> Category.T
+        "C" -> Category.C
+        "A" -> Category.A
+        "O" -> Category.O
+        "F" -> Category.F
+        else -> throw Exception("Can't prase category. Text: ${str}")
+    }
+}
+
 class SmallMark(var category: Category) {
     var available = false
     var finished = true
