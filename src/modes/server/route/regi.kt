@@ -10,7 +10,7 @@ import jsonParser
 import log
 import models.LoginException
 import models.User
-import modes.server.updater.runAsyncUpdate
+import modes.server.updater.runUpdate
 import org.json.simple.JSONObject
 import org.json.simple.parser.ParseException
 import send
@@ -39,7 +39,7 @@ var regiRoute = { exchange: HttpExchange ->
         log(LogLevel.INFO, "Request #$hash /regi :: User verified successfully")
         User.add(user)
 
-        runAsyncUpdate(req["number"] as String, courses, hash)
+        runUpdate(req["number"] as String, courses, hash, "/regi")
     } catch (e: LoginException) {
         log(LogLevel.INFO, "Request #$hash /regi :: Login error")
         statusCode = 401

@@ -7,6 +7,7 @@ import logUnhandled
 import models.User
 import modes.server.route.deregiRoute
 import modes.server.route.getmarkRoute
+import modes.server.route.getmarkTimelineRoute
 import modes.server.route.regiRoute
 import modes.server.updater.autoUpdateThreadRunning
 import modes.server.updater.startAutoUpdateThread
@@ -15,7 +16,7 @@ import java.net.InetSocketAddress
 
 
 fun startServer() {
-    var autoUpdateThread:Thread?=null
+    var autoUpdateThread: Thread? = null
 
     log(LogLevel.INFO, "Starting server")
 
@@ -36,6 +37,7 @@ fun startServer() {
 
     val server = HttpServer.create(InetSocketAddress(5004), 0)
     server.createContext("/getmark", getmarkRoute)
+    server.createContext("/getmark_timeline", getmarkTimelineRoute)
     server.createContext("/regi", regiRoute)
     server.createContext("/deregi", deregiRoute)
     server.start()

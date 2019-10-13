@@ -16,7 +16,7 @@ import webpage.LoginPage
 import writeToFile
 import java.util.concurrent.atomic.AtomicBoolean
 
-fun performUpdate(user: User, newData: ArrayList<Course>? = null):ArrayList<TAUpdate> {
+fun performUpdate(user: User, newData: ArrayList<Course>? = null): ArrayList<TAUpdate> {
     val studentNumber = user.number
     val password = user.password
     var updates = ArrayList<TAUpdate>()
@@ -44,14 +44,23 @@ fun performUpdate(user: User, newData: ArrayList<Course>? = null):ArrayList<TAUp
     return updates
 }
 
-fun runAsyncUpdate(number: String, newData: ArrayList<Course>, hash: Int) {
-    GlobalScope.launch {
+fun runUpdate(number: String, newData: ArrayList<Course>, hash: Int,routeName:String, block: Boolean = false) {
+    if (block) {
         val user = User.get(number)
         user?.let {
             performUpdate(it, newData)
         }
-        log(LogLevel.INFO, "Request #$hash /getmark :: Follow up update done")
+        log(LogLevel.INFO, "Request #$hash ${routeName} :: Follow up update done")
+    } else {
+        GlobalScope.launch {
+            val user = User.get(number)
+            user?.let {
+                performUpdate(it, newData)
+            }
+            log(LogLevel.INFO, "Request #$hash ${routeName} :: Follow up update done")
+        }
     }
+
 }
 
 fun sendNotifications(user: User, updateList: ArrayList<TAUpdate>) {
@@ -59,21 +68,21 @@ fun sendNotifications(user: User, updateList: ArrayList<TAUpdate>) {
 }
 
 var autoUpdateThreadRunning = AtomicBoolean(false)
-fun startAutoUpdateThread(intervalMinute: Int):Thread {
+fun startAutoUpdateThread(intervalMinute: Int): Thread {
     val interval = intervalMinute * 60 * 1000
     val thread = Thread {
         autoUpdateThreadRunning.set(true)
         while (autoUpdateThreadRunning.get()) {
             val startTime = System.currentTimeMillis()
-            User.allUsers.forEach {user->
+            User.allUsers.forEach { user ->
                 val updates = performUpdate(user)
                 log(LogLevel.INFO, "Performed update for user ${user.number}, ${updates.size} updates")
             }
 
-            val remainTime=interval-(System.currentTimeMillis()-startTime)
+            val remainTime = interval - (System.currentTimeMillis() - startTime)
             try {
                 Thread.sleep(remainTime)
-            }catch (e:InterruptedException){
+            } catch (e: InterruptedException) {
                 log(LogLevel.INFO, "Thread interrupted")
             }
         }
