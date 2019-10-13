@@ -71,13 +71,15 @@ class CourseListParser {
             course.code=json["code"] as String
             course.block=json["block"] as String
             course.room=json["room"] as String
-            course.overallMark=json["overall_mark"] as Double
+            course.overallMark=json["overall_mark"] as Double?
 
-            course.assignments= ArrayList()
-            (json["assignments"] as JSONArray).forEach { assignmentJSON->
-                course.assignments!!.add(parseAssignment(assignmentJSON as JSONObject))
+            if (course.overallMark!=null){
+                course.assignments= ArrayList()
+                (json["assignments"] as JSONArray).forEach { assignmentJSON->
+                    course.assignments!!.add(parseAssignment(assignmentJSON as JSONObject))
+                }
+                course.weightTable= parseWeightTable(json["weight_table"] as JSONObject)
             }
-            course.weightTable= parseWeightTable(json["weight_table"] as JSONObject)
 
             return course
         }

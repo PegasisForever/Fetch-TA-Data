@@ -8,7 +8,8 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.lang.Exception
 import java.nio.charset.StandardCharsets.UTF_8
-import java.sql.Timestamp
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDateTime
@@ -48,6 +49,10 @@ fun String.writeToFile(path: String) {
 
 fun String.appendToFile(path: String) {
     FileUtils.write(File(path), this, "UTF-8", true);
+}
+
+fun readFile(path: String):String{
+    return String(Files.readAllBytes(Paths.get(path)))
 }
 
 object W {

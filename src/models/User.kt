@@ -4,60 +4,82 @@ import exceptions.UserParseException
 import jsonParser
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
+import readFile
 import writeToFile
-import java.io.FileReader
 
+class Device() {
+    var token = ""
+    var name = ""
+    var language = "en"
+    var receive = true
+
+    constructor(json: JSONObject) : this() {
+        token = json["token"] as String
+        name = json["name"] as String
+        language = json["language"] as String
+        receive = json["receive"] as Boolean
+    }
+
+    fun toJSONObject():JSONObject{
+        val obj=JSONObject()
+        obj["token"]=token
+        obj["name"]=name
+        obj["language"]=language
+        obj["receive"]=receive
+
+        return obj
+    }
+}
 
 class User() {
-    var number: String =""
-    var password: String=""
-    var receiveNotification: Boolean =true
-    var tokenNames = HashMap<String,String>()
+    var number = ""
+    var password = ""
+    var devices = ArrayList<Device>()
 
-    constructor(JSON: JSONObject):this(){
-        val userDataJSON = JSON["user"] as JSONObject
-        number = userDataJSON["number"] as String
-        password = userDataJSON["password"] as String
-        receiveNotification = true
+    constructor(json: JSONObject) : this() {
+        number = json["number"] as String
+        password = json["password"] as String
 
-        val tokenNamesJSON=JSON["tokennames"] as JSONObject
-        tokenNamesJSON.forEach { token, name ->
-            tokenNames.put(token as String,name as String)
+        (json["devices"] as JSONArray).forEach { deviceJSON->
+            devices.add(Device(deviceJSON as JSONObject))
         }
     }
 
     fun toJSONObject(): JSONObject {
         val obj = JSONObject()
 
-        val userDataJSON = JSONObject()
-        userDataJSON["number"] = number
-        userDataJSON["password"] = password
-        userDataJSON["receive"] = receiveNotification
-        obj["user"] = userDataJSON
+        obj["number"] = number
+        obj["password"] = password
 
-        val tokenNamesJSON = JSONObject()
-        tokenNames.forEach { token, name ->
-            tokenNamesJSON[token]=name
+        val devicesArray=JSONArray()
+        devices.forEach {
+            devicesArray.add(it.toJSONObject())
         }
-        obj["tokennames"] = tokenNamesJSON
+        obj["devices"] = devicesArray
 
         return obj
     }
 
     companion object {
-        fun fromClient(JSON: JSONObject):User{
-            val user=User()
+        fun fromClient(JSON: JSONObject): User {
+            val user = User()
 
-            try{
+            try {
                 val userDataJSON = JSON["user"] as JSONObject
                 user.number = userDataJSON["number"] as String
                 user.password = userDataJSON["password"] as String
-                user.receiveNotification = userDataJSON["receive"] as Boolean
 
-                if (JSON["token"]!=null){
-                    user.tokenNames[JSON["token"] as String] = userDataJSON["displayname"] as String
+                val device=Device()
+                device.receive=userDataJSON["receive"] as Boolean
+                device.name=userDataJSON["displayname"] as String
+                if (JSON["token"] != null) {
+                    device.token=JSON["token"] as String
                 }
-            }catch (e:Exception){
+                if (JSON.containsKey("language")){
+                    device.language=JSON["language"] as String
+                }
+                user.devices.add(device)
+            } catch (e: Exception) {
                 throw UserParseException()
             }
 
@@ -65,14 +87,12 @@ class User() {
         }
 
         private val allUsers = ArrayList<User>()
-        private const val fileName="./data/users.json"
+        private const val fileName = "data/users.json"
 
         fun init() {
-            FileReader(fileName).use { reader ->
-                val users = jsonParser.parse(reader) as JSONArray
-                users.forEach { userJSON ->
-                    allUsers.add(User(userJSON as JSONObject))
-                }
+            val users = jsonParser.parse(readFile(fileName)) as JSONArray
+            users.forEach { userJSON ->
+                allUsers.add(User(userJSON as JSONObject))
             }
         }
 
@@ -87,7 +107,7 @@ class User() {
         fun add(newUser: User) {
             allUsers.forEach { user ->
                 if (user.number == newUser.number) {
-                    user.tokenNames.putAll(newUser.tokenNames)
+                    user.devices.addAll(newUser.devices)
                     save()
                     return
                 }
@@ -99,8 +119,10 @@ class User() {
         fun remove(removedUser: User) {
             allUsers.forEach { user ->
                 if (user.number == removedUser.number) {
-                    removedUser.tokenNames.forEach { token, name ->
-                        user.tokenNames.remove(token,name)
+                    removedUser.devices.forEach { deviceRemoved ->
+                        user.devices.removeIf {
+                            it.token==deviceRemoved.token
+                        }
                     }
                     return@forEach
                 }
