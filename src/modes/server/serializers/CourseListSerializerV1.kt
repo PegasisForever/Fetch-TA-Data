@@ -27,7 +27,7 @@ class CourseListSerializerV1 {
                 obj[smallMark.category.name] = serializeSmallMark(smallMark)
             }
             obj["name"] = assignment.name
-            obj["time"] = assignment.time.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+            obj["time"] = ""
 
             return obj
         }
@@ -61,11 +61,13 @@ class CourseListSerializerV1 {
             obj["overall_mark"] = course.overallMark
 
             val markDetail = JSONObject()
-            markDetail["assignments"] = JSONArray()
-            course.assignments?.forEach { assignment ->
-                (markDetail["assignments"] as JSONArray).add(serializeAssignment(assignment))
+            if (course.overallMark!=null){
+                markDetail["assignments"] = JSONArray()
+                course.assignments?.forEach { assignment ->
+                    (markDetail["assignments"] as JSONArray).add(serializeAssignment(assignment))
+                }
+                markDetail["weights"] = course.weightTable?.let { serializeWeightTable(it) }
             }
-            markDetail["weights"] = course.weightTable?.let { serializeWeightTable(it) }
 
             obj["mark_detail"] = markDetail
 
