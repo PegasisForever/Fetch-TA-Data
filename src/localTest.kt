@@ -3,6 +3,7 @@ import models.Course
 import modes.server.serializers.CourseListSerializerV2
 import webpage.SummaryPage
 import java.io.File
+import java.time.ZonedDateTime
 import java.util.logging.Level
 
 
@@ -34,10 +35,10 @@ fun main() {
     )
 }
 
-fun readLocalHtml(fileName:String):ArrayList<Course>{
+fun readLocalHtml(fileName:String,time:ZonedDateTime):ArrayList<Course>{
     val summaryPageHTML = getWebClient()
         .getPage<HtmlPage>(File("ta-archive/$fileName").toURL())
-    return SummaryPage(summaryPageHTML,fileName)
+    return SummaryPage(summaryPageHTML,fileName,time)
         .fillDetails()
         .courses
 }

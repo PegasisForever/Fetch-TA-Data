@@ -10,7 +10,7 @@ open class TAUpdate{
 class AssignmentAdded:TAUpdate(){
     var courseName=""
     var assignmentName=""
-    var assignmentAvg=0.0
+    var assignmentAvg:Double?=null
     var overallBefore:Double?=null
     var overallAfter=0.0
 

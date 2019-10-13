@@ -4,6 +4,7 @@ import jsonParser
 import models.*
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
+import toZonedDateTime
 import java.time.LocalDate
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -14,7 +15,7 @@ class CourseListParser {
         private fun parseSmallMark(json: JSONObject, category: String): SmallMark {
             val smallMark = SmallMark(CategoryFromInitial(category))
             smallMark.available = json["available"] as Boolean
-            smallMark.finished = json["available"] as Boolean
+            smallMark.finished = json["finished"] as Boolean
             smallMark.total = json["total"] as Double
             smallMark.get = json["get"] as Double
             smallMark.weight = json["weight"] as Double
@@ -22,14 +23,13 @@ class CourseListParser {
             return smallMark
         }
 
-        private fun parseAssignment(json: JSONObject): Assignment {
+        fun parseAssignment(json: JSONObject): Assignment {
             val assignment = Assignment()
             val smallMarkCategoryAdded = ArrayList<String>()
             json.forEach { key, value ->
                 when (key) {
                     "name" -> assignment.name = value as String
-                    "time" -> assignment.time =
-                        ZonedDateTime.parse(value as String, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+                    "time" -> assignment.time =(value as String).toZonedDateTime()
                     else -> {
                         smallMarkCategoryAdded.add(key as String)
                         assignment.smallMarks.add(parseSmallMark(value as JSONObject, key))

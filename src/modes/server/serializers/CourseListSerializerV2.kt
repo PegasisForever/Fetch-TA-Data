@@ -3,6 +3,7 @@ package modes.server.serializers
 import models.*
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
+import toJSONString
 import java.time.format.DateTimeFormatter
 
 class CourseListSerializerV2 {
@@ -18,7 +19,7 @@ class CourseListSerializerV2 {
             return obj
         }
 
-        private fun serializeAssignment(assignment: Assignment): JSONObject {
+        fun serializeAssignment(assignment: Assignment): JSONObject {
             val obj = JSONObject()
             assignment.smallMarks.forEach { smallMark ->
                 if (smallMark.available){
@@ -26,7 +27,7 @@ class CourseListSerializerV2 {
                 }
             }
             obj["name"] = assignment.name
-            obj["time"] = assignment.time.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+            obj["time"] = assignment.time.toJSONString()
 
             return obj
         }

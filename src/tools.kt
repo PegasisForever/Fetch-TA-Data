@@ -14,6 +14,7 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.regex.Pattern
 import java.util.zip.GZIPInputStream
@@ -196,4 +197,12 @@ fun Long.toZonedDateTime():ZonedDateTime{
         torontoZoneID
     )
     return localDateTime.atZone(torontoZoneID)
+}
+
+fun ZonedDateTime.toJSONString():String{
+    return this.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+}
+
+fun String.toZonedDateTime():ZonedDateTime{
+    return ZonedDateTime.parse(this,DateTimeFormatter.ISO_OFFSET_DATE_TIME)
 }

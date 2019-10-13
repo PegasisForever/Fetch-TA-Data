@@ -8,8 +8,9 @@ import models.Course
 import java.io.File
 import java.lang.Exception
 import java.time.LocalDate
+import java.time.ZonedDateTime
 
-class SummaryPage(val htmlPage: HtmlPage,val fileName:String?=null) {
+class SummaryPage(val htmlPage: HtmlPage, val fileName: String? = null, val time: ZonedDateTime? = null) {
     val courses = ArrayList<Course>()
     val detailPages = ArrayList<DetailPage>()
     private val summaryTable = htmlPage.getElementsByTagName("table")[1] as HtmlTable
@@ -44,21 +45,21 @@ class SummaryPage(val htmlPage: HtmlPage,val fileName:String?=null) {
     }
 
     fun gotoDetailPage(index: Int): DetailPage {
-        val detailHTMLPage=if (fileName==null){
+        val detailHTMLPage = if (fileName == null) {
             htmlPage.getAnchorByHref(
                 summaryTable.getRow(index + 1).getCell(2)
                     .getElementsByTagName("a")[0].getAttribute("href")
             ).click()
-        }else{
-            val file=File("ta-archive/"+fileName.replace("summary","detail-${courses[index].code}"))
-            if (!file.exists()){
+        } else {
+            val file = File("ta-archive/" + fileName.replace("summary", "detail-${courses[index].code}"))
+            if (!file.exists()) {
                 throw Exception("file ${file.name} not found, summary file name is ${fileName}")
             }
             getWebClient()
                 .getPage<HtmlPage>(file.toURL())
         }
 
-        return DetailPage(detailHTMLPage, courses[index].code)
+        return DetailPage(detailHTMLPage, courses[index].code,time)
     }
 
     fun fillDetails(): SummaryPage {

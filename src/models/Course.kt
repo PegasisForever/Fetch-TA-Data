@@ -43,6 +43,10 @@ class SmallMark(var category: Category) {
     var get = 0.0
     var weight = 0.0
 
+    override fun toString(): String {
+        return "${category.name}: finished=$finished"
+    }
+
     companion object{
         fun isSame(sm1:SmallMark,sm2:SmallMark):Boolean{
             return sm1.available==sm2.available &&

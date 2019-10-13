@@ -1,12 +1,14 @@
+import modes.server.parsers.TimeLineParser.Companion.parseTimeLine
+import modes.server.serializers.TimeLineSerializerV2.Companion.serializeTimeLine
 import modes.server.timeline.TAUpdate
 import modes.server.timeline.compareCourseList
 import java.io.File
 
 fun main() {
-    val fileNames=ArrayList<String>()
+    val fileNames = ArrayList<String>()
     val dir = File("./ta-archive/")
     dir.listFiles()?.forEach { file ->
-        if (file.name.indexOf("350100699-summary") != -1) {
+        if (file.name.indexOf("349891234-summary") != -1) {
             fileNames.add(file.name)
         }
     }
@@ -14,13 +16,14 @@ fun main() {
 
 
     val updateList = ArrayList<TAUpdate>()
-    for (i in 0..fileNames.size-2){
-        val oldCourseList = readLocalHtml(fileNames[i])
-        val newCourseList = readLocalHtml(fileNames[i+1])
+    for (i in 0..fileNames.size - 2) {
+        val zdt = fileNames[i + 1].substring(0, 13).toLong().toZonedDateTime()
 
-        val zdt=fileNames[i+1].substring(0,13).toLong().toZonedDateTime()
-        updateList.addAll(compareCourseList(oldCourseList,newCourseList, zdt))
+        val oldCourseList = readLocalHtml(fileNames[i], zdt)
+        val newCourseList = readLocalHtml(fileNames[i + 1], zdt)
+
+        updateList.addAll(compareCourseList(oldCourseList, newCourseList, zdt))
     }
 
-    println(updateList)
+    println(serializeTimeLine(updateList))
 }

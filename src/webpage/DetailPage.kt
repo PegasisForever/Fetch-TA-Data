@@ -5,8 +5,9 @@ import com.gargoylesoftware.htmlunit.html.HtmlTable
 import find
 import models.*
 import models.Category.F
+import java.time.ZonedDateTime
 
-class DetailPage(val htmlPage: HtmlPage, val courseCode: String) {
+class DetailPage(val htmlPage: HtmlPage, val courseCode: String,val time: ZonedDateTime?=null) {
     val assignments = ArrayList<Assignment>()
     val weightTable = WeightTable()
 
@@ -28,6 +29,9 @@ class DetailPage(val htmlPage: HtmlPage, val courseCode: String) {
             val assignment = Assignment()
 
             assignment.name = row.getCell(0).asText()
+            if (time!=null){
+                assignment.time=time
+            }
 
             val smallMarkCategoryAdded = ArrayList<Category>()
             for (cellI in 1 until row.cells.size) {
