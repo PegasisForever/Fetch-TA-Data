@@ -16,14 +16,15 @@ fun archive() {
 
         for (student in students) if (student is JSONObject) {
             println(student["id"].toString())
+            val time=Date().time
             val summaryPage = LoginPage().gotoSummaryPage(student["id"].toString(), student["pwd"].toString())
             summaryPage.htmlPage.webResponse.contentAsString
-                .writeToFile("./ta-archive/${Date().time}-${student["id"]}-summary.html")
+                .writeToFile("./ta-archive/${time}-${student["id"]}-summary.html")
 
             summaryPage.fillDetails()
             for (detailPage in summaryPage.detailPages) {
                 detailPage.htmlPage.webResponse.contentAsString
-                    .writeToFile("./ta-archive/${Date().time}-${student["id"]}-detail-${detailPage.courseCode}.html")
+                    .writeToFile("./ta-archive/${time}-${student["id"]}-detail-${detailPage.courseCode}.html")
             }
         }
     }

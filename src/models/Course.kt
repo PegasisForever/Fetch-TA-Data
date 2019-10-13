@@ -42,12 +42,53 @@ class SmallMark(var category: Category) {
     var total = 0.0
     var get = 0.0
     var weight = 0.0
+
+    companion object{
+        fun isSame(sm1:SmallMark,sm2:SmallMark):Boolean{
+            return sm1.available==sm2.available &&
+                    sm1.finished==sm2.finished &&
+                    sm1.total==sm2.total &&
+                    sm1.get==sm2.get &&
+                    sm1.weight==sm2.weight
+        }
+    }
 }
 
 class Assignment {
     val smallMarks = ArrayList<SmallMark>()
     var name = ""
     var time = ZonedDateTime.now()
+
+    fun getAverage(weightTable: WeightTable):Double{
+        var total=0.0
+        var get=0.0
+
+        smallMarks.forEach {smallMark->
+            if (smallMark.available && smallMark.finished){
+                val weight=weightTable.getWeight(smallMark.category).CW
+                total+=smallMark.total*weight
+                get+=smallMark.get*weight
+            }
+        }
+
+        return get/total
+    }
+
+    companion object{
+        fun isSame(as1:Assignment,as2:Assignment):Boolean{
+            if (as1.smallMarks.size!=as2.smallMarks.size){
+                return false
+            }
+            as1.smallMarks.forEach {as1SmallMark->
+                as2.smallMarks.forEach{as2SmallMark->
+                    if (as1SmallMark.category==as2SmallMark.category && !SmallMark.isSame(as1SmallMark,as2SmallMark)){
+                        return false
+                    }
+                }
+            }
+            return true
+        }
+    }
 }
 
 class Weight(var category: Category) {
@@ -58,6 +99,15 @@ class Weight(var category: Category) {
 
 class WeightTable {
     val weightsList = ArrayList<Weight>()
+
+    fun getWeight(category: Category):Weight{
+        weightsList.forEach { weight->
+            if (weight.category==category){
+                return weight
+            }
+        }
+        throw java.lang.Exception("Cannot found $category in $weightsList")
+    }
 }
 
 class Course {
@@ -70,4 +120,12 @@ class Course {
     var block = ""
     var room = ""
     var overallMark: Double? = null
+
+    fun getDisplayName():String{
+        return if(name!=""){
+            name
+        }else{
+            code
+        }
+    }
 }

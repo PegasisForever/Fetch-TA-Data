@@ -3,10 +3,13 @@ package webpage
 import com.gargoylesoftware.htmlunit.html.HtmlPage
 import com.gargoylesoftware.htmlunit.html.HtmlTable
 import find
+import getWebClient
 import models.Course
+import java.io.File
+import java.lang.Exception
 import java.time.LocalDate
 
-class SummaryPage(val htmlPage: HtmlPage) {
+class SummaryPage(val htmlPage: HtmlPage,val fileName:String?=null) {
     val courses = ArrayList<Course>()
     val detailPages = ArrayList<DetailPage>()
     private val summaryTable = htmlPage.getElementsByTagName("table")[1] as HtmlTable
@@ -41,11 +44,21 @@ class SummaryPage(val htmlPage: HtmlPage) {
     }
 
     fun gotoDetailPage(index: Int): DetailPage {
-        val pageAnchor = htmlPage.getAnchorByHref(
-            summaryTable.getRow(index + 1).getCell(2)
-                .getElementsByTagName("a")[0].getAttribute("href")
-        )
-        return DetailPage(pageAnchor.click(), courses[index].code)
+        val detailHTMLPage=if (fileName==null){
+            htmlPage.getAnchorByHref(
+                summaryTable.getRow(index + 1).getCell(2)
+                    .getElementsByTagName("a")[0].getAttribute("href")
+            ).click()
+        }else{
+            val file=File("ta-archive/"+fileName.replace("summary","detail-${courses[index].code}"))
+            if (!file.exists()){
+                throw Exception("file ${file.name} not found, summary file name is ${fileName}")
+            }
+            getWebClient()
+                .getPage<HtmlPage>(file.toURL())
+        }
+
+        return DetailPage(detailHTMLPage, courses[index].code)
     }
 
     fun fillDetails(): SummaryPage {

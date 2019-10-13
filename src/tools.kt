@@ -8,7 +8,12 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.lang.Exception
 import java.nio.charset.StandardCharsets.UTF_8
+import java.sql.Timestamp
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.util.*
 import java.util.regex.Pattern
 import java.util.zip.GZIPInputStream
@@ -182,4 +187,13 @@ fun String.gzip(): ByteArray {
 
 fun ByteArray.unGzip(): String {
     return GZIPInputStream(this.inputStream()).bufferedReader(UTF_8).use { it.readText() }
+}
+
+val torontoZoneID=ZoneId.of("America/Toronto")
+fun Long.toZonedDateTime():ZonedDateTime{
+    val localDateTime = LocalDateTime.ofInstant(
+        Instant.ofEpochMilli(this),
+        torontoZoneID
+    )
+    return localDateTime.atZone(torontoZoneID)
 }

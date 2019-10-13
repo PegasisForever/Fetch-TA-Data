@@ -29,6 +29,7 @@ class DetailPage(val htmlPage: HtmlPage, val courseCode: String) {
 
             assignment.name = row.getCell(0).asText()
 
+            val smallMarkCategoryAdded = ArrayList<Category>()
             for (cellI in 1 until row.cells.size) {
                 val cell = row.getCell(cellI)
                 val category = categoryOfEachColumn[cellI - 1]
@@ -51,13 +52,15 @@ class DetailPage(val htmlPage: HtmlPage, val courseCode: String) {
                         find(smallMarkText, "(?<=weight=)[^ ]+$")[0].toDouble()
                     }
 
-                    assignment.smallMarks.add(smallMark)
                 }
-
-
-
+                assignment.smallMarks.add(smallMark)
+                smallMarkCategoryAdded.add(category)
             }
-
+            enumValues<Category>().forEach { category ->
+                if (!smallMarkCategoryAdded.contains(category)) {
+                    assignment.smallMarks.add(SmallMark(category))
+                }
+            }
             assignments.add(assignment)
         }
 

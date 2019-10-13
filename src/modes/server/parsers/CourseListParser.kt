@@ -9,7 +9,6 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 //For CourseListSerializerV2
-
 class CourseListParser {
     companion object {
         private fun parseSmallMark(json: JSONObject, category: String): SmallMark {
