@@ -7,8 +7,10 @@ import models.Course
 import models.User
 import modes.server.parsers.CourseListParser
 import modes.server.parsers.TimeLineParser
+import modes.server.sendFCM
 import modes.server.serializers.CourseListSerializerV2.Companion.serializeCourseList
 import modes.server.serializers.TimeLineSerializerV2.Companion.serializeTimeLine
+import modes.server.timeline.AssignmentAdded
 import modes.server.timeline.TAUpdate
 import modes.server.timeline.compareCourseList
 import readFile
@@ -44,7 +46,7 @@ fun performUpdate(user: User, newData: ArrayList<Course>? = null): ArrayList<TAU
     return updates
 }
 
-fun runUpdate(number: String, newData: ArrayList<Course>, hash: Int,routeName:String, block: Boolean = false) {
+fun runUpdate(number: String, newData: ArrayList<Course>, hash: Int, routeName: String, block: Boolean = false) {
     if (block) {
         val user = User.get(number)
         user?.let {
@@ -64,7 +66,19 @@ fun runUpdate(number: String, newData: ArrayList<Course>, hash: Int,routeName:St
 }
 
 fun sendNotifications(user: User, updateList: ArrayList<TAUpdate>) {
-    //TODO
+    updateList.forEach { taUpdate ->
+        when (taUpdate) {
+            is AssignmentAdded -> {
+                user.devices.forEach { device ->
+                    if (device.receive) {
+                        NotificationStrings.getAssignmentAddedNoti(device.language, taUpdate)?.let {
+                            sendFCM(device.token, it)
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 var autoUpdateThreadRunning = AtomicBoolean(false)

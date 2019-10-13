@@ -8,7 +8,7 @@ import com.google.firebase.messaging.Message
 import com.google.firebase.messaging.Notification
 import java.io.FileInputStream
 
-fun sendFCM(token:String,title:String,body:String) {
+fun sendFCM(token:String,notification: modes.server.updater.Notification) {
     val serviceAccount = FileInputStream("data/serviceAccountKey.json")
 
     val options = FirebaseOptions.Builder()
@@ -19,7 +19,7 @@ fun sendFCM(token:String,title:String,body:String) {
     FirebaseApp.initializeApp(options)
 
     val message = Message.builder()
-        .setNotification(Notification(title, body))
+        .setNotification(Notification(notification.title, notification.body))
         .setToken(token)
         .build()
 
