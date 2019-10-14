@@ -78,6 +78,7 @@ fun startAutoUpdateThread(intervalMinute: Int): Thread {
     val interval = intervalMinute * 60 * 1000
     val thread = Thread {
         autoUpdateThreadRunning.set(true)
+        log(LogLevel.INFO, "Auto update thread started")
         while (autoUpdateThreadRunning.get()) {
             val startTime = System.currentTimeMillis()
             User.allUsers.forEach { user ->
