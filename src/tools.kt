@@ -21,6 +21,8 @@ import java.util.regex.Pattern
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 import kotlin.collections.ArrayList
+import java.text.DecimalFormat
+import java.math.RoundingMode
 
 
 fun find(str: String, regex: String, allowBlank: Boolean = false): ArrayList<String> {
@@ -210,4 +212,19 @@ fun ZonedDateTime.toJSONString():String{
 
 fun String.toZonedDateTime():ZonedDateTime{
     return ZonedDateTime.parse(this,DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+}
+
+operator fun String.times(time:Int):String{
+    val builder = StringBuilder()
+    repeat(time){
+        builder.append(this)
+    }
+
+    return builder.toString()
+}
+
+fun Double.toRoundString(digit:Int):String{
+    val df = DecimalFormat("#."+"#"*digit)
+    df.roundingMode = RoundingMode.CEILING
+    return df.format(this)
 }

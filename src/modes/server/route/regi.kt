@@ -13,6 +13,7 @@ import models.User
 import modes.server.updater.runUpdate
 import org.json.simple.JSONObject
 import org.json.simple.parser.ParseException
+import readFile
 import send
 import webpage.LoginPage
 
@@ -37,9 +38,13 @@ var regiRoute = { exchange: HttpExchange ->
         res = CourseListSerializers[reqApiVersion]?.invoke(courses)!!
 
         log(LogLevel.INFO, "Request #$hash /regi :: User verified successfully")
+
         User.add(user)
 
         runUpdate(user.number, courses, hash, "/regi")
+        if (reqApiVersion>1){
+            res += "|||" + readFile("data/timelines/${user.number}.json")
+        }
     } catch (e: LoginException) {
         log(LogLevel.INFO, "Request #$hash /regi :: Login error")
         statusCode = 401

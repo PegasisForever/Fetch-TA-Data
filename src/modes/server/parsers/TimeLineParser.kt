@@ -27,7 +27,7 @@ class TimeLineParser {
             val assignmentUpdated = AssignmentUpdated()
             assignmentUpdated.courseName = json["course_name"] as String
             assignmentUpdated.assignmentName = json["assignment_name"] as String
-            assignmentUpdated.assignmentBefore = parseAssignment(json["assignment_before"] as JSONObject)
+            assignmentUpdated.assignmentBefore = parseAssignment(json["assignment_before"] as JSONObject)   //remember to change after updated
             assignmentUpdated.assignmentAfter = parseAssignment(json["assignment_after"] as JSONObject)
             assignmentUpdated.time = (json["time"] as String).toZonedDateTime()
 
