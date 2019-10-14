@@ -10,6 +10,7 @@ import log
 import java.io.FileInputStream
 
 fun sendFCM(token:String,notification: modes.server.updater.Notification) {
+
     val serviceAccount = FileInputStream("data/serviceAccountKey.json")
 
     val options = FirebaseOptions.Builder()
@@ -24,7 +25,12 @@ fun sendFCM(token:String,notification: modes.server.updater.Notification) {
         .setToken(token)
         .build()
 
-    val response = FirebaseMessaging.getInstance().send(message)
-    println("Sent message: $response")
-    log(LogLevel.INFO, "Sent notification to $token, content: $notification, response: $response")
+    try {
+        val response = FirebaseMessaging.getInstance().send(message)
+        log(LogLevel.INFO, "Sent notification to $token, content: $notification, response: $response")
+    }catch (e:Throwable){
+        log(LogLevel.INFO, "Failed to send notification to $token, content: $notification",e)
+    }
+
+
 }
