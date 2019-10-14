@@ -1,7 +1,5 @@
 package modes.server.updater
 
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import log
 import models.Course
 import models.User
@@ -46,23 +44,12 @@ fun performUpdate(user: User, newData: ArrayList<Course>? = null): ArrayList<TAU
     return updates
 }
 
-fun runUpdate(number: String, newData: ArrayList<Course>, hash: Int, routeName: String, block: Boolean = false) {
-    if (block) {
-        val user = User.get(number)
-        user?.let {
-            performUpdate(it, newData)
-        }
-        log(LogLevel.INFO, "Request #$hash ${routeName} :: Follow up update done")
-    } else {
-        GlobalScope.launch {
-            val user = User.get(number)
-            user?.let {
-                performUpdate(it, newData)
-            }
-            log(LogLevel.INFO, "Request #$hash ${routeName} :: Follow up update done")
-        }
+fun runUpdate(number: String, newData: ArrayList<Course>, hash: Int, routeName: String) {
+    val user = User.get(number)
+    user?.let {
+        performUpdate(it, newData)
     }
-
+    log(LogLevel.INFO, "Request #$hash ${routeName} :: Follow up update done")
 }
 
 fun sendNotifications(user: User, updateList: ArrayList<TAUpdate>) {

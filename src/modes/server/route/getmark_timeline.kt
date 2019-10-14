@@ -36,7 +36,7 @@ val getmarkTimelineRoute = { exchange: HttpExchange ->
         res = CourseListSerializers[reqApiVersion]?.invoke(courses)!!
         log(LogLevel.INFO, "Request #$hash /getmark_timeline :: Fetch successfully")
 
-        runUpdate(number, courses, hash, "/getmark_timeline", true)
+        runUpdate(number, courses, hash, "/getmark_timeline")
         res += "|||" + readFile("data/timelines/$number.json")
         log(LogLevel.INFO, "Request #$hash /getmark_timeline :: Get timeline successfully")
     } catch (e: LoginException) {
