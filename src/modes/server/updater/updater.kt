@@ -27,24 +27,29 @@ fun performUpdate(user: User, newData: ArrayList<Course>? = null): ArrayList<TAU
     } catch (ignored: Exception) {
     }
 
-    val newCourseList = newData ?: LoginPage().gotoSummaryPage(studentNumber, password).fillDetails().courses
-    if (oldCourseList == null) {
-        serializeCourseList(newCourseList).writeToFile("data/courselists/$studentNumber.json")
-        "[]".writeToFile("data/timelines/$studentNumber.json")
-    } else {
-        val timeline = TimeLineParser.parseTimeLine(readFile("data/timelines/$studentNumber.json"))
-        updates = compareCourseList(oldCourseList, newCourseList)
-        timeline.addAll(updates)
+    try {
+        val newCourseList = newData ?: LoginPage().gotoSummaryPage(studentNumber, password).fillDetails().courses
+        if (oldCourseList == null) {
+            serializeCourseList(newCourseList).writeToFile("data/courselists/$studentNumber.json")
+            "[]".writeToFile("data/timelines/$studentNumber.json")
+        } else {
+            val timeline = TimeLineParser.parseTimeLine(readFile("data/timelines/$studentNumber.json"))
+            updates = compareCourseList(oldCourseList, newCourseList)
+            timeline.addAll(updates)
 
-        serializeCourseList(newCourseList).writeToFile("data/courselists/$studentNumber.json")
-        serializeTimeLine(timeline).writeToFile("data/timelines/$studentNumber.json")
+            serializeCourseList(newCourseList).writeToFile("data/courselists/$studentNumber.json")
+            serializeTimeLine(timeline).writeToFile("data/timelines/$studentNumber.json")
+        }
+
+        sendNotifications(user, updates)
+    }catch (e:Exception){
+        log(LogLevel.ERROR,"Error while performing update for user ${studentNumber}",e)
     }
 
-    sendNotifications(user, updates)
     return updates
 }
 
-fun runUpdate(number: String, newData: ArrayList<Course>, hash: Int, routeName: String) {
+fun runFollowUpUpdate(number: String, newData: ArrayList<Course>, hash: Int, routeName: String) {
     val user = User.get(number)
     user?.let {
         performUpdate(it, newData)

@@ -8,7 +8,7 @@ import getReqString
 import jsonParser
 import log
 import models.LoginException
-import modes.server.updater.runUpdate
+import modes.server.updater.runFollowUpUpdate
 import org.json.simple.JSONObject
 import org.json.simple.parser.ParseException
 import readFile
@@ -36,7 +36,7 @@ val getmarkTimelineRoute = { exchange: HttpExchange ->
         res = CourseListSerializers[reqApiVersion]?.invoke(courses)!!
         log(LogLevel.INFO, "Request #$hash /getmark_timeline :: Fetch successfully")
 
-        runUpdate(number, courses, hash, "/getmark_timeline")
+        runFollowUpUpdate(number, courses, hash, "/getmark_timeline")
         res += "|||" + readFile("data/timelines/$number.json")
         log(LogLevel.INFO, "Request #$hash /getmark_timeline :: Get timeline successfully")
     } catch (e: LoginException) {

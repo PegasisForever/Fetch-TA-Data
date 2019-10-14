@@ -3,7 +3,11 @@ package modes.server.updater
 import modes.server.timeline.AssignmentAdded
 import toRoundString
 
-class Notification(var title: String, var body: String)
+class Notification(var title: String, var body: String){
+    override fun toString(): String {
+        return "Notification title: $title body: $body"
+    }
+}
 
 class NotificationStrings {
     companion object {

@@ -6,6 +6,7 @@ import com.google.firebase.FirebaseOptions
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.Message
 import com.google.firebase.messaging.Notification
+import log
 import java.io.FileInputStream
 
 fun sendFCM(token:String,notification: modes.server.updater.Notification) {
@@ -25,4 +26,5 @@ fun sendFCM(token:String,notification: modes.server.updater.Notification) {
 
     val response = FirebaseMessaging.getInstance().send(message)
     println("Sent message: $response")
+    log(LogLevel.INFO, "Sent notification to $token, content: $notification, response: $response")
 }

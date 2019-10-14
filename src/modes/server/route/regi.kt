@@ -10,7 +10,7 @@ import jsonParser
 import log
 import models.LoginException
 import models.User
-import modes.server.updater.runUpdate
+import modes.server.updater.runFollowUpUpdate
 import org.json.simple.JSONObject
 import org.json.simple.parser.ParseException
 import readFile
@@ -41,7 +41,7 @@ var regiRoute = { exchange: HttpExchange ->
 
         User.add(user)
 
-        runUpdate(user.number, courses, hash, "/regi")
+        runFollowUpUpdate(user.number, courses, hash, "/regi")
         if (reqApiVersion>1){
             res += "|||" + readFile("data/timelines/${user.number}.json")
         }
