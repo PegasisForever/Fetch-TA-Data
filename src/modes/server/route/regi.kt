@@ -39,7 +39,7 @@ var regiRoute = { exchange: HttpExchange ->
         log(LogLevel.INFO, "Request #$hash /regi :: User verified successfully")
         User.add(user)
 
-        runUpdate(req["number"] as String, courses, hash, "/regi")
+        runUpdate(user.number, courses, hash, "/regi")
     } catch (e: LoginException) {
         log(LogLevel.INFO, "Request #$hash /regi :: Login error")
         statusCode = 401
