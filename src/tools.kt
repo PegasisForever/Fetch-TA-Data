@@ -46,11 +46,11 @@ fun find(str: String, regex: String, allowBlank: Boolean = false): ArrayList<Str
 }
 
 fun String.writeToFile(path: String) {
-    FileUtils.writeStringToFile(File(path), this, "UTF-8")
+    File(path).writeText(this)
 }
 
 fun String.appendToFile(path: String) {
-    FileUtils.write(File(path), this, "UTF-8", true);
+    File(path).appendText(this)
 }
 
 fun readFile(path: String):String{
