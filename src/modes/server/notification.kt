@@ -9,16 +9,21 @@ import com.google.firebase.messaging.Notification
 import log
 import java.io.FileInputStream
 
+var initialized=false
+
 fun sendFCM(token:String,notification: modes.server.updater.Notification) {
+    if (!initialized){
+        val serviceAccount = FileInputStream("data/serviceAccountKey.json")
 
-    val serviceAccount = FileInputStream("data/serviceAccountKey.json")
+        val options = FirebaseOptions.Builder()
+            .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+            .setDatabaseUrl("https://yrdsb-teach-assist.firebaseio.com")
+            .build()
 
-    val options = FirebaseOptions.Builder()
-        .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-        .setDatabaseUrl("https://yrdsb-teach-assist.firebaseio.com")
-        .build()
+        FirebaseApp.initializeApp(options)
 
-    FirebaseApp.initializeApp(options)
+        initialized=true
+    }
 
     val message = Message.builder()
         .setNotification(Notification(notification.title, notification.body))

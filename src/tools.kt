@@ -158,7 +158,7 @@ var sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
 fun log(level: LogLevel, msg: String, throwable: Throwable? = null) {
     val time = sdf.format(Date())
     var logText = "$time\t|\t${level.name}\t|\t${Thread.currentThread().name}\t|\t${msg.replace("\n", "\\n")}\n"
-    if ((level == LogLevel.FATAL || level == LogLevel.ERROR) && throwable != null) {
+    if (throwable != null) {
         logText += ExceptionUtils.getStackTrace(throwable)
     }
 
