@@ -104,6 +104,14 @@ fun HttpExchange.getReqString() = String(
     UTF_8
 )
 
+fun HttpExchange.getIP():String?{
+    if (requestHeaders.containsKey("X-real-ip")){
+        return requestHeaders["X-real-ip"]?.get(0)
+    }else{
+        return remoteAddress.address.toString()
+    }
+}
+
 fun HttpExchange.send(statusCode: Int, body: String, isGzip: Boolean = false) {
     if (isGzip) {
         val zippedBody = body.gzip()

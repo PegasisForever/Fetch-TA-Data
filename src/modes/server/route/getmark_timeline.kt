@@ -4,6 +4,7 @@ import LogLevel
 import modes.server.serializers.CourseListSerializers
 import com.sun.net.httpserver.HttpExchange
 import getApiVersion
+import getIP
 import getReqString
 import jsonParser
 import log
@@ -21,7 +22,7 @@ val getmarkTimelineRoute = { exchange: HttpExchange ->
 
     val hash = exchange.hashCode()
     val reqString = exchange.getReqString()
-    val ipAddress = exchange.remoteAddress.address.toString()
+    val ipAddress = exchange.getIP()
     val reqApiVersion = exchange.getApiVersion()
     log(LogLevel.INFO, "Request #$hash /getmark_timeline <- $ipAddress, api version=$reqApiVersion, data=$reqString")
 

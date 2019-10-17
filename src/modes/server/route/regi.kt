@@ -5,6 +5,7 @@ import modes.server.serializers.CourseListSerializers
 import com.sun.net.httpserver.HttpExchange
 import exceptions.UserParseException
 import getApiVersion
+import getIP
 import getReqString
 import jsonParser
 import log
@@ -23,7 +24,7 @@ var regiRoute = { exchange: HttpExchange ->
 
     val hash = exchange.hashCode()
     val reqString = exchange.getReqString()
-    val ipAddress = exchange.remoteAddress.address.toString()
+    val ipAddress = exchange.getIP()
     val reqApiVersion = exchange.getApiVersion()
     log(LogLevel.INFO, "Request #$hash /regi <- $ipAddress, api version=$reqApiVersion, data=$reqString")
 
