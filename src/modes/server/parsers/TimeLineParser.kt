@@ -14,7 +14,7 @@ class TimeLineParser {
         private fun parseAssignmentAdded(json: JSONObject): AssignmentAdded {
             val assignmentAdded = AssignmentAdded()
             assignmentAdded.courseName = json["course_name"] as String
-            assignmentAdded.assignmentName = json["assignment_name"] as String
+            assignmentAdded.assignment = parseAssignment(json["assignment"] as JSONObject)
             assignmentAdded.assignmentAvg = json["assignment_avg"] as Double?
             assignmentAdded.overallBefore = json["overall_before"] as Double?
             assignmentAdded.overallAfter = json["overall_after"] as Double

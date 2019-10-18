@@ -12,7 +12,7 @@ class TimeLineSerializerV2 {
             val obj = JSONObject()
             obj["category"] = "assignment_added"
             obj["course_name"] = assignmentAdded.courseName
-            obj["assignment_name"] = assignmentAdded.assignmentName
+            obj["assignment"] = serializeAssignment(assignmentAdded.assignment)
             obj["assignment_avg"] = assignmentAdded.assignmentAvg
             obj["overall_before"] = assignmentAdded.overallBefore
             obj["overall_after"] = assignmentAdded.overallAfter
@@ -39,7 +39,7 @@ class TimeLineSerializerV2 {
             obj["category"] = "course_added"
             obj["course_name"] = courseAdded.courseName
             obj["course_block"] = courseAdded.courseBlock
-            obj["time"]=courseAdded.time.toJSONString()
+            obj["time"] = courseAdded.time.toJSONString()
 
             return obj
         }
@@ -49,7 +49,7 @@ class TimeLineSerializerV2 {
             obj["category"] = "course_removed"
             obj["course_name"] = courseRemoved.courseName
             obj["course_block"] = courseRemoved.courseBlock
-            obj["time"]=courseRemoved.time.toJSONString()
+            obj["time"] = courseRemoved.time.toJSONString()
 
             return obj
         }

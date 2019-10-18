@@ -75,7 +75,7 @@ class Assignment {
             }
         }
 
-        return get/total
+        return get/total*100
     }
 
     companion object{

@@ -29,7 +29,7 @@ fun compareAssignments(
         if (isNew) {
             val assignmentAdded = AssignmentAdded()
             assignmentAdded.courseName = newCourse.getDisplayName()
-            assignmentAdded.assignmentName = assignment.name
+            assignmentAdded.assignment = assignment
             assignmentAdded.assignmentAvg = assignment.getAverage(newCourse.weightTable!!)
             assignmentAdded.overallBefore = oldCourse.overallMark
             assignmentAdded.overallAfter = newCourse.overallMark!!

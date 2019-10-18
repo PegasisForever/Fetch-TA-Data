@@ -1,7 +1,6 @@
 import com.gargoylesoftware.htmlunit.WebClient
 import com.sun.net.httpserver.HttpExchange
 import modes.server.route.latestApiVersion
-import org.apache.commons.io.FileUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.json.simple.parser.JSONParser
 import java.io.ByteArrayOutputStream

@@ -9,13 +9,13 @@ open class TAUpdate{
 
 class AssignmentAdded:TAUpdate(){
     var courseName=""
-    var assignmentName=""
+    var assignment=Assignment()
     var assignmentAvg:Double?=null
     var overallBefore:Double?=null
     var overallAfter=0.0
 
     override fun toString(): String {
-        return assignmentName
+        return assignment.name
     }
 }
 
