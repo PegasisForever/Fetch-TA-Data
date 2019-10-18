@@ -154,9 +154,10 @@ enum class LogLevel {
 }
 
 var sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
+val serverBuildNumber=1
 fun log(level: LogLevel, msg: String, throwable: Throwable? = null) {
     val time = sdf.format(Date())
-    var logText = "$time\t|\t${level.name}\t|\t${Thread.currentThread().name}\t|\t${msg.replace("\n", "\\n")}\n"
+    var logText = "$time\t|\tBN${serverBuildNumber}\t|\t${level.name}\t|\t${Thread.currentThread().name}\t|\t${msg.replace("\n", "\\n")}\n"
     if (throwable != null) {
         logText += ExceptionUtils.getStackTrace(throwable)
     }
@@ -176,7 +177,7 @@ fun log(level: LogLevel, msg: String, throwable: Throwable? = null) {
 
 fun logUnhandled(thread: Thread?, throwable: Throwable) {
     val time = sdf.format(Date())
-    var logText = "$time\t|\t${LogLevel.FATAL.name}\t|\t${thread?.name}\t|\tUnhandled Error\n"
+    var logText = "$time\t|\tBN${serverBuildNumber}\t|\t${LogLevel.FATAL.name}\t|\t${thread?.name}\t|\tUnhandled Error\n"
     logText += ExceptionUtils.getStackTrace(throwable)
 
     logText.appendToFile("data/server_log.log")
