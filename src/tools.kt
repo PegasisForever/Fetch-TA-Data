@@ -154,7 +154,7 @@ enum class LogLevel {
 }
 
 var sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
-val serverBuildNumber=1
+val serverBuildNumber=2
 fun log(level: LogLevel, msg: String, throwable: Throwable? = null) {
     val time = sdf.format(Date())
     var logText = "$time\t|\tBN${serverBuildNumber}\t|\t${level.name}\t|\t${Thread.currentThread().name}\t|\t${msg.replace("\n", "\\n")}\n"

@@ -8,7 +8,7 @@ enum class Category(val displayName: String) {
     T("Thinking"),
     C("Communication"),
     A("Application"),
-    O("Other"),
+    O("Other/Culminating"),
     F("Final / Culminating")
 }
 
