@@ -12,7 +12,7 @@ class DetailPage(val htmlPage: HtmlPage, val courseCode: String,val time: ZonedD
     val weightTable = WeightTable()
 
     init {
-        val detailTable = htmlPage.getElementsByTagName("table")[1] as HtmlTable
+        val detailTable = htmlPage.getByXPath<HtmlTable>("//table[@border='1'][@cellpadding='3'][@cellspacing='0'][@width='100%']")[0]
 
         val infoRow = detailTable.getRow(0)
         val categoryOfEachColumn = ArrayList<Category>()
@@ -69,7 +69,7 @@ class DetailPage(val htmlPage: HtmlPage, val courseCode: String,val time: ZonedD
         }
 
         val weightsTable =
-            htmlPage.getByXPath<HtmlTable>("//table[@border='1'][@cellpadding='3'][@cellspacing='0'][not(@width)]")[0]
+            htmlPage.getByXPath<HtmlTable>("//table[@border='1'][@cellpadding='3'][@cellspacing='0'][not(@width)]").last()
 
         for (rowI in 1..5) {
             val row = weightsTable.getRow(rowI)
