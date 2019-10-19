@@ -78,6 +78,24 @@ class Assignment {
         return get/total*100
     }
 
+    fun isNoWeight():Boolean{
+        smallMarks.forEach {smallMark->
+            if (smallMark.weight!=0.0){
+                return false
+            }
+        }
+        return true
+    }
+
+    fun isFinished():Boolean{
+        smallMarks.forEach {smallMark->
+            if (!smallMark.finished){
+                return false
+            }
+        }
+        return true
+    }
+
     companion object{
         fun isSame(as1:Assignment,as2:Assignment):Boolean{
             if (as1.smallMarks.size!=as2.smallMarks.size){
