@@ -14,13 +14,24 @@ import org.json.simple.parser.ParseException
 import send
 import webpage.LoginPage
 
-val publicGetmarkRoute = { exchange: HttpExchange ->
+val publicGetmarkRoute = out@{ exchange: HttpExchange ->
+    exchange.responseHeaders.add("Access-Control-Allow-Origin", "*");
+
+    if (exchange.requestMethod.toUpperCase()=="OPTIONS") {
+        exchange.responseHeaders.add("Access-Control-Allow-Methods", "GET, OPTIONS")
+        exchange.responseHeaders.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
+        exchange.sendResponseHeaders(204, -1)
+
+        return@out
+    }
+
     var statusCode = 200  //200:success  400:bad request  401:pwd incorrect  500:internal error
     var res = ""
 
     val hash = exchange.hashCode()
     val reqString = exchange.getReqString()
     val ipAddress = exchange.getIP()
+
     log(LogLevel.INFO, "Request #$hash /public/getmark <- $ipAddress, data=$reqString")
 
     try {
