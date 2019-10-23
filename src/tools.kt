@@ -67,6 +67,7 @@ object W {
         webClient.options.isThrowExceptionOnFailingStatusCode = false
         webClient.options.isDownloadImages = false
         webClient.options.isAppletEnabled = false
+        webClient.options.timeout=10000
     }
 
 }
@@ -154,7 +155,7 @@ enum class LogLevel {
 }
 
 var sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
-const val serverBuildNumber=5
+const val serverBuildNumber=6
 fun log(level: LogLevel, msg: String, throwable: Throwable? = null) {
     val time = sdf.format(Date())
     var logText = "$time\t|\tBN${serverBuildNumber}\t|\t${level.name}\t|\t${Thread.currentThread().name}\t|\t${msg.replace("\n", "\\n")}\n"

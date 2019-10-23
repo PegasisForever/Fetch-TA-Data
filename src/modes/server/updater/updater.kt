@@ -42,8 +42,8 @@ fun performUpdate(user: User, newData: ArrayList<Course>? = null): ArrayList<TAU
         }
 
         sendNotifications(user, updates)
-    }catch (e:Exception){
-        log(LogLevel.ERROR,"Error while performing update for user ${studentNumber}",e)
+    } catch (e: Exception) {
+        log(LogLevel.ERROR, "Error while performing update for user ${studentNumber}", e)
     }
 
     return updates
@@ -62,9 +62,12 @@ fun sendNotifications(user: User, updateList: ArrayList<TAUpdate>) {
         when (taUpdate) {
             is AssignmentAdded -> {
                 user.devices.forEach { device ->
-                    if (device.receive) {
+                    if (device.receive && device.token != "") {
                         NotificationStrings.getAssignmentAddedNoti(device.language, taUpdate)?.let {
-                            sendFCM(device.token, it)
+                            val deviceExists = sendFCM(device.token, it)
+                            if (!deviceExists){
+                                User.removeToken(device.token)
+                            }
                         }
                     }
                 }

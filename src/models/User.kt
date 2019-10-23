@@ -130,6 +130,15 @@ class User() {
             save()
         }
 
+        fun removeToken(token:String){
+            allUsers.forEach { user->
+                user.devices.removeIf {
+                    it.token==token
+                }
+            }
+            save()
+        }
+
         fun get(number:String):User?{
             allUsers.forEach {
                 if (it.number==number){
