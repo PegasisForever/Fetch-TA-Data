@@ -15,6 +15,7 @@ import org.json.simple.parser.ParseException
 import readFile
 import send
 import webpage.LoginPage
+import java.net.SocketTimeoutException
 
 val getmarkTimelineRoute = { exchange: HttpExchange ->
     var statusCode = 200  //200:success  400:bad request  401:pwd incorrect  500:internal error
@@ -46,6 +47,9 @@ val getmarkTimelineRoute = { exchange: HttpExchange ->
     } catch (e: ParseException) {
         log(LogLevel.INFO, "Request #$hash /getmark_timeline :: Can't parse request")
         statusCode = 400
+    } catch (e: SocketTimeoutException) {
+        log(LogLevel.WARN, "Request #$hash /getmark_timeline :: connect timeout", e)
+        statusCode = 503
     } catch (e: Exception) {
         log(LogLevel.ERROR, "Request #$hash /getmark_timeline :: Unknown error: ${e.message}", e)
         statusCode = 500

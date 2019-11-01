@@ -7,12 +7,13 @@ import models.*
 import models.Category.F
 import java.time.ZonedDateTime
 
-class DetailPage(val htmlPage: HtmlPage, val courseCode: String,val time: ZonedDateTime?=null) {
+class DetailPage(val htmlPage: HtmlPage, val courseCode: String, val time: ZonedDateTime? = null) {
     val assignments = ArrayList<Assignment>()
     val weightTable = WeightTable()
 
     init {
-        val detailTable = htmlPage.getByXPath<HtmlTable>("//table[@border='1'][@cellpadding='3'][@cellspacing='0'][@width='100%']")[0]
+        val detailTable =
+            htmlPage.getByXPath<HtmlTable>("//table[@border='1'][@cellpadding='3'][@cellspacing='0'][@width='100%']")[0]
 
         val infoRow = detailTable.getRow(0)
         val categoryOfEachColumn = ArrayList<Category>()
@@ -29,8 +30,12 @@ class DetailPage(val htmlPage: HtmlPage, val courseCode: String,val time: ZonedD
             val assignment = Assignment()
 
             assignment.name = row.getCell(0).asText()
-            if (time!=null){
-                assignment.time=time
+            if (time != null) {
+                assignment.time = time
+            }
+            val feedbackText=detailTable.getRow(rowI + 1).asText()
+            if (!feedbackText.isBlank()){
+                assignment.feedback=feedbackText.replace(Regex("(\\R|\\s)+")," ").trim()
             }
 
             val smallMarkCategoryAdded = ArrayList<Category>()
@@ -41,12 +46,12 @@ class DetailPage(val htmlPage: HtmlPage, val courseCode: String,val time: ZonedD
 
                 val smallMarkText = cell.asText()
 
-                if (smallMarkText!=""){
+                if (smallMarkText != "") {
                     smallMark.available = true
-                    smallMark.get = if(find(smallMarkText, "^[^ ]+(?= / )",true)[0]!=""){
+                    smallMark.get = if (find(smallMarkText, "^[^ ]+(?= / )", true)[0] != "") {
                         find(smallMarkText, "^[^ ]+(?= / )")[0].toDouble()
-                    }else{
-                        smallMark.finished=false
+                    } else {
+                        smallMark.finished = false
                         0.0
                     }
                     smallMark.total = find(smallMarkText, "(?<=/ )[^ ]+(?= = )")[0].toDouble()
@@ -69,14 +74,15 @@ class DetailPage(val htmlPage: HtmlPage, val courseCode: String,val time: ZonedD
         }
 
         val weightsTable =
-            htmlPage.getByXPath<HtmlTable>("//table[@border='1'][@cellpadding='3'][@cellspacing='0'][not(@width)]").last()
+            htmlPage.getByXPath<HtmlTable>("//table[@border='1'][@cellpadding='3'][@cellspacing='0'][not(@width)]")
+                .last()
 
         for (rowI in 1..5) {
             val row = weightsTable.getRow(rowI)
-            val category=CategoryFrom(row.getCell(0).asText())
+            val category = CategoryFrom(row.getCell(0).asText())
 
             val weight = Weight(category)
-            weight.W= find(row.getCell(1).asText(), "^[^%]+")[0].toDouble()
+            weight.W = find(row.getCell(1).asText(), "^[^%]+")[0].toDouble()
             weight.CW = find(row.getCell(2).asText(), "^[^%]+")[0].toDouble()
             weight.SA = find(row.getCell(3).asText(), "^[^%]+")[0].toDouble()
 

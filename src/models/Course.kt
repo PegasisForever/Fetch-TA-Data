@@ -62,6 +62,7 @@ class Assignment {
     val smallMarks = ArrayList<SmallMark>()
     var name = ""
     var time = ZonedDateTime.now()
+    var feedback = ""
 
     fun getAverage(weightTable: WeightTable):Double{
         var total=0.0

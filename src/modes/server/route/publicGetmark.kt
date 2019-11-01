@@ -13,6 +13,7 @@ import org.json.simple.JSONObject
 import org.json.simple.parser.ParseException
 import send
 import webpage.LoginPage
+import java.net.SocketTimeoutException
 
 val publicGetmarkRoute = out@{ exchange: HttpExchange ->
     exchange.responseHeaders.add("Access-Control-Allow-Origin", "*");
@@ -51,6 +52,9 @@ val publicGetmarkRoute = out@{ exchange: HttpExchange ->
     } catch (e: ParseException) {
         log(LogLevel.INFO, "Request #$hash /getmark :: Can't parse request")
         statusCode = 400
+    } catch (e: SocketTimeoutException) {
+        log(LogLevel.WARN, "Request #$hash /getmark :: connect timeout", e)
+        statusCode = 503
     } catch (e: Exception) {
         log(LogLevel.ERROR, "Request #$hash /getmark :: Unknown error: ${e.message}", e)
         statusCode = 500
