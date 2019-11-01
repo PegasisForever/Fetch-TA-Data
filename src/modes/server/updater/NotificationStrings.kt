@@ -33,11 +33,11 @@ class NotificationStrings {
                     when (language) {
                         "en" -> Notification(
                             "First assessment in ${update.courseName}",
-                            "You got average ${update.assignmentAvg}% in \"${update.assignment.getDisplayName(language)}\"."
+                            "You got average ${update.assignmentAvg?.toRoundString(1)}% in \"${update.assignment.getDisplayName(language)}\"."
                         )
                         "zh" -> Notification(
                             "${update.courseName}第一次发布了分数",
-                            "您在“${update.assignment.getDisplayName(language)}”中获得了平均" + "${update.assignmentAvg}分")
+                            "您在“${update.assignment.getDisplayName(language)}”中获得了平均" + "${update.assignmentAvg?.toRoundString(1)}分")
                         else -> null
                     }
                 }
@@ -62,12 +62,12 @@ class NotificationStrings {
                     when (language) {
                         "en" -> Notification(
                             "New no weight assessment in ${update.courseName}",
-                            "You got average ${update.assignmentAvg}% in \"${update.assignment.getDisplayName(language)}\". " +
+                            "You got average ${update.assignmentAvg?.toRoundString(1)}% in \"${update.assignment.getDisplayName(language)}\". " +
                                     "(No weight)"
                         )
                         "zh" -> Notification(
                             "${update.courseName}第一次发布了分数",
-                            "您在“${update.assignment.getDisplayName(language)}”中获得了平均\" + \"${update.assignmentAvg}分" +
+                            "您在“${update.assignment.getDisplayName(language)}”中获得了平均\" + \"${update.assignmentAvg?.toRoundString(1)}分" +
                                     "（无权重）")
                         else -> null
                     }
@@ -103,7 +103,7 @@ class NotificationStrings {
 
                             Notification(
                                 "New assessment in ${update.courseName}",
-                                "You got average ${update.assignmentAvg}% in " +
+                                "You got average ${update.assignmentAvg?.toRoundString(1)}% in " +
                                         "\"${update.assignment.getDisplayName(language)}\". " +
                                         compareText
                             )
@@ -136,7 +136,7 @@ class NotificationStrings {
                             Notification(
                                 "${update.courseName}发布了新的分数",
                                 "您在“${update.assignment.getDisplayName(language)}”中获得了平均" +
-                                        "${update.assignmentAvg}分，" +
+                                        "${update.assignmentAvg?.toRoundString(1)}分，" +
                                         compareText
                             )
                         }
@@ -165,14 +165,14 @@ class NotificationStrings {
                     when (language) {
                         "en" -> Notification(
                             "New no weight assessment in ${update.courseName}",
-                            "You got average ${update.assignmentAvg}% in " +
+                            "You got average ${update.assignmentAvg?.toRoundString(1)}% in " +
                                     "\"${update.assignment.getDisplayName(language)}\". (No weight)" +
                                     "Your course overall remains the same."
                         )
                         "zh" -> Notification(
                             "${update.courseName}发布了新的分数",
                             "您在“${update.assignment.getDisplayName(language)}”中获得了平均" +
-                                    "${update.assignmentAvg}分（无权重）")
+                                    "${update.assignmentAvg?.toRoundString(1)}分（无权重）")
                         else -> null
                     }
                 }
