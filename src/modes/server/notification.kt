@@ -13,6 +13,10 @@ import java.io.FileInputStream
 var initialized=false
 
 fun sendFCM(token:String,notification: modes.server.updater.Notification):Boolean {
+    log(LogLevel.INFO, "Temp disable send notification to $token, content: $notification")
+    return true
+
+
     var deviceExists=true
 
     if (!initialized){
