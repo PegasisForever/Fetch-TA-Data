@@ -143,6 +143,7 @@ class Course {
     var block = ""
     var room = ""
     var overallMark: Double? = null
+    var cached = false
 
     fun getDisplayName():String{
         return if(name!=""){

@@ -9,7 +9,7 @@ import java.time.LocalDate
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
-//For CourseListSerializerV2
+//For CourseListSerializerV3
 class CourseListParser {
     companion object {
         private fun parseSmallMark(json: JSONObject, category: String): SmallMark {
@@ -29,7 +29,8 @@ class CourseListParser {
             json.forEach { key, value ->
                 when (key) {
                     "name" -> assignment.name = value as String
-                    "time" -> assignment.time =(value as String).toZonedDateTime()
+                    "time" -> assignment.time = (value as String).toZonedDateTime()
+                    "feedback" -> assignment.feedback = value as String
                     else -> {
                         smallMarkCategoryAdded.add(key as String)
                         assignment.smallMarks.add(parseSmallMark(value as JSONObject, key))
@@ -67,27 +68,30 @@ class CourseListParser {
             val course = Course()
             course.startTime = LocalDate.parse(json["start_time"] as String, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
             course.endTime = LocalDate.parse(json["end_time"] as String, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-            course.name=json["name"] as String
-            course.code=json["code"] as String
-            course.block=json["block"] as String
-            course.room=json["room"] as String
-            course.overallMark=json["overall_mark"] as Double?
+            course.name = json["name"] as String
+            course.code = json["code"] as String
+            course.block = json["block"] as String
+            course.room = json["room"] as String
+            course.overallMark = json["overall_mark"] as Double?
+            if (json.containsKey("cached")){
+                course.cached=json["cached"] as Boolean //delete after first run
+            }
 
-            if (course.overallMark!=null){
-                course.assignments= ArrayList()
-                (json["assignments"] as JSONArray).forEach { assignmentJSON->
+            if (course.overallMark != null) {
+                course.assignments = ArrayList()
+                (json["assignments"] as JSONArray).forEach { assignmentJSON ->
                     course.assignments!!.add(parseAssignment(assignmentJSON as JSONObject))
                 }
-                course.weightTable= parseWeightTable(json["weight_table"] as JSONObject)
+                course.weightTable = parseWeightTable(json["weight_table"] as JSONObject)
             }
 
             return course
         }
 
-        fun parseCourseList(str:String):ArrayList<Course>{
-            val json=jsonParser.parse(str) as JSONArray
-            val list=ArrayList<Course>()
-            json.forEach { courseJSON->
+        fun parseCourseList(str: String): ArrayList<Course> {
+            val json = jsonParser.parse(str) as JSONArray
+            val list = ArrayList<Course>()
+            json.forEach { courseJSON ->
                 list.add(parseCourse(courseJSON as JSONObject))
             }
 

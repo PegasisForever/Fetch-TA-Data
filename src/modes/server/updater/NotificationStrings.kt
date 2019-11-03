@@ -94,7 +94,7 @@ class NotificationStrings {
                                 update.overallBefore!! < update.overallAfter -> {
                                     "Your course overall increased from ${update.overallBefore!!.toRoundString(1)}% " +
                                             "to ${update.overallAfter.toRoundString(1)}%. " +
-                                            "(+${(update.overallAfter + update.overallBefore!!).toRoundString(1)}%)"
+                                            "(+${(update.overallAfter - update.overallBefore!!).toRoundString(1)}%)"
                                 }
 
                                 //wtf
