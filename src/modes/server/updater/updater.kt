@@ -6,8 +6,8 @@ import models.User
 import modes.server.parsers.CourseListParser
 import modes.server.parsers.TimeLineParser
 import modes.server.sendFCM
-import modes.server.serializers.CourseListSerializerV2.Companion.serializeCourseList
-import modes.server.serializers.TimeLineSerializerV2.Companion.serializeTimeLine
+import modes.server.serializers.CourseListSerializerV3.Companion.serializeCourseList
+import modes.server.serializers.TimeLineSerializerV3.Companion.serializeTimeLine
 import modes.server.timeline.AssignmentAdded
 import modes.server.timeline.TAUpdate
 import modes.server.timeline.compareCourseList
