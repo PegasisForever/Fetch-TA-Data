@@ -1,6 +1,6 @@
 package modes
 
-import modes.server.serializers.CourseListSerializerV2.Companion.serializeCourseList
+import modes.server.serializers.CourseListSerializerV3.Companion.serializeCourseList
 import webpage.LoginPage
 
 fun getMarks(studentNumber: String, password: String) {

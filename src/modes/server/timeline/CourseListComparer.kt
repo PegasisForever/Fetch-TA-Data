@@ -56,19 +56,23 @@ fun compareCourseList(
 ): ArrayList<TAUpdate> {
     val updateList = ArrayList<TAUpdate>()
 
-    new.forEach { course ->
-        var isNew = true
+    for (i in 0 until new.size){
+        val course=new[i]
+        var oldCourse:Course?=null
         for (courseOld in old) if (courseOld.code == course.code) {
-            isNew = false
+            oldCourse=courseOld
             updateList.addAll(compareAssignments(courseOld, course, compareTime))
         }
 
-        if (isNew) {
+        if (oldCourse==null) {
             val courseAdded = CourseAdded()
             courseAdded.courseName = course.getDisplayName()
             courseAdded.courseBlock = course.block
             courseAdded.time = compareTime
             updateList.add(courseAdded)
+        }else if(course.overallMark==null && oldCourse.overallMark!=null){
+            new[i]=oldCourse
+            new[i].cached=true
         }
     }
 

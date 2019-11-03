@@ -35,7 +35,7 @@ class DetailPage(val htmlPage: HtmlPage, val courseCode: String, val time: Zoned
             }
             val feedbackText=detailTable.getRow(rowI + 1).asText()
             if (!feedbackText.isBlank()){
-                assignment.feedback=feedbackText.replace(Regex("(\\R|\\s)+")," ").trim()
+                assignment.feedback=feedbackText.replace(Regex("(\\R|\\s)+")," ").replace("Feedback:","").trim()
             }
 
             val smallMarkCategoryAdded = ArrayList<Category>()
