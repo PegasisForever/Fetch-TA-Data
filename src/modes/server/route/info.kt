@@ -1,3 +1,3 @@
 package modes.server.route
 
-val latestApiVersion=2
+val latestApiVersion=3

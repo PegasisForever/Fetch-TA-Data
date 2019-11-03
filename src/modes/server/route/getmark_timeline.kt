@@ -8,7 +8,10 @@ import getIP
 import getReqString
 import jsonParser
 import log
+import models.Course
 import models.LoginException
+import modes.server.serializers.TimeLineSerializers
+import modes.server.timeline.TAUpdate
 import modes.server.updater.runFollowUpUpdate
 import org.json.simple.JSONObject
 import org.json.simple.parser.ParseException
@@ -35,12 +38,12 @@ val getmarkTimelineRoute = { exchange: HttpExchange ->
             .gotoSummaryPage(number, req["password"] as String)
             .fillDetails()
             .courses
-        res = CourseListSerializers[reqApiVersion]?.invoke(courses)!!
-        log(LogLevel.INFO, "Request #$hash /getmark_timeline :: Fetch successfully")
 
-        runFollowUpUpdate(number, courses, hash, "/getmark_timeline")
-        res += "|||" + readFile("data/timelines/$number.json")
-        log(LogLevel.INFO, "Request #$hash /getmark_timeline :: Get timeline successfully")
+        log(LogLevel.INFO, "Request #$hash /getmark_timeline :: Fetch successfully")
+        val out=runFollowUpUpdate(number, courses, hash, "/getmark_timeline")
+
+        res = CourseListSerializers[reqApiVersion]?.invoke(out["courselist"] as ArrayList<Course>)!! +"|||" +
+                TimeLineSerializers[reqApiVersion]?.invoke(out["timeline"] as ArrayList<TAUpdate>)!!
     } catch (e: LoginException) {
         log(LogLevel.INFO, "Request #$hash /getmark_timeline :: Login error")
         statusCode = 401

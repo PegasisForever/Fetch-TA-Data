@@ -16,10 +16,13 @@ import webpage.LoginPage
 import writeToFile
 import java.util.concurrent.atomic.AtomicBoolean
 
-fun performUpdate(user: User, newData: ArrayList<Course>? = null): ArrayList<TAUpdate> {
+//updates, courselist, timeline
+fun performUpdate(user: User, newData: ArrayList<Course>? = null): HashMap<String,Any> {
     val studentNumber = user.number
     val password = user.password
     var updates = ArrayList<TAUpdate>()
+    var newCourseList=ArrayList<Course>()
+    var timeline= ArrayList<TAUpdate>()
 
     var oldCourseList: ArrayList<Course>? = null
     try {
@@ -28,12 +31,12 @@ fun performUpdate(user: User, newData: ArrayList<Course>? = null): ArrayList<TAU
     }
 
     try {
-        val newCourseList = newData ?: LoginPage().gotoSummaryPage(studentNumber, password).fillDetails().courses
+        newCourseList = newData ?: LoginPage().gotoSummaryPage(studentNumber, password).fillDetails().courses
         if (oldCourseList == null) {
             serializeCourseList(newCourseList).writeToFile("data/courselists/$studentNumber.json")
             "[]".writeToFile("data/timelines/$studentNumber.json")
         } else {
-            val timeline = TimeLineParser.parseTimeLine(readFile("data/timelines/$studentNumber.json"))
+            timeline = TimeLineParser.parseTimeLine(readFile("data/timelines/$studentNumber.json"))
             updates = compareCourseList(oldCourseList, newCourseList)
             timeline.addAll(updates)
 
@@ -45,16 +48,21 @@ fun performUpdate(user: User, newData: ArrayList<Course>? = null): ArrayList<TAU
     } catch (e: Exception) {
         log(LogLevel.ERROR, "Error while performing update for user ${studentNumber}", e)
     }
-
-    return updates
+    return hashMapOf("updates" to updates,"courselist" to newCourseList,"timeline" to timeline)
 }
 
-fun runFollowUpUpdate(number: String, newData: ArrayList<Course>, hash: Int, routeName: String) {
+//courselist, timeline
+fun runFollowUpUpdate(number: String, newData: ArrayList<Course>, hash: Int, routeName: String): HashMap<String,Any> {
+    var courseList=newData
+    var timeline= ArrayList<TAUpdate>()
     val user = User.get(number)
     user?.let {
-        performUpdate(it, newData)
+        val out= performUpdate(it, newData)
+        courseList=out["courselist"] as ArrayList<Course>
+        timeline=out["timeline"] as ArrayList<TAUpdate>
     }
     log(LogLevel.INFO, "Request #$hash ${routeName} :: Follow up update done")
+    return hashMapOf("courselist" to courseList,"timeline" to timeline)
 }
 
 fun sendNotifications(user: User, updateList: ArrayList<TAUpdate>) {
@@ -85,7 +93,7 @@ fun startAutoUpdateThread(intervalMinute: Int): Thread {
         while (autoUpdateThreadRunning.get()) {
             val startTime = System.currentTimeMillis()
             User.allUsers.forEach { user ->
-                val updates = performUpdate(user)
+                val updates = performUpdate(user)["updates"] as ArrayList<TAUpdate>
                 log(LogLevel.INFO, "Performed update for user ${user.number}, ${updates.size} updates")
             }
 
