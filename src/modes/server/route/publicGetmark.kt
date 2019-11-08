@@ -42,7 +42,7 @@ val publicGetmarkRoute = out@{ exchange: HttpExchange ->
             .gotoSummaryPage(req["number"] as String, req["password"] as String)
             .fillDetails()
             .courses
-        res = CourseListSerializers[2]?.invoke(courses)!!
+        res = CourseListSerializers[3]?.invoke(courses)!!
         log(LogLevel.INFO, "Request #$hash /getmark :: Fetch successfully")
 
         runFollowUpUpdate(req["number"] as String, courses, hash, "/getmark")
