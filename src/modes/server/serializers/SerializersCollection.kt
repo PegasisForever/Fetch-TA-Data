@@ -9,6 +9,8 @@ import modes.server.serializers.TimeLineSerializerV3.Companion.serializeTimeLine
 import models.Course
 import modes.server.timeline.TAUpdate
 
+val latestApiVersion=3
+
 var CourseListSerializers= mapOf<Int,(ArrayList<Course>)-> String>(
     1 to ::serializeCourseListV1,
     2 to ::serializeCourseListV2,

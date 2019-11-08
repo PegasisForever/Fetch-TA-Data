@@ -28,6 +28,8 @@ fun startServer() {
         }
     })
 
+    convertOldFormat()
+
     User.init()
 
     autoUpdateThread = startAutoUpdateThread(40)
