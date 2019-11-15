@@ -20,12 +20,12 @@ class Device() {
         receive = json["receive"] as Boolean
     }
 
-    fun toJSONObject():JSONObject{
-        val obj=JSONObject()
-        obj["token"]=token
-        obj["name"]=name
-        obj["language"]=language
-        obj["receive"]=receive
+    fun toJSONObject(): JSONObject {
+        val obj = JSONObject()
+        obj["token"] = token
+        obj["name"] = name
+        obj["language"] = language
+        obj["receive"] = receive
 
         return obj
     }
@@ -40,7 +40,7 @@ class User() {
         number = json["number"] as String
         password = json["password"] as String
 
-        (json["devices"] as JSONArray).forEach { deviceJSON->
+        (json["devices"] as JSONArray).forEach { deviceJSON ->
             devices.add(Device(deviceJSON as JSONObject))
         }
     }
@@ -51,7 +51,7 @@ class User() {
         obj["number"] = number
         obj["password"] = password
 
-        val devicesArray=JSONArray()
+        val devicesArray = JSONArray()
         devices.forEach {
             devicesArray.add(it.toJSONObject())
         }
@@ -61,29 +61,29 @@ class User() {
     }
 
     companion object {
-        fun fromClient(JSON: JSONObject): User {
-            val user = User()
-
+        fun fromClient(json: JSONObject): User {
             try {
-                val userDataJSON = JSON["user"] as JSONObject
-                user.number = userDataJSON["number"] as String
-                user.password = userDataJSON["password"] as String
+                val userDataJson = json["user"] as JSONObject
+                val user = User().apply {
+                    number = userDataJson["number"] as String
+                    password = userDataJson["password"] as String
+                }
 
-                val device=Device()
-                device.receive=userDataJSON["receive"] as Boolean
-                device.name=userDataJSON["displayname"] as String
-                if (JSON["token"] != null) {
-                    device.token=JSON["token"] as String
+
+                val device = Device().apply {
+                    receive = userDataJson["receive"] as Boolean
+                    name = userDataJson["displayname"] as String
+                    language = json["language"] as String
+                    if (json["token"] != null) {
+                        token = json["token"] as String
+                    }
                 }
-                if (JSON.containsKey("language")){
-                    device.language=JSON["language"] as String
-                }
+
                 user.devices.add(device)
+                return user
             } catch (e: Exception) {
                 throw UserParseException()
             }
-
-            return user
         }
 
         val allUsers = ArrayList<User>()
@@ -105,47 +105,35 @@ class User() {
         }
 
         fun add(newUser: User) {
-            allUsers.forEach { user ->
-                if (user.number == newUser.number) {
-                    user.devices.addAll(newUser.devices)
-                    save()
-                    return
-                }
+            get(newUser.number)?.run {
+                devices.addAll(newUser.devices)
+                save()
+                return
             }
-            allUsers.add(newUser)
+            allUsers += newUser
             save()
         }
 
         fun remove(removedUser: User) {
-            allUsers.forEach { user ->
-                if (user.number == removedUser.number) {
-                    removedUser.devices.forEach { deviceRemoved ->
-                        user.devices.removeIf {
-                            it.token==deviceRemoved.token
-                        }
+            get(removedUser.number)?.run {
+                removedUser.devices.forEach { deviceRemoved ->
+                    devices.removeIf {
+                        it.token == deviceRemoved.token
                     }
-                    return@forEach
                 }
             }
             save()
         }
 
-        fun removeToken(token:String){
-            allUsers.forEach { user->
+        fun removeToken(token: String) {
+            allUsers.forEach { user ->
                 user.devices.removeIf {
-                    it.token==token
+                    it.token == token
                 }
             }
             save()
         }
 
-        fun get(number:String):User?{
-            allUsers.forEach {
-                if (it.number==number){
-                    return it
-                }
-            }
-            return null
-        }
+        fun get(number: String) = allUsers.find { it.number == number }
     }
 }

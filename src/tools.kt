@@ -98,18 +98,13 @@ fun HttpExchange.getIP(): String? {
 }
 
 fun HttpExchange.send(statusCode: Int, body: String, isGzip: Boolean = true) {
-    if (isGzip) {
-        val zippedBody = body.gzip()
-        sendResponseHeaders(statusCode, zippedBody.size.toLong())
-        responseBody.write(zippedBody)
-        responseBody.close()
-    } else {
-        val byteArray = body.toByteArray()
-        sendResponseHeaders(statusCode, byteArray.size.toLong())
-        responseBody.write(byteArray)
-        responseBody.close()
-    }
-
+    send(
+        statusCode, if (body != "" && isGzip) {
+            body.gzip()
+        } else {
+            body.toByteArray()
+        }
+    )
 }
 
 fun HttpExchange.send(statusCode: Int, body: ByteArray = ByteArray(0)) {
@@ -119,8 +114,8 @@ fun HttpExchange.send(statusCode: Int, body: ByteArray = ByteArray(0)) {
 }
 
 fun HttpExchange.returnIfApiVersionInsufficient(): Boolean {
-    if (this.getApiVersion() < minApiVersion) {
-        this.send(426)
+    if (getApiVersion() < minApiVersion) {
+        send(426)
         return true
     }
     return false
@@ -203,7 +198,7 @@ fun String.gzip(): ByteArray {
 }
 
 fun ByteArray.unGzip(): String {
-    return GZIPInputStream(this.inputStream()).bufferedReader(UTF_8).use { it.readText() }
+    return GZIPInputStream(inputStream()).bufferedReader(UTF_8).use { it.readText() }
 }
 
 val torontoZoneID = ZoneId.of("America/Toronto")

@@ -10,59 +10,75 @@ import models.LoginException
 import modes.server.serializers.serializePublic
 import modes.server.updater.runFollowUpUpdate
 import org.json.simple.JSONObject
-import org.json.simple.parser.ParseException
 import send
 import webpage.LoginPage
 import java.net.SocketTimeoutException
 
-val publicGetmarkRoute = out@{ exchange: HttpExchange ->
-    exchange.responseHeaders.add("Access-Control-Allow-Origin", "*")
+object PublicGetMark {
+    private class ReqData(req: String) {
+        val number: String
+        val password: String
 
-    if (exchange.requestMethod.toUpperCase()=="OPTIONS") {
-        exchange.responseHeaders.add("Access-Control-Allow-Methods", "GET, OPTIONS")
-        exchange.responseHeaders.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
-        exchange.sendResponseHeaders(204, -1)
-
-        return@out
+        init {
+            try {
+                val json = jsonParser.parse(req) as JSONObject
+                number = json["number"] as String
+                password = json["password"] as String
+            } catch (e: Exception) {
+                throw ParseRequestException()
+            }
+        }
     }
 
-    var statusCode = 200  //200:success  400:bad request  401:pwd incorrect  500:internal error
-    var res = ""
+    val route = out@{ exchange: HttpExchange ->
+        exchange.responseHeaders.add("Access-Control-Allow-Origin", "*")
 
-    val hash = exchange.hashCode()
-    val reqString = exchange.getReqString()
-    val ipAddress = exchange.getIP()
+        if (exchange.requestMethod.toUpperCase() == "OPTIONS") {
+            exchange.responseHeaders.add("Access-Control-Allow-Methods", "GET, OPTIONS")
+            exchange.responseHeaders.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
+            exchange.sendResponseHeaders(204, -1)
 
-    log(LogLevel.INFO, "Request #$hash /public/getmark <- $ipAddress, data=$reqString")
+            return@out
+        }
 
-    try {
-        val req = jsonParser.parse(reqString) as JSONObject
+        var statusCode = 200  //200:success  400:bad request  401:pwd incorrect  500:internal error
+        var res = ""
 
-        val courses = LoginPage()
-            .gotoSummaryPage(req["number"] as String, req["password"] as String)
-            .fillDetails()
-            .courses
-        res = courses.serializePublic().toJSONString()
-        log(LogLevel.INFO, "Request #$hash /getmark :: Fetch successfully")
+        val hash = exchange.hashCode()
+        val reqString = exchange.getReqString()
+        val ipAddress = exchange.getIP()
 
-        runFollowUpUpdate(req["number"] as String, courses, hash, "/getmark")
-    } catch (e: LoginException) {
-        log(LogLevel.INFO, "Request #$hash /getmark :: Login error")
-        statusCode = 401
-    } catch (e: ParseException) {
-        log(LogLevel.INFO, "Request #$hash /getmark :: Can't parse request")
-        statusCode = 400
-    } catch (e: SocketTimeoutException) {
-        log(LogLevel.WARN, "Request #$hash /getmark :: connect timeout", e)
-        statusCode = 503
-    } catch (e: Exception) {
-        log(LogLevel.ERROR, "Request #$hash /getmark :: Unknown error: ${e.message}", e)
-        statusCode = 500
+        log(LogLevel.INFO, "Request #$hash /public/getmark <- $ipAddress, data=$reqString")
+
+        try {
+            with(ReqData(reqString)) {
+                val courses = LoginPage()
+                    .gotoSummaryPage(number, password)
+                    .fillDetails()
+                    .courses
+                res = courses.serializePublic().toJSONString()
+                log(LogLevel.INFO, "Request #$hash /getmark :: Fetch successfully")
+
+                runFollowUpUpdate(number, courses, hash, "/getmark")
+            }
+        } catch (e: LoginException) {
+            log(LogLevel.INFO, "Request #$hash /getmark :: Login error")
+            statusCode = 401
+        } catch (e: ParseRequestException) {
+            log(LogLevel.INFO, "Request #$hash /getmark :: Can't parse request")
+            statusCode = 400
+        } catch (e: SocketTimeoutException) {
+            log(LogLevel.WARN, "Request #$hash /getmark :: connect timeout", e)
+            statusCode = 503
+        } catch (e: Exception) {
+            log(LogLevel.ERROR, "Request #$hash /getmark :: Unknown error: ${e.message}", e)
+            statusCode = 500
+        }
+
+        log(
+            LogLevel.INFO,
+            "Request #$hash /getmark -> $ipAddress, status=$statusCode, data=$res"
+        )
+        exchange.send(statusCode, res, false)
     }
-
-    log(
-        LogLevel.INFO,
-        "Request #$hash /getmark -> $ipAddress, status=$statusCode, data=$res"
-    )
-    exchange.send(statusCode, res, false)
 }
