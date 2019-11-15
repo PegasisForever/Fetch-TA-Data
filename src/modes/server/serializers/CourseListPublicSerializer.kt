@@ -3,7 +3,6 @@ package modes.server.serializers
 import models.*
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
-import toJSONString
 import java.time.format.DateTimeFormatter
 
 //Based on V4
@@ -28,7 +27,6 @@ class CourseListPublicSerializer {
                 }
             }
             obj["name"] = assignment.name
-            obj["time"] = assignment.time?.toJSONString()
             obj["feedback"] = assignment.feedback
 
             return obj
