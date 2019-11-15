@@ -148,12 +148,13 @@ enum class LogLevel {
     FATAL
 }
 
-var sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
+val logDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
+val fileDateFormat = SimpleDateFormat("yyyy-MM-dd")
 const val serverBuildNumber = 11
 fun log(level: LogLevel, msg: String, throwable: Throwable? = null) {
-    val time = sdf.format(Date())
+    val date = Date()
     var logText =
-        "$time\t|\tBN${serverBuildNumber}\t|\t${level.name}\t|\t${Thread.currentThread().name}\t|\t${msg.replace(
+        "${logDateFormat.format(date)}\t|\tBN${serverBuildNumber}\t|\t${level.name}\t|\t${Thread.currentThread().name}\t|\t${msg.replace(
             "\n",
             "\\n"
         )}\n"
@@ -161,7 +162,7 @@ fun log(level: LogLevel, msg: String, throwable: Throwable? = null) {
         logText += ExceptionUtils.getStackTrace(throwable)
     }
 
-    logText.appendToFile("data/server_log.log")
+    logText.appendToFile("data/log/${fileDateFormat.format(date)}.log")
 
     val color = when (level) {
         LogLevel.DEBUG -> ANSI_BLACK
@@ -175,7 +176,7 @@ fun log(level: LogLevel, msg: String, throwable: Throwable? = null) {
 }
 
 fun logUnhandled(thread: Thread?, throwable: Throwable) {
-    val time = sdf.format(Date())
+    val time = logDateFormat.format(Date())
     var logText =
         "$time\t|\tBN${serverBuildNumber}\t|\t${LogLevel.FATAL.name}\t|\t${thread?.name}\t|\tUnhandled Error\n"
     logText += ExceptionUtils.getStackTrace(throwable)
