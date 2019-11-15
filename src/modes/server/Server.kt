@@ -35,7 +35,9 @@ fun startServer() {
 
     User.init()
 
-    autoUpdateThread = startAutoUpdateThread(40)
+    if (Config.autoUpdateEnabled) {
+        autoUpdateThread = startAutoUpdateThread(Config.autoUpdateIntervalMinute)
+    }
 
     //private server
     HttpServer.create(InetSocketAddress(5004), 0).run {

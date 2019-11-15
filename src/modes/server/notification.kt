@@ -1,5 +1,6 @@
 package modes.server
 
+import LogLevel
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
@@ -10,12 +11,13 @@ import com.google.firebase.messaging.Notification
 import log
 import java.io.FileInputStream
 
-var initialized=false
+private var initialized = false
 
 fun sendFCM(token:String,notification: modes.server.updater.Notification):Boolean {
-    log(LogLevel.INFO, "Temp disable send notification to $token, content: $notification")
-    return true
-
+    if (!Config.notificationEnabled) {
+        log(LogLevel.INFO, "Notification disbled, token: $token, content: $notification")
+        return true
+    }
 
     var deviceExists=true
 
