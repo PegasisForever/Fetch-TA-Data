@@ -7,7 +7,6 @@ import models.User
 import modes.server.PCache
 import modes.server.save
 import modes.server.sendFCM
-import modes.server.timeline.AssignmentAdded
 import modes.server.timeline.TimeLine
 import modes.server.timeline.compareCourses
 import webpage.LoginPage
@@ -30,12 +29,14 @@ fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
             newCourseList.save(studentNumber)
             TimeLine().save(studentNumber)
         } else {
-            val timeLine = PCache.readTimeLine(studentNumber)
-            updates = compareCourses(oldCourseList, newCourseList)
-            timeLine.addAll(updates)
+            val compareResult = compareCourses(oldCourseList, newCourseList)
+            updates = compareResult.updates
 
-            newCourseList.save(studentNumber)
+            val timeLine = PCache.readTimeLine(studentNumber)
+            timeLine += updates
             timeLine.save(studentNumber)
+
+            compareResult.courseList.save(studentNumber)
         }
 
         sendNotifications(user, updates)
@@ -53,19 +54,11 @@ fun runFollowUpUpdate(number: String, newData: CourseList, hash: Int, routeName:
 }
 
 fun sendNotifications(user: User, updateList: TimeLine) {
+    val availableDevices = user.devices.filter { it.receive && it.token != "" }
     updateList.forEach { taUpdate ->
-        when (taUpdate) {
-            is AssignmentAdded -> {
-                user.devices.forEach { device ->
-                    if (device.receive && device.token != "") {
-                        NotificationStrings.getAssignmentAddedNoti(device.language, taUpdate)?.let {
-                            val deviceExists = sendFCM(device.token, it)
-                            if (!deviceExists) {
-                                User.removeToken(device.token)
-                            }
-                        }
-                    }
-                }
+        availableDevices.forEach { device ->
+            NotificationStrings.getNoti(device.language, taUpdate)?.let { notification ->
+                if (!sendFCM(device.token, notification)) User.removeToken(device.token)
             }
         }
     }

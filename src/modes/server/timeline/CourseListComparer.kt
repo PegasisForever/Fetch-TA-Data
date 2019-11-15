@@ -50,30 +50,32 @@ fun compareAssignments(
     return updateList
 }
 
+class CourseCompareResult(val courseList: CourseList, val updates: TimeLine)
+
 fun compareCourses(
     old: CourseList,
     new: CourseList,
     compareTime: ZonedDateTime = ZonedDateTime.now()
-): TimeLine {
+): CourseCompareResult {
+    val courseListResult = CourseList()
     val updateList = TimeLine()
 
-    for (i in 0 until new.size){
-        val course=new[i]
-        var oldCourse:Course?=null
-        for (courseOld in old) if (courseOld.code == course.code) {
-            oldCourse=courseOld
-            updateList.addAll(compareAssignments(courseOld, course, compareTime))
-        }
-
-        if (oldCourse==null) {
+    new.forEach { newCourse ->
+        val oldCourse = old.find { it.code == newCourse.code }
+        courseListResult += if (oldCourse == null) {
             val courseAdded = CourseAdded()
-            courseAdded.courseName = course.getDisplayName()
-            courseAdded.courseBlock = course.block
+            courseAdded.courseName = newCourse.getDisplayName()
+            courseAdded.courseBlock = newCourse.block
             courseAdded.time = compareTime
-            updateList.add(courseAdded)
-        }else if(course.overallMark==null && oldCourse.overallMark!=null){
-            new[i]=oldCourse
-            new[i].cached=true
+            updateList += courseAdded
+            newCourse
+        } else if (newCourse.overallMark == null && oldCourse.overallMark != null) {
+            oldCourse.apply {
+                cached = true
+            }
+        } else {
+            updateList += compareAssignments(oldCourse, newCourse, compareTime)
+            newCourse
         }
     }
 
@@ -89,13 +91,12 @@ fun compareCourses(
             courseRemoved.courseName = courseOld.getDisplayName()
             courseRemoved.courseBlock = courseOld.block
             courseRemoved.time = compareTime
-            updateList.add(courseRemoved)
+            updateList += courseRemoved
         }
     }
 
 
-    return updateList
-    //TODO return compare result object
+    return CourseCompareResult(courseListResult, updateList)
 }
 
 
