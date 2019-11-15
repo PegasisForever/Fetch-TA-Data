@@ -100,8 +100,9 @@ fun HttpExchange.send(statusCode: Int, body: String, isGzip: Boolean = true) {
         responseBody.write(zippedBody)
         responseBody.close()
     } else {
-        sendResponseHeaders(statusCode, body.length.toLong())
-        responseBody.write(body.toByteArray())
+        val byteArray = body.toByteArray()
+        sendResponseHeaders(statusCode, byteArray.size.toLong())
+        responseBody.write(byteArray)
         responseBody.close()
     }
 

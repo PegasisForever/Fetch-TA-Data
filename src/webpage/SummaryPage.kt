@@ -29,6 +29,11 @@ class SummaryPage(val htmlPage: HtmlPage, val fileName: String? = null, val time
                 course.name = findFirst(classText, "(?<= : )[^\\n]+(?= )")
                 course.block = findFirst(classText, "(?<=Block: )\\d")
                 course.room = findFirst(classText, "(?<=rm\\. )\\d+")
+                with(course) {
+                    if (code == null && name == null && block == null && room == null && classText.isNotBlank()) {
+                        course.name = classText
+                    }
+                }
 
                 val timeText = row.getCell(1).asText()
                 val times = find(timeText, "\\d+-\\d+-\\d+")
