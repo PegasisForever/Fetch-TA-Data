@@ -4,7 +4,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage
 import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput
-import find
+import findFirst
 import models.LoginException
 import webClient
 
@@ -24,7 +24,7 @@ class LoginPage {
         val loginBtn = htmlPage.getElementByName<HtmlSubmitInput>("submit")
         val summaryHtmlPage = loginBtn.click<HtmlPage>()
         if (summaryHtmlPage.titleText != "Student Reports") {
-            val errorCode = find(summaryHtmlPage.url.toString(), "\\d")[0].toInt()
+            val errorCode = findFirst(summaryHtmlPage.url.toString(), "\\d")?.toInt()
             throw LoginException(errorCode)
         }
         return SummaryPage(summaryHtmlPage)

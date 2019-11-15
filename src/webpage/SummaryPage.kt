@@ -1,8 +1,11 @@
 package webpage
 
+import LogLevel
 import com.gargoylesoftware.htmlunit.html.HtmlPage
 import com.gargoylesoftware.htmlunit.html.HtmlTable
 import find
+import findFirst
+import log
 import models.Course
 import models.CourseList
 import webClient
@@ -17,29 +20,35 @@ class SummaryPage(val htmlPage: HtmlPage, val fileName: String? = null, val time
 
     init {
         for (i in 1 until summaryTable.rowCount) {
-            val row = summaryTable.getRow(i)
-            val course = Course()
+            try {
+                val row = summaryTable.getRow(i)
+                val course = Course()
 
-            val classText = row.getCell(0).asText()
-            course.code = find(classText, "^[^ ]+")[0]
-            course.name = find(classText, "(?<= : )[^\\n]*(?= )", true)[0]
-            course.block = find(classText, "(?<=Block: )\\d")[0]
-            course.room = find(classText, "(?<=rm\\. )\\d+", true)[0]
+                val classText = row.getCell(0).asText()
+                course.code = findFirst(classText, "[A-Z\\d]{6}-[\\d]{2}")
+                course.name = findFirst(classText, "(?<= : )[^\\n]+(?= )")
+                course.block = findFirst(classText, "(?<=Block: )\\d")
+                course.room = findFirst(classText, "(?<=rm\\. )\\d+")
 
-            val timeText = row.getCell(1).asText()
-            val times = find(timeText, "\\d+-\\d+-\\d+")
-            course.startTime = LocalDate.parse(times[0])
-            course.endTime = LocalDate.parse(times[1])
+                val timeText = row.getCell(1).asText()
+                val times = find(timeText, "\\d+-\\d+-\\d+")
+                if (times?.size == 2) {
+                    course.startTime = LocalDate.parse(times[0])
+                    course.endTime = LocalDate.parse(times[1])
+                }
 
-            val markText = row.getCell(2).asText()
+                if (row.cells.size == 3) {
+                    val markText = row.getCell(2).asText()
+                    val currentMarkText = find(markText, "(?<=current mark = )[^%]+")?.get(0)
+                    if (currentMarkText != null) {
+                        course.overallMark = currentMarkText.toDouble()
+                    }
+                }
 
-            if (markText.indexOf("current mark") == -1) {
-                course.overallMark = null
-            } else {
-                course.overallMark = find(markText, "(?<=current mark = )[^%]+")[0].toDouble()
+                courses.add(course)
+            } catch (e: Exception) {
+                log(LogLevel.ERROR, "Cannot parse summary row #$i", e)
             }
-
-            courses.add(course)
         }
 
     }

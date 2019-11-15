@@ -24,24 +24,25 @@ import java.util.zip.GZIPOutputStream
 import kotlin.collections.ArrayList
 
 
-fun find(str: String, regex: String, allowBlank: Boolean = false): ArrayList<String> {
-    val result = ArrayList<String>()
+fun find(str: String, regex: String): ArrayList<String>? {
+    var result: ArrayList<String>? = ArrayList()
 
     val pattern = Pattern.compile(regex)
     val matcher = pattern.matcher(str)
 
     while (matcher.find()) {
-        result.add(matcher.group(0))
+        result!!.add(matcher.group(0))
     }
 
-    if (result.size == 0) {
-        result.add("")
-        if (!allowBlank) {
-            log(LogLevel.WARN, "Regex not found: /${regex}/ in \"${str}\"")
-        }
+    if (result!!.size == 0) {
+        result = null
     }
 
     return result
+}
+
+fun findFirst(str: String, regex: String): String? {
+    return find(str, regex)?.get(0)
 }
 
 fun String.writeToFile(path: String) {
