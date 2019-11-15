@@ -8,7 +8,7 @@ fun convertLegacy() {
     Files.walk(Paths.get("data/courselists"))
         .map { it.toFile() }.filter { it.isFile }
         .forEach { file ->
-            val text = file.readText()
+            val text = readFile(file)
             val courseList = LegacyCourseListParser.parseCourseList(text)
             courseList.serialize().toJSONString().writeToFile(file.absolutePath)
         }
@@ -17,7 +17,7 @@ fun convertLegacy() {
     Files.walk(Paths.get("data/timelines"))
         .map { it.toFile() }.filter { it.isFile }
         .forEach { file ->
-            val text = file.readText()
+            val text = readFile(file)
             val timeLine = LegacyTimeLineParser.parseTimeLine(text)
             timeLine.serialize().toJSONString().writeToFile(file.absolutePath)
         }

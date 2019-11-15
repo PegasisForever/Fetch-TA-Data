@@ -57,6 +57,10 @@ fun readFile(path: String): String {
     return String(Files.readAllBytes(Paths.get(path)))
 }
 
+fun readFile(file: File): String {
+    return file.readText()
+}
+
 val webClient = WebClient().apply {
     options.isCssEnabled = false
     options.isJavaScriptEnabled = false

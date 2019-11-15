@@ -10,11 +10,11 @@ import jsonParser
 import log
 import models.LoginException
 import models.User
+import modes.server.PCache
 import modes.server.serializers.serialize
 import modes.server.updater.runFollowUpUpdate
 import org.json.simple.JSONObject
 import org.json.simple.parser.ParseException
-import readFile
 import returnIfApiVersionInsufficient
 import send
 import webpage.LoginPage
@@ -42,16 +42,14 @@ var regiRoute = out@{ exchange: HttpExchange ->
             .gotoSummaryPage(user.number, user.password)
             .fillDetails()
             .courses
-        res = courses.serialize(reqApiVersion).toJSONString()
-
-        log(LogLevel.INFO, "Request #$hash /regi :: User verified successfully")
-
         User.add(user)
-
+        log(LogLevel.INFO, "Request #$hash /regi :: User verified successfully")
         runFollowUpUpdate(user.number, courses, hash, "/regi")
-        if (reqApiVersion>1){
-            res += "|||" + readFile("data/timelines/${user.number}.json")
-        }
+
+        res = JSONObject().apply {
+            put("time_line", PCache.readTimeLine(user.number).serialize(reqApiVersion))
+            put("course_list", PCache.readCourseList(user.number).serialize(reqApiVersion))
+        }.toJSONString()
     } catch (e: LoginException) {
         log(LogLevel.INFO, "Request #$hash /regi :: Login error")
         statusCode = 401

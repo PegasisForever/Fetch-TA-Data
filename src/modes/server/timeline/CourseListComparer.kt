@@ -95,6 +95,7 @@ fun compareCourses(
 
 
     return updateList
+    //TODO return compare result object
 }
 
 
