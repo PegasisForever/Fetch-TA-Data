@@ -3,9 +3,10 @@ package modes.server.serializers
 import models.*
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
+import toJSONString
 import java.time.format.DateTimeFormatter
 
-class CourseListSerializerV1 {
+class CourseListSerializerV4 {
     companion object {
         private fun serializeSmallMark(smallMark: SmallMark): JSONObject {
             val obj = JSONObject()
@@ -18,16 +19,16 @@ class CourseListSerializerV1 {
             return obj
         }
 
-        private fun serializeAssignment(assignment: Assignment): JSONObject {
+        fun serializeAssignment(assignment: Assignment): JSONObject {
             val obj = JSONObject()
-            enumValues<Category>().forEach { category ->
-                obj[category.name] = serializeSmallMark(SmallMark(category))
-            }
             assignment.smallMarks.forEach { smallMark ->
-                obj[smallMark.category.name] = serializeSmallMark(smallMark)
+                if (smallMark.available) {
+                    obj[smallMark.category.name] = serializeSmallMark(smallMark)
+                }
             }
             obj["name"] = assignment.name
-            obj["time"] = ""
+            obj["time"] = assignment.time?.toJSONString()
+            obj["feedback"] = assignment.feedback
 
             return obj
         }
@@ -52,35 +53,31 @@ class CourseListSerializerV1 {
 
         private fun serializeCourse(course: Course): JSONObject {
             val obj = JSONObject()
-            obj["start_time"] = course.startTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-            obj["end_time"] = course.endTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+            obj["start_time"] = course.startTime?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+            obj["end_time"] = course.endTime?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
             obj["name"] = course.name
             obj["code"] = course.code
             obj["block"] = course.block
             obj["room"] = course.room
             obj["overall_mark"] = course.overallMark
+            obj["cached"] = course.cached
 
-            val markDetail = JSONObject()
-            if (course.overallMark!=null){
-                markDetail["assignments"] = JSONArray()
-                course.assignments?.forEach { assignment ->
-                    (markDetail["assignments"] as JSONArray).add(serializeAssignment(assignment))
-                }
-                markDetail["weights"] = course.weightTable?.let { serializeWeightTable(it) }
+            obj["assignments"] = JSONArray()
+            course.assignments?.forEach { assignment ->
+                (obj["assignments"] as JSONArray).add(serializeAssignment(assignment))
             }
-
-            obj["mark_detail"] = markDetail
+            obj["weight_table"] = course.weightTable?.let { serializeWeightTable(it) }
 
             return obj
         }
 
-        fun serializeCourseList(list: ArrayList<Course>): String {
+        fun serializeCourseList(list: CourseList): JSONArray {
             val array = JSONArray()
             list.forEach { course ->
                 array.add(serializeCourse(course))
             }
 
-            return array.toJSONString()
+            return array
         }
     }
 }

@@ -1,7 +1,6 @@
 package modes.server.route
 
 import LogLevel
-import modes.server.serializers.CourseListSerializers
 import com.sun.net.httpserver.HttpExchange
 import exceptions.UserParseException
 import getApiVersion
@@ -11,14 +10,16 @@ import jsonParser
 import log
 import models.LoginException
 import models.User
+import modes.server.serializers.serialize
 import modes.server.updater.runFollowUpUpdate
 import org.json.simple.JSONObject
 import org.json.simple.parser.ParseException
 import readFile
+import returnIfApiVersionInsufficient
 import send
 import webpage.LoginPage
 
-var regiRoute = { exchange: HttpExchange ->
+var regiRoute = out@{ exchange: HttpExchange ->
     var statusCode = 200  //200:success  400:bad request  401:pwd incorrect  500:internal error
     var res = ""
 
@@ -28,6 +29,11 @@ var regiRoute = { exchange: HttpExchange ->
     val reqApiVersion = exchange.getApiVersion()
     log(LogLevel.INFO, "Request #$hash /regi <- $ipAddress, api version=$reqApiVersion, data=$reqString")
 
+    if (exchange.returnIfApiVersionInsufficient()) {
+        log(LogLevel.INFO, "Request #$hash /regi -> $ipAddress, api version insufficient")
+        return@out
+    }
+
     try {
         val req = jsonParser.parse(reqString) as JSONObject
         val user = User.fromClient(req)
@@ -36,7 +42,7 @@ var regiRoute = { exchange: HttpExchange ->
             .gotoSummaryPage(user.number, user.password)
             .fillDetails()
             .courses
-        res = CourseListSerializers[reqApiVersion]?.invoke(courses)!!
+        res = courses.serialize(reqApiVersion).toJSONString()
 
         log(LogLevel.INFO, "Request #$hash /regi :: User verified successfully")
 
@@ -61,5 +67,5 @@ var regiRoute = { exchange: HttpExchange ->
     }
 
     log(LogLevel.INFO, "Request #$hash /regi -> $ipAddress, status=$statusCode, data=$res")
-    exchange.send(statusCode, res, reqApiVersion > 1)
+    exchange.send(statusCode, res)
 }

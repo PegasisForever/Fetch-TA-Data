@@ -5,12 +5,17 @@ import com.sun.net.httpserver.HttpServer
 import log
 import logUnhandled
 import models.User
-import modes.server.route.*
+import modes.server.route.deregiRoute
+import modes.server.route.getmarkTimelineRoute
+import modes.server.route.publicGetmarkRoute
+import modes.server.route.regiRoute
 import modes.server.updater.autoUpdateThreadRunning
 import modes.server.updater.startAutoUpdateThread
 import java.lang.Thread.setDefaultUncaughtExceptionHandler
 import java.net.InetSocketAddress
 
+val minApiVersion = 4
+val latestApiVersion = 4
 
 fun startServer() {
     var autoUpdateThread: Thread? = null
@@ -28,24 +33,23 @@ fun startServer() {
         }
     })
 
-    convertOldFormat()
-
     User.init()
 
     autoUpdateThread = startAutoUpdateThread(40)
 
     //private server
-    val server = HttpServer.create(InetSocketAddress(5004), 0)
-    server.createContext("/getmark", getmarkRoute)
-    server.createContext("/getmark_timeline", getmarkTimelineRoute)
-    server.createContext("/regi", regiRoute)
-    server.createContext("/deregi", deregiRoute)
-    server.start()
+    HttpServer.create(InetSocketAddress(5004), 0).run {
+        createContext("/getmark_timeline", getmarkTimelineRoute)
+        createContext("/regi", regiRoute)
+        createContext("/deregi", deregiRoute)
+        start()
+    }
 
     //public server
-    val publicServer = HttpServer.create(InetSocketAddress(5005), 0)
-    publicServer.createContext("/getmark", publicGetmarkRoute)
-    publicServer.start()
+    HttpServer.create(InetSocketAddress(5005), 0).run {
+        createContext("/getmark", publicGetmarkRoute)
+        start()
+    }
 
     log(LogLevel.INFO, "Server started")
 }

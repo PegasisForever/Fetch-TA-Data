@@ -1,23 +1,42 @@
 package modes.server.serializers
 
-import modes.server.serializers.CourseListSerializerV1.Companion.serializeCourseList as serializeCourseListV1
-import modes.server.serializers.CourseListSerializerV2.Companion.serializeCourseList as serializeCourseListV2
-import modes.server.serializers.CourseListSerializerV3.Companion.serializeCourseList as serializeCourseListV3
-import modes.server.serializers.TimeLineSerializerV2.Companion.serializeTimeLine as serializeTimeLineV2
-import modes.server.serializers.TimeLineSerializerV3.Companion.serializeTimeLine as serializeTimeLineV3
+import models.CourseList
+import modes.server.latestApiVersion
+import modes.server.timeline.TimeLine
+import org.json.simple.JSONArray
+import org.json.simple.JSONObject
+import modes.server.serializers.CourseListPublicSerializer.Companion.serializeCourseList as serializePublicCourseList
+import modes.server.serializers.CourseListSerializerV4.Companion.serializeCourseList as serializeCourseListV4
+import modes.server.serializers.TimeLineSerializerV4.Companion.serializeTimeLine as serializeTimeLineV4
 
-import models.Course
-import modes.server.timeline.TAUpdate
+fun JSONArray.wrapVersion(version: Int): JSONObject {
+    val obj = JSONObject()
+    obj["version"] = version
+    obj["data"] = this
+    return obj
+}
 
-val latestApiVersion=3
-
-var CourseListSerializers= mapOf<Int,(ArrayList<Course>)-> String>(
-    1 to ::serializeCourseListV1,
-    2 to ::serializeCourseListV2,
-    3 to ::serializeCourseListV3
+val CourseListSerializers = mapOf<Int, (CourseList) -> JSONArray>(
+    4 to ::serializeCourseListV4
 )
 
-var TimeLineSerializers= mapOf<Int,(ArrayList<TAUpdate>)-> String>(
-    2 to ::serializeTimeLineV2,
-    3 to ::serializeTimeLineV3
+fun CourseList.serialize(version: Int = latestApiVersion): JSONObject {
+    val serializer = CourseListSerializers[version] ?: error("Cannot get course list serializer for API V$version")
+    val json = serializer(this)
+    return json.wrapVersion(version)
+}
+
+fun CourseList.serializePublic(): JSONArray {
+    return serializePublicCourseList(this)
+}
+
+
+val TimeLineSerializers = mapOf<Int, (TimeLine) -> JSONArray>(
+    4 to ::serializeTimeLineV4
 )
+
+fun TimeLine.serialize(version: Int = latestApiVersion): JSONObject {
+    val serializer = TimeLineSerializers[version] ?: error("Cannot get time line serializer for API V$version")
+    val json = serializer(this)
+    return json.wrapVersion(version)
+}

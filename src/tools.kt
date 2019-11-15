@@ -1,14 +1,16 @@
 import com.gargoylesoftware.htmlunit.WebClient
 import com.sun.net.httpserver.HttpExchange
-import modes.server.route.latestApiVersion
+import modes.server.latestApiVersion
+import modes.server.minApiVersion
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.json.simple.parser.JSONParser
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.lang.Exception
+import java.math.RoundingMode
 import java.nio.charset.StandardCharsets.UTF_8
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDateTime
@@ -20,8 +22,6 @@ import java.util.regex.Pattern
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 import kotlin.collections.ArrayList
-import java.text.DecimalFormat
-import java.math.RoundingMode
 
 
 fun find(str: String, regex: String, allowBlank: Boolean = false): ArrayList<String> {
@@ -52,41 +52,21 @@ fun String.appendToFile(path: String) {
     File(path).appendText(this)
 }
 
-fun readFile(path: String):String{
+fun readFile(path: String): String {
     return String(Files.readAllBytes(Paths.get(path)))
 }
 
-object W {
-    val webClient = WebClient()
-
-    init {
-        webClient.options.isCssEnabled = false
-        webClient.options.isJavaScriptEnabled = false
-        webClient.options.isRedirectEnabled = true
-        webClient.options.isThrowExceptionOnScriptError = false
-        webClient.options.isThrowExceptionOnFailingStatusCode = false
-        webClient.options.isDownloadImages = false
-        webClient.options.isAppletEnabled = false
-        webClient.options.timeout=10000
-    }
-
+val webClient = WebClient().apply {
+    options.isCssEnabled = false
+    options.isJavaScriptEnabled = false
+    options.isRedirectEnabled = true
+    options.isThrowExceptionOnScriptError = false
+    options.isThrowExceptionOnFailingStatusCode = false
+    options.isDownloadImages = false
+    options.isAppletEnabled = false
+    options.timeout = 10000
 }
 
-fun getWebClient() = W.webClient
-
-fun newWebClient(): WebClient {
-    val webClient = WebClient()
-
-    webClient.options.isCssEnabled = false
-    webClient.options.isJavaScriptEnabled = false
-    webClient.options.isRedirectEnabled = true
-    webClient.options.isThrowExceptionOnScriptError = false
-    webClient.options.isThrowExceptionOnFailingStatusCode = false
-    webClient.options.isDownloadImages = false
-    webClient.options.isAppletEnabled = false
-
-    return webClient
-}
 
 val ANSI_RESET = "\u001B[0m"
 val ANSI_BLACK = "\u001B[30m"
@@ -104,15 +84,15 @@ fun HttpExchange.getReqString() = String(
     UTF_8
 )
 
-fun HttpExchange.getIP():String?{
-    if (requestHeaders.containsKey("X-real-ip")){
+fun HttpExchange.getIP(): String? {
+    if (requestHeaders.containsKey("X-real-ip")) {
         return requestHeaders["X-real-ip"]?.get(0)
-    }else{
+    } else {
         return remoteAddress.address.toString()
     }
 }
 
-fun HttpExchange.send(statusCode: Int, body: String, isGzip: Boolean = false) {
+fun HttpExchange.send(statusCode: Int, body: String, isGzip: Boolean = true) {
     if (isGzip) {
         val zippedBody = body.gzip()
         sendResponseHeaders(statusCode, zippedBody.size.toLong())
@@ -126,10 +106,18 @@ fun HttpExchange.send(statusCode: Int, body: String, isGzip: Boolean = false) {
 
 }
 
-fun HttpExchange.send(statusCode: Int, body: ByteArray) {
+fun HttpExchange.send(statusCode: Int, body: ByteArray = ByteArray(0)) {
     sendResponseHeaders(statusCode, body.size.toLong())
     responseBody.write(body)
     responseBody.close()
+}
+
+fun HttpExchange.returnIfApiVersionInsufficient(): Boolean {
+    if (this.getApiVersion() < minApiVersion) {
+        this.send(426)
+        return true
+    }
+    return false
 }
 
 fun HttpExchange.getApiVersion(): Int {
@@ -155,10 +143,14 @@ enum class LogLevel {
 }
 
 var sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
-const val serverBuildNumber=11
+const val serverBuildNumber = 11
 fun log(level: LogLevel, msg: String, throwable: Throwable? = null) {
     val time = sdf.format(Date())
-    var logText = "$time\t|\tBN${serverBuildNumber}\t|\t${level.name}\t|\t${Thread.currentThread().name}\t|\t${msg.replace("\n", "\\n")}\n"
+    var logText =
+        "$time\t|\tBN${serverBuildNumber}\t|\t${level.name}\t|\t${Thread.currentThread().name}\t|\t${msg.replace(
+            "\n",
+            "\\n"
+        )}\n"
     if (throwable != null) {
         logText += ExceptionUtils.getStackTrace(throwable)
     }
@@ -178,7 +170,8 @@ fun log(level: LogLevel, msg: String, throwable: Throwable? = null) {
 
 fun logUnhandled(thread: Thread?, throwable: Throwable) {
     val time = sdf.format(Date())
-    var logText = "$time\t|\tBN${serverBuildNumber}\t|\t${LogLevel.FATAL.name}\t|\t${thread?.name}\t|\tUnhandled Error\n"
+    var logText =
+        "$time\t|\tBN${serverBuildNumber}\t|\t${LogLevel.FATAL.name}\t|\t${thread?.name}\t|\tUnhandled Error\n"
     logText += ExceptionUtils.getStackTrace(throwable)
 
     logText.appendToFile("data/server_log.log")
@@ -206,8 +199,8 @@ fun ByteArray.unGzip(): String {
     return GZIPInputStream(this.inputStream()).bufferedReader(UTF_8).use { it.readText() }
 }
 
-val torontoZoneID=ZoneId.of("America/Toronto")
-fun Long.toZonedDateTime():ZonedDateTime{
+val torontoZoneID = ZoneId.of("America/Toronto")
+fun Long.toZonedDateTime(): ZonedDateTime {
     val localDateTime = LocalDateTime.ofInstant(
         Instant.ofEpochMilli(this),
         torontoZoneID
@@ -215,25 +208,25 @@ fun Long.toZonedDateTime():ZonedDateTime{
     return localDateTime.atZone(torontoZoneID)
 }
 
-fun ZonedDateTime.toJSONString():String{
+fun ZonedDateTime.toJSONString(): String {
     return this.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
 }
 
-fun String.toZonedDateTime():ZonedDateTime{
-    return ZonedDateTime.parse(this,DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+fun String.toZonedDateTime(): ZonedDateTime {
+    return ZonedDateTime.parse(this, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
 }
 
-operator fun String.times(time:Int):String{
+operator fun String.times(time: Int): String {
     val builder = StringBuilder()
-    repeat(time){
+    repeat(time) {
         builder.append(this)
     }
 
     return builder.toString()
 }
 
-fun Double.toRoundString(digit:Int):String{
-    val df = DecimalFormat("#."+"#"*digit)
+fun Double.toRoundString(digit: Int): String {
+    val df = DecimalFormat("#." + "#" * digit)
     df.roundingMode = RoundingMode.CEILING
     return df.format(this)
 }

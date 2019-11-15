@@ -2,6 +2,7 @@ package modes.server.timeline
 
 import models.Assignment
 import models.Course
+import models.CourseList
 import java.time.ZonedDateTime
 
 fun compareAssignments(
@@ -49,12 +50,12 @@ fun compareAssignments(
     return updateList
 }
 
-fun compareCourseList(
-    old: ArrayList<Course>,
-    new: ArrayList<Course>,
+fun compareCourses(
+    old: CourseList,
+    new: CourseList,
     compareTime: ZonedDateTime = ZonedDateTime.now()
-): ArrayList<TAUpdate> {
-    val updateList = ArrayList<TAUpdate>()
+): TimeLine {
+    val updateList = TimeLine()
 
     for (i in 0 until new.size){
         val course=new[i]

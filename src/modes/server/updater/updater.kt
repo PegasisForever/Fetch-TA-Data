@@ -1,68 +1,69 @@
 package modes.server.updater
 
+import LogLevel
 import log
-import models.Course
+import models.CourseList
 import models.User
-import modes.server.parsers.CourseListParser
-import modes.server.parsers.TimeLineParser
+import modes.server.parsers.toCourseList
+import modes.server.parsers.toTimeLine
 import modes.server.sendFCM
-import modes.server.serializers.CourseListSerializerV3.Companion.serializeCourseList
-import modes.server.serializers.TimeLineSerializerV3.Companion.serializeTimeLine
+import modes.server.serializers.serialize
 import modes.server.timeline.AssignmentAdded
 import modes.server.timeline.TAUpdate
-import modes.server.timeline.compareCourseList
+import modes.server.timeline.TimeLine
+import modes.server.timeline.compareCourses
 import readFile
 import webpage.LoginPage
 import writeToFile
 import java.util.concurrent.atomic.AtomicBoolean
 
 //updates, courselist, timeline
-fun performUpdate(user: User, newData: ArrayList<Course>? = null): HashMap<String,Any> {
+fun performUpdate(user: User, newData: CourseList? = null): HashMap<String, Any> {
     val studentNumber = user.number
     val password = user.password
-    var updates = ArrayList<TAUpdate>()
-    var newCourseList=ArrayList<Course>()
-    var timeline= ArrayList<TAUpdate>()
+    var updates = TimeLine()
+    var newCourseList = CourseList()
+    var timeLine = TimeLine()
 
-    var oldCourseList: ArrayList<Course>? = null
+    var oldCourseList: CourseList? = null
     try {
-        oldCourseList = CourseListParser.parseCourseList(readFile("data/courselists/$studentNumber.json"))
+        oldCourseList = readFile("data/courselists/$studentNumber.json").toCourseList()
     } catch (ignored: Exception) {
     }
 
     try {
         newCourseList = newData ?: LoginPage().gotoSummaryPage(studentNumber, password).fillDetails().courses
         if (oldCourseList == null) {
-            serializeCourseList(newCourseList).writeToFile("data/courselists/$studentNumber.json")
+            newCourseList.serialize().toJSONString().writeToFile("data/courselists/$studentNumber.json")
             "[]".writeToFile("data/timelines/$studentNumber.json")
         } else {
-            timeline = TimeLineParser.parseTimeLine(readFile("data/timelines/$studentNumber.json"))
-            updates = compareCourseList(oldCourseList, newCourseList)
-            timeline.addAll(updates)
+            timeLine = readFile("data/timelines/$studentNumber.json").toTimeLine()
+            updates = compareCourses(oldCourseList, newCourseList)
+            timeLine.addAll(updates)
 
-            serializeCourseList(newCourseList).writeToFile("data/courselists/$studentNumber.json")
-            serializeTimeLine(timeline).writeToFile("data/timelines/$studentNumber.json")
+            newCourseList.serialize().toJSONString().writeToFile("data/courselists/$studentNumber.json")
+            timeLine.serialize().toJSONString().writeToFile("data/timelines/$studentNumber.json")
         }
 
         sendNotifications(user, updates)
     } catch (e: Exception) {
         log(LogLevel.ERROR, "Error while performing update for user ${studentNumber}", e)
     }
-    return hashMapOf("updates" to updates,"courselist" to newCourseList,"timeline" to timeline)
+    return hashMapOf("updates" to updates, "courselist" to newCourseList, "timeline" to timeLine)
 }
 
 //courselist, timeline
-fun runFollowUpUpdate(number: String, newData: ArrayList<Course>, hash: Int, routeName: String): HashMap<String,Any> {
-    var courseList=newData
-    var timeline= ArrayList<TAUpdate>()
+fun runFollowUpUpdate(number: String, newData: CourseList, hash: Int, routeName: String): HashMap<String, Any> {
+    var courseList = newData
+    var timeline = TimeLine()
     val user = User.get(number)
     user?.let {
-        val out= performUpdate(it, newData)
-        courseList=out["courselist"] as ArrayList<Course>
-        timeline=out["timeline"] as ArrayList<TAUpdate>
+        val out = performUpdate(it, newData)
+        courseList = out["courselist"] as CourseList
+        timeline = out["timeline"] as TimeLine
     }
     log(LogLevel.INFO, "Request #$hash ${routeName} :: Follow up update done")
-    return hashMapOf("courselist" to courseList,"timeline" to timeline)
+    return hashMapOf("courselist" to courseList, "timeline" to timeline)
 }
 
 fun sendNotifications(user: User, updateList: ArrayList<TAUpdate>) {
@@ -73,7 +74,7 @@ fun sendNotifications(user: User, updateList: ArrayList<TAUpdate>) {
                     if (device.receive && device.token != "") {
                         NotificationStrings.getAssignmentAddedNoti(device.language, taUpdate)?.let {
                             val deviceExists = sendFCM(device.token, it)
-                            if (!deviceExists){
+                            if (!deviceExists) {
                                 User.removeToken(device.token)
                             }
                         }

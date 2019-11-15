@@ -4,13 +4,10 @@ import jsonParser
 import models.*
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
-import toZonedDateTime
 import java.time.LocalDate
-import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
-//For CourseListSerializerV3
-class CourseListParser {
+class LegacyCourseListParser {
     companion object {
         private fun parseSmallMark(json: JSONObject, category: String): SmallMark {
             val smallMark = SmallMark(CategoryFromInitial(category))
@@ -29,8 +26,8 @@ class CourseListParser {
             json.forEach { key, value ->
                 when (key) {
                     "name" -> assignment.name = value as String
-                    "time" -> assignment.time = (value as String).toZonedDateTime()
-                    "feedback" -> assignment.feedback = value as String
+                    "time" -> assignment.time = null
+                    "feedback" -> assignment.feedback = (value as String).takeIf { it != "" }
                     else -> {
                         smallMarkCategoryAdded.add(key as String)
                         assignment.smallMarks.add(parseSmallMark(value as JSONObject, key))
@@ -68,13 +65,13 @@ class CourseListParser {
             val course = Course()
             course.startTime = LocalDate.parse(json["start_time"] as String, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
             course.endTime = LocalDate.parse(json["end_time"] as String, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-            course.name = json["name"] as String
+            course.name = (json["name"] as String).takeIf { it != "" }
             course.code = json["code"] as String
             course.block = json["block"] as String
             course.room = json["room"] as String
             course.overallMark = json["overall_mark"] as Double?
-            if (json.containsKey("cached")){
-                course.cached=json["cached"] as Boolean //delete after first run
+            if (json.containsKey("cached")) {
+                course.cached = json["cached"] as Boolean //delete after first run
             }
 
             if (course.overallMark != null) {
@@ -88,9 +85,9 @@ class CourseListParser {
             return course
         }
 
-        fun parseCourseList(str: String): ArrayList<Course> {
+        fun parseCourseList(str: String): CourseList {
             val json = jsonParser.parse(str) as JSONArray
-            val list = ArrayList<Course>()
+            val list = CourseList()
             json.forEach { courseJSON ->
                 list.add(parseCourse(courseJSON as JSONObject))
             }

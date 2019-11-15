@@ -7,7 +7,7 @@ import models.*
 import models.Category.F
 import java.time.ZonedDateTime
 
-class DetailPage(val htmlPage: HtmlPage, val courseCode: String, val time: ZonedDateTime? = null) {
+class DetailPage(val htmlPage: HtmlPage, val courseCode: String?, val time: ZonedDateTime? = null) {
     val assignments = ArrayList<Assignment>()
     val weightTable = WeightTable()
 

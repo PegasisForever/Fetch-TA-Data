@@ -3,15 +3,15 @@ package webpage
 import com.gargoylesoftware.htmlunit.html.HtmlPage
 import com.gargoylesoftware.htmlunit.html.HtmlTable
 import find
-import getWebClient
 import models.Course
+import models.CourseList
+import webClient
 import java.io.File
-import java.lang.Exception
 import java.time.LocalDate
 import java.time.ZonedDateTime
 
 class SummaryPage(val htmlPage: HtmlPage, val fileName: String? = null, val time: ZonedDateTime? = null) {
-    val courses = ArrayList<Course>()
+    val courses = CourseList()
     val detailPages = ArrayList<DetailPage>()
     private val summaryTable = htmlPage.getElementsByTagName("table")[1] as HtmlTable
 
@@ -55,8 +55,7 @@ class SummaryPage(val htmlPage: HtmlPage, val fileName: String? = null, val time
             if (!file.exists()) {
                 throw Exception("file ${file.name} not found, summary file name is ${fileName}")
             }
-            getWebClient()
-                .getPage<HtmlPage>(file.toURL())
+            webClient.getPage<HtmlPage>(file.toURL())
         }
 
         return DetailPage(detailHTMLPage, courses[index].code,time)

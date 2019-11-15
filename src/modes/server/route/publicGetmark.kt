@@ -1,13 +1,13 @@
 package modes.server.route
 
 import LogLevel
-import modes.server.serializers.CourseListSerializers
 import com.sun.net.httpserver.HttpExchange
 import getIP
 import getReqString
 import jsonParser
 import log
 import models.LoginException
+import modes.server.serializers.serializePublic
 import modes.server.updater.runFollowUpUpdate
 import org.json.simple.JSONObject
 import org.json.simple.parser.ParseException
@@ -16,7 +16,7 @@ import webpage.LoginPage
 import java.net.SocketTimeoutException
 
 val publicGetmarkRoute = out@{ exchange: HttpExchange ->
-    exchange.responseHeaders.add("Access-Control-Allow-Origin", "*");
+    exchange.responseHeaders.add("Access-Control-Allow-Origin", "*")
 
     if (exchange.requestMethod.toUpperCase()=="OPTIONS") {
         exchange.responseHeaders.add("Access-Control-Allow-Methods", "GET, OPTIONS")
@@ -42,7 +42,7 @@ val publicGetmarkRoute = out@{ exchange: HttpExchange ->
             .gotoSummaryPage(req["number"] as String, req["password"] as String)
             .fillDetails()
             .courses
-        res = CourseListSerializers[3]?.invoke(courses)!!
+        res = courses.serializePublic().toJSONString()
         log(LogLevel.INFO, "Request #$hash /getmark :: Fetch successfully")
 
         runFollowUpUpdate(req["number"] as String, courses, hash, "/getmark")

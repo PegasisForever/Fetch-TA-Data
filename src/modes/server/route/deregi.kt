@@ -11,9 +11,10 @@ import log
 import models.User
 import org.json.simple.JSONObject
 import org.json.simple.parser.ParseException
+import returnIfApiVersionInsufficient
 import send
 
-var deregiRoute={ exchange:HttpExchange ->
+var deregiRoute = out@{ exchange: HttpExchange ->
     var statusCode = 200  //200:success  400:bad request  500:internal error
 
     val hash = exchange.hashCode()
@@ -21,6 +22,11 @@ var deregiRoute={ exchange:HttpExchange ->
     val ipAddress = exchange.getIP()
     val reqApiVersion = exchange.getApiVersion()
     log(LogLevel.INFO, "Request #$hash /deregi <- $ipAddress, api version=$reqApiVersion, data=$reqString")
+
+    if (exchange.returnIfApiVersionInsufficient()) {
+        log(LogLevel.INFO, "Request #$hash /deregi -> $ipAddress, api version insufficient")
+        return@out
+    }
 
     try {
         val req = jsonParser.parse(reqString) as JSONObject

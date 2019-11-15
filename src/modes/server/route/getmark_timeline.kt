@@ -1,26 +1,25 @@
 package modes.server.route
 
 import LogLevel
-import modes.server.serializers.CourseListSerializers
 import com.sun.net.httpserver.HttpExchange
 import getApiVersion
 import getIP
 import getReqString
 import jsonParser
 import log
-import models.Course
+import models.CourseList
 import models.LoginException
-import modes.server.serializers.TimeLineSerializers
-import modes.server.timeline.TAUpdate
+import modes.server.serializers.serialize
+import modes.server.timeline.TimeLine
 import modes.server.updater.runFollowUpUpdate
 import org.json.simple.JSONObject
 import org.json.simple.parser.ParseException
-import readFile
+import returnIfApiVersionInsufficient
 import send
 import webpage.LoginPage
 import java.net.SocketTimeoutException
 
-val getmarkTimelineRoute = { exchange: HttpExchange ->
+val getmarkTimelineRoute = out@{ exchange: HttpExchange ->
     var statusCode = 200  //200:success  400:bad request  401:pwd incorrect  500:internal error
     var res = ""
 
@@ -29,6 +28,11 @@ val getmarkTimelineRoute = { exchange: HttpExchange ->
     val ipAddress = exchange.getIP()
     val reqApiVersion = exchange.getApiVersion()
     log(LogLevel.INFO, "Request #$hash /getmark_timeline <- $ipAddress, api version=$reqApiVersion, data=$reqString")
+
+    if (exchange.returnIfApiVersionInsufficient()) {
+        log(LogLevel.INFO, "Request #$hash /getmark_timeline -> $ipAddress, api version insufficient")
+        return@out
+    }
 
     try {
         val req = jsonParser.parse(reqString) as JSONObject
@@ -42,8 +46,8 @@ val getmarkTimelineRoute = { exchange: HttpExchange ->
         log(LogLevel.INFO, "Request #$hash /getmark_timeline :: Fetch successfully")
         val out=runFollowUpUpdate(number, courses, hash, "/getmark_timeline")
 
-        res = CourseListSerializers[reqApiVersion]?.invoke(out["courselist"] as ArrayList<Course>)!! +"|||" +
-                TimeLineSerializers[reqApiVersion]?.invoke(out["timeline"] as ArrayList<TAUpdate>)!!
+        res = (out["courselist"] as CourseList).serialize(reqApiVersion).toJSONString() + "|||" +
+                (out["timeline"] as TimeLine).serialize(reqApiVersion).toJSONString()
     } catch (e: LoginException) {
         log(LogLevel.INFO, "Request #$hash /getmark_timeline :: Login error")
         statusCode = 401
@@ -62,5 +66,5 @@ val getmarkTimelineRoute = { exchange: HttpExchange ->
         LogLevel.INFO,
         "Request #$hash /getmark_timeline -> $ipAddress, status=$statusCode, data=$res"
     )
-    exchange.send(statusCode, res, reqApiVersion > 1)
+    exchange.send(statusCode, res)
 }

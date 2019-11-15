@@ -1,15 +1,13 @@
 package modes.server.parsers
 
 import jsonParser
-import modes.server.parsers.CourseListParser.Companion.parseAssignment
+import modes.server.parsers.LegacyCourseListParser.Companion.parseAssignment
 import modes.server.timeline.*
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import toZonedDateTime
-import java.lang.Exception
 
-//For TimeLineSerializerV2
-class TimeLineParser {
+class LegacyTimeLineParser {
     companion object {
         private fun parseAssignmentAdded(json: JSONObject): AssignmentAdded {
             val assignmentAdded = AssignmentAdded()
@@ -52,8 +50,8 @@ class TimeLineParser {
             return courseRemoved
         }
 
-        fun parseTimeLine(str:String):ArrayList<TAUpdate>{
-            val list=ArrayList<TAUpdate>()
+        fun parseTimeLine(str: String): TimeLine {
+            val list = TimeLine()
 
             (jsonParser.parse(str) as JSONArray).forEach {taUpdate->
                 val taUpdateJSON = taUpdate as JSONObject

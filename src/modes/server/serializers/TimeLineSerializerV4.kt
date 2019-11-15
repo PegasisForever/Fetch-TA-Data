@@ -1,12 +1,12 @@
 package modes.server.serializers
 
-import modes.server.serializers.CourseListSerializerV3.Companion.serializeAssignment
+import modes.server.serializers.CourseListSerializerV4.Companion.serializeAssignment
 import modes.server.timeline.*
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import toJSONString
 
-class TimeLineSerializerV3 {
+class TimeLineSerializerV4 {
     companion object {
         private fun serializeAssignmentAdded(assignmentAdded: AssignmentAdded): JSONObject {
             val obj = JSONObject()
@@ -26,8 +26,7 @@ class TimeLineSerializerV3 {
             obj["category"] = "assignment_updated"
             obj["course_name"] = assignmentUpdated.courseName
             obj["assignment_name"] = assignmentUpdated.assignmentName
-            obj["assignment_before"] =
-                serializeAssignment(assignmentUpdated.assignmentBefore) //remember to change after updated serializer
+            obj["assignment_before"] = serializeAssignment(assignmentUpdated.assignmentBefore)
             obj["assignment_after"] = serializeAssignment(assignmentUpdated.assignmentAfter)
             obj["time"] = assignmentUpdated.time.toJSONString()
 
@@ -54,7 +53,7 @@ class TimeLineSerializerV3 {
             return obj
         }
 
-        fun serializeTimeLine(updateList: ArrayList<TAUpdate>): String {
+        fun serializeTimeLine(updateList: TimeLine): JSONArray {
             val array = JSONArray()
             updateList.forEach { taUpdate ->
                 array.add(
@@ -68,7 +67,7 @@ class TimeLineSerializerV3 {
                 )
             }
 
-            return array.toJSONString()
+            return array
         }
     }
 }

@@ -5,8 +5,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput
 import find
-import getWebClient
 import models.LoginException
+import webClient
 
 class LoginPage {
     init {
@@ -31,7 +31,7 @@ class LoginPage {
     }
 
     companion object{
-        val htmlPage: HtmlPage = getWebClient().getPage("https://ta.yrdsb.ca/live/index.php")
+        val htmlPage: HtmlPage = webClient.getPage("https://ta.yrdsb.ca/live/index.php")
     }
 
 }

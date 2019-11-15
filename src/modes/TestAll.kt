@@ -1,11 +1,9 @@
 package modes
 
-import modes.server.serializers.CourseListSerializerV2
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
 import webpage.LoginPage
-import writeToFile
 import java.io.FileReader
 
 

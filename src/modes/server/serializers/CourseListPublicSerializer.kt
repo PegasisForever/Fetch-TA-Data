@@ -6,7 +6,8 @@ import org.json.simple.JSONObject
 import toJSONString
 import java.time.format.DateTimeFormatter
 
-class CourseListSerializerV3 {
+//Based on V4
+class CourseListPublicSerializer {
     companion object {
         private fun serializeSmallMark(smallMark: SmallMark): JSONObject {
             val obj = JSONObject()
@@ -27,7 +28,7 @@ class CourseListSerializerV3 {
                 }
             }
             obj["name"] = assignment.name
-            obj["time"] = assignment.time.toJSONString()
+            obj["time"] = assignment.time?.toJSONString()
             obj["feedback"] = assignment.feedback
 
             return obj
@@ -53,14 +54,13 @@ class CourseListSerializerV3 {
 
         private fun serializeCourse(course: Course): JSONObject {
             val obj = JSONObject()
-            obj["start_time"] = course.startTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-            obj["end_time"] = course.endTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+            obj["start_time"] = course.startTime?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+            obj["end_time"] = course.endTime?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
             obj["name"] = course.name
             obj["code"] = course.code
             obj["block"] = course.block
             obj["room"] = course.room
             obj["overall_mark"] = course.overallMark
-            obj["cached"] = course.cached
 
             obj["assignments"] = JSONArray()
             course.assignments?.forEach { assignment ->
@@ -71,13 +71,13 @@ class CourseListSerializerV3 {
             return obj
         }
 
-        fun serializeCourseList(list: ArrayList<Course>): String {
+        fun serializeCourseList(list: CourseList): JSONArray {
             val array = JSONArray()
             list.forEach { course ->
                 array.add(serializeCourse(course))
             }
 
-            return array.toJSONString()
+            return array
         }
     }
 }

@@ -25,7 +25,7 @@ fun CategoryFrom(str: String): Category {
 }
 
 fun CategoryFromInitial(str: String): Category {
-    return when(str) {
+    return when (str) {
         "KU" -> Category.KU
         "T" -> Category.T
         "C" -> Category.C
@@ -47,13 +47,13 @@ class SmallMark(var category: Category) {
         return "${category.name}: finished=$finished"
     }
 
-    companion object{
-        fun isSame(sm1:SmallMark,sm2:SmallMark):Boolean{
-            return sm1.available==sm2.available &&
-                    sm1.finished==sm2.finished &&
-                    sm1.total==sm2.total &&
-                    sm1.get==sm2.get &&
-                    sm1.weight==sm2.weight
+    companion object {
+        fun isSame(sm1: SmallMark, sm2: SmallMark): Boolean {
+            return sm1.available == sm2.available &&
+                    sm1.finished == sm2.finished &&
+                    sm1.total == sm2.total &&
+                    sm1.get == sm2.get &&
+                    sm1.weight == sm2.weight
         }
     }
 }
@@ -61,50 +61,54 @@ class SmallMark(var category: Category) {
 class Assignment {
     val smallMarks = ArrayList<SmallMark>()
     var name = ""
-    var time = ZonedDateTime.now()
-    var feedback = ""
+    var time: ZonedDateTime? = null
+    var feedback: String? = null
 
-    fun getAverage(weightTable: WeightTable):Double{
-        var total=0.0
-        var get=0.0
+    fun getAverage(weightTable: WeightTable): Double {
+        var total = 0.0
+        var get = 0.0
 
-        smallMarks.forEach {smallMark->
-            if (smallMark.available && smallMark.finished){
-                val weight=weightTable.getWeight(smallMark.category).CW
-                total+=smallMark.total*weight
-                get+=smallMark.get*weight
+        smallMarks.forEach { smallMark ->
+            if (smallMark.available && smallMark.finished) {
+                val weight = weightTable.getWeight(smallMark.category).CW
+                total += smallMark.total * weight
+                get += smallMark.get * weight
             }
         }
 
-        return get/total*100
+        return get / total * 100
     }
 
-    fun isNoWeight():Boolean{
-        smallMarks.forEach {smallMark->
-            if (smallMark.weight!=0.0){
+    fun isNoWeight(): Boolean {
+        smallMarks.forEach { smallMark ->
+            if (smallMark.weight != 0.0) {
                 return false
             }
         }
         return true
     }
 
-    fun isFinished():Boolean{
-        smallMarks.forEach {smallMark->
-            if (!smallMark.finished){
+    fun isFinished(): Boolean {
+        smallMarks.forEach { smallMark ->
+            if (!smallMark.finished) {
                 return false
             }
         }
         return true
     }
 
-    companion object{
-        fun isSame(as1:Assignment,as2:Assignment):Boolean{
-            if (as1.smallMarks.size!=as2.smallMarks.size){
+    companion object {
+        fun isSame(as1: Assignment, as2: Assignment): Boolean {
+            if (as1.smallMarks.size != as2.smallMarks.size) {
                 return false
             }
-            as1.smallMarks.forEach {as1SmallMark->
-                as2.smallMarks.forEach{as2SmallMark->
-                    if (as1SmallMark.category==as2SmallMark.category && !SmallMark.isSame(as1SmallMark,as2SmallMark)){
+            as1.smallMarks.forEach { as1SmallMark ->
+                as2.smallMarks.forEach { as2SmallMark ->
+                    if (as1SmallMark.category == as2SmallMark.category && !SmallMark.isSame(
+                            as1SmallMark,
+                            as2SmallMark
+                        )
+                    ) {
                         return false
                     }
                 }
@@ -123,9 +127,9 @@ class Weight(var category: Category) {
 class WeightTable {
     val weightsList = ArrayList<Weight>()
 
-    fun getWeight(category: Category):Weight{
-        weightsList.forEach { weight->
-            if (weight.category==category){
+    fun getWeight(category: Category): Weight {
+        weightsList.forEach { weight ->
+            if (weight.category == category) {
                 return weight
             }
         }
@@ -136,20 +140,22 @@ class WeightTable {
 class Course {
     var assignments: ArrayList<Assignment>? = null
     var weightTable: WeightTable? = null
-    var startTime = LocalDate.now()
-    var endTime = LocalDate.now()
-    var name = ""
-    var code = ""
-    var block = ""
-    var room = ""
+    var startTime: LocalDate? = null
+    var endTime: LocalDate? = null
+    var name: String? = null
+    var code: String? = null
+    var block: String? = null
+    var room: String? = null
     var overallMark: Double? = null
     var cached = false
 
-    fun getDisplayName():String{
-        return if(name!=""){
-            name
-        }else{
-            code
+    fun getDisplayName(): String? {
+        return when {
+            name != null -> name!!
+            code != null -> code!!
+            else -> null
         }
     }
 }
+
+class CourseList : ArrayList<Course>()

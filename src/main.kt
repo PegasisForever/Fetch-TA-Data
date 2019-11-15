@@ -23,6 +23,9 @@ fun main(args: Array<String>) {
         "server" -> {
             startServer()
         }
+        "convert" -> {
+            convertLegacy()
+        }
         else -> println("Unknown mode")
     }
 }
