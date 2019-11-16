@@ -5,10 +5,7 @@ import com.sun.net.httpserver.HttpServer
 import log
 import logUnhandled
 import models.User
-import modes.server.route.Deregi
-import modes.server.route.GetmarkTimeLine
-import modes.server.route.PublicGetMark
-import modes.server.route.Regi
+import modes.server.route.*
 import modes.server.updater.autoUpdateThreadRunning
 import modes.server.updater.startAutoUpdateThread
 import java.lang.Thread.setDefaultUncaughtExceptionHandler
@@ -42,6 +39,7 @@ fun startServer() {
     //private server
     HttpServer.create(InetSocketAddress(5004), 0).run {
         createContext("/getmark_timeline", GetmarkTimeLine.route)
+        createContext("/feedback", Feedback.route)
         createContext("/regi", Regi.route)
         createContext("/deregi", Deregi.route)
         start()
