@@ -3,6 +3,7 @@ package modes.server.updater
 import LogLevel
 import log
 import models.CourseList
+import models.LoginException
 import models.User
 import modes.server.PCache
 import modes.server.save
@@ -10,6 +11,7 @@ import modes.server.sendFCM
 import modes.server.timeline.TimeLine
 import modes.server.timeline.compareCourses
 import webpage.LoginPage
+import java.net.SocketTimeoutException
 import java.util.concurrent.atomic.AtomicBoolean
 
 fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
@@ -40,6 +42,10 @@ fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
         }
 
         sendNotifications(user, updates)
+    } catch (e: LoginException) {
+        log(LogLevel.INFO, "Error while performing update for user ${studentNumber}: Login error")
+    } catch (e: SocketTimeoutException) {
+        log(LogLevel.WARN, "Error while performing update for user ${studentNumber}: Connect timeout")
     } catch (e: Exception) {
         log(LogLevel.ERROR, "Error while performing update for user ${studentNumber}", e)
     }
@@ -74,7 +80,7 @@ fun startAutoUpdateThread(intervalMinute: Int): Thread {
             val startTime = System.currentTimeMillis()
             User.allUsers.forEach { user ->
                 val updates = performUpdate(user)
-                log(LogLevel.INFO, "Performed update for user ${user.number}, ${updates.size} updates")
+                log(LogLevel.INFO, "Auto performed update for user ${user.number}, ${updates.size} updates")
             }
 
             val remainTime = interval - (System.currentTimeMillis() - startTime)

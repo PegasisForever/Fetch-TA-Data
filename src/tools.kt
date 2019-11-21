@@ -145,7 +145,7 @@ enum class LogLevel {
 
 val logDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
 val fileDateFormat = SimpleDateFormat("yyyy-MM-dd")
-const val serverBuildNumber = 12
+const val serverBuildNumber = 13
 fun log(level: LogLevel, msg: String, throwable: Throwable? = null) {
     val date = Date()
     var logText =

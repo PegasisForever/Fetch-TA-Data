@@ -73,7 +73,7 @@ object GetmarkTimeLine {
             log(LogLevel.INFO, "Request #$hash /getmark_timeline :: Can't parse request")
             statusCode = 400
         } catch (e: SocketTimeoutException) {
-            log(LogLevel.WARN, "Request #$hash /getmark_timeline :: connect timeout", e)
+            log(LogLevel.WARN, "Request #$hash /getmark_timeline :: Connect timeout", e)
             statusCode = 503
         } catch (e: Exception) {
             log(LogLevel.ERROR, "Request #$hash /getmark_timeline :: Unknown error: ${e.message}", e)
