@@ -97,24 +97,23 @@ class Assignment {
         return true
     }
 
-    companion object {
-        fun isSame(as1: Assignment, as2: Assignment): Boolean {
-            if (as1.smallMarks.size != as2.smallMarks.size) {
-                return false
-            }
-            as1.smallMarks.forEach { as1SmallMark ->
-                as2.smallMarks.forEach { as2SmallMark ->
-                    if (as1SmallMark.category == as2SmallMark.category && !SmallMark.isSame(
-                            as1SmallMark,
-                            as2SmallMark
-                        )
-                    ) {
-                        return false
-                    }
+    //everything need to be the same
+    fun isSame(other: Assignment): Boolean {
+        if (smallMarks.size != other.smallMarks.size) {
+            return false
+        }
+        smallMarks.forEach { as1SmallMark ->
+            other.smallMarks.forEach { as2SmallMark ->
+                if (as1SmallMark.category == as2SmallMark.category && !SmallMark.isSame(
+                        as1SmallMark,
+                        as2SmallMark
+                    )
+                ) {
+                    return false
                 }
             }
-            return true
         }
+        return true
     }
 }
 
@@ -243,7 +242,8 @@ class Course {
         }
     }
 
-    fun isSameCourse(other: Course): Boolean {
+    //only things like name need to be the same
+    fun isSame(other: Course): Boolean {
         return name == other.name && code == other.code && block == other.block && room == other.room
     }
 }

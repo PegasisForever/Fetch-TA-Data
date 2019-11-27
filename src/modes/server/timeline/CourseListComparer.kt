@@ -1,6 +1,5 @@
 package modes.server.timeline
 
-import models.Assignment
 import models.Course
 import models.CourseList
 import java.time.ZonedDateTime
@@ -15,35 +14,25 @@ fun compareAssignments(
     val new = newCourse.assignments ?: ArrayList()
 
     new.forEach { assignment ->
-        var isNew = true
-        var isUpdate = false
-        var globalAssignmentOld: Assignment? = null
-        for (assignmentOld in old) if (assignmentOld.name == assignment.name) {
-            isNew = false
-            if (!Assignment.isSame(assignment, assignmentOld)) {
-                isUpdate = true
-                globalAssignmentOld = assignmentOld
-            }
-            break
-        }
+        val oldAssignment = old.find { it.name == assignment.name }
 
-        if (isNew) {
-            val assignmentAdded = AssignmentAdded()
-            assignmentAdded.courseName = newCourse.getDisplayName()
-            assignmentAdded.assignment = assignment
-            assignmentAdded.assignmentAvg = assignment.getAverage(newCourse.weightTable!!)
-            assignmentAdded.overallBefore = oldCourse.overallMark
-            assignmentAdded.overallAfter = newCourse.overallMark!!
-            assignmentAdded.time = compareTime
-            updateList.add(assignmentAdded)
-        } else if (isUpdate) {
-            val assignmentUpdated = AssignmentUpdated()
-            assignmentUpdated.courseName = newCourse.getDisplayName()
-            assignmentUpdated.assignmentName = assignment.name
-            assignmentUpdated.assignmentBefore = globalAssignmentOld!!
-            assignmentUpdated.assignmentAfter = assignment
-            assignmentUpdated.time = compareTime
-            updateList.add(assignmentUpdated)
+        if (oldAssignment == null) { //new assignment
+            updateList += AssignmentAdded().apply {
+                courseName = newCourse.getDisplayName()
+                this.assignment = assignment
+                assignmentAvg = assignment.getAverage(newCourse.weightTable!!)
+                overallBefore = oldCourse.overallMark
+                overallAfter = newCourse.overallMark!!
+                time = compareTime
+            }
+        } else if (!assignment.isSame(oldAssignment)) { //assignment updated
+            updateList += AssignmentUpdated().apply {
+                courseName = newCourse.getDisplayName()
+                assignmentName = assignment.name
+                assignmentBefore = oldAssignment
+                assignmentAfter = assignment
+                time = compareTime
+            }
         }
     }
 
@@ -67,7 +56,7 @@ fun compareCourses(
 
     //for each course in new course list, test if it's new added, mark hidden by teacher, or normal
     new.forEach { newCourse ->
-        val oldCourse = old.find { newCourse.isSameCourse(it) }
+        val oldCourse = old.find { newCourse.isSame(it) }
         courseListResult += if (oldCourse == null) { //this course is only in the new course list
             updateList += CourseAdded().apply {
                 courseName = newCourse.getDisplayName()
@@ -87,7 +76,7 @@ fun compareCourses(
 
     //find removed courses
     old.forEach { oldCourse ->
-        val isRemoved = new.find { oldCourse.isSameCourse(it) } == null
+        val isRemoved = new.find { oldCourse.isSame(it) } == null
         if (isRemoved) {
             updateList += CourseRemoved().apply {
                 courseName = oldCourse.getDisplayName()
