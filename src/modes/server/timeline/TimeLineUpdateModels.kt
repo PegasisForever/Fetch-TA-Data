@@ -28,8 +28,6 @@ class AssignmentUpdated : TAUpdate() {
     var assignmentAfter = Assignment()
 }
 
-class CourseArchived : TAUpdate()
-
 class CourseAdded : TAUpdate() {
     var courseName: String? = null
     var courseBlock: String? = null
