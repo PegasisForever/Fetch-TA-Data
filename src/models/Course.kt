@@ -149,12 +149,102 @@ class Course {
     var overallMark: Double? = null
     var cached = false
 
-    fun getDisplayName(): String? {
+    fun getDisplayName(): String {
         return when {
             name != null -> name!!
             code != null -> code!!
-            else -> null
+            else -> "Unnamed Course"
         }
+    }
+
+    //calculate more accurate course overall and avg marks
+    fun calculate() {
+        if (weightTable != null) {
+            var K = 0.0
+            var Kn = 0.0
+            var T = 0.0
+            var Tn = 0.0
+            var C = 0.0
+            var Cn = 0.0
+            var A = 0.0
+            var An = 0.0
+            var O = 0.0
+            var On = 0.0
+
+            assignments!!.forEach { assignment ->
+                assignment.smallMarks.forEach { smallMark ->
+                    if (smallMark.finished && smallMark.available)
+                        when (smallMark.category) {
+                            Category.KU -> {
+                                K += smallMark.get / smallMark.total * smallMark.weight
+                                Kn += smallMark.weight
+                            }
+                            Category.T -> {
+                                T += smallMark.get / smallMark.total * smallMark.weight
+                                Tn += smallMark.weight
+                            }
+                            Category.C -> {
+                                C += smallMark.get / smallMark.total * smallMark.weight
+                                Cn += smallMark.weight
+                            }
+                            Category.A -> {
+                                A += smallMark.get / smallMark.total * smallMark.weight
+                                An += smallMark.weight
+                            }
+                            Category.O -> {
+                                O += smallMark.get / smallMark.total * smallMark.weight
+                                On += smallMark.weight
+                            }
+                        }
+                }
+            }
+
+            val Ka = K / Kn
+            val Ta = T / Tn
+            val Ca = C / Cn
+            val Aa = A / An
+            val Oa = O / On
+            var avg = 0.0
+            var avgn = 0.0
+            if (Ka >= 0.0) {
+                val weight = weightTable!!.getWeight(Category.KU)
+                weight.SA = Ka * 100
+                avg += Ka * weight.W
+                avgn += weight.W
+            }
+            if (Ta >= 0.0) {
+                val weight = weightTable!!.getWeight(Category.T)
+                weight.SA = Ta * 100
+                avg += Ta * weight.W
+                avgn += weight.W
+            }
+            if (Ca >= 0.0) {
+                val weight = weightTable!!.getWeight(Category.C)
+                weight.SA = Ca * 100
+                avg += Ca * weight.W
+                avgn += weight.W
+            }
+            if (Aa >= 0.0) {
+                val weight = weightTable!!.getWeight(Category.A)
+                weight.SA = Aa * 100
+                avg += Aa * weight.W
+                avgn += weight.W
+            }
+            if (Oa >= 0.0) {
+                val weight = weightTable!!.getWeight(Category.O)
+                weight.SA = Oa * 100
+                avg += Oa * weight.W
+                avgn += weight.W
+            }
+
+            if (avg / avgn >= 0) {
+                overallMark = avg / avgn * 100
+            }
+        }
+    }
+
+    fun isSameCourse(other: Course): Boolean {
+        return name == other.name && code == other.code && block == other.block && room == other.room
     }
 }
 
