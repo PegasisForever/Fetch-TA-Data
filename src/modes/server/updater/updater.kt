@@ -7,6 +7,7 @@ import models.LoginException
 import models.User
 import modes.server.PCache
 import modes.server.save
+import modes.server.saveArchive
 import modes.server.sendFCM
 import modes.server.timeline.TimeLine
 import modes.server.timeline.compareCourses
@@ -19,27 +20,25 @@ fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
     val password = user.password
     var updates = TimeLine()
 
-    val oldCourseList = try {
-        PCache.readCourseList(studentNumber)
-    } catch (e: Exception) {
-        null
-    }
-
     try {
-        val newCourseList = newData ?: LoginPage().gotoSummaryPage(studentNumber, password).fillDetails().courses
-        if (oldCourseList == null) {
-            newCourseList.save(studentNumber)
-            TimeLine().save(studentNumber)
-        } else {
-            val compareResult = compareCourses(oldCourseList, newCourseList)
-            updates = compareResult.updates
+        val compareResult = compareCourses(
+            old = PCache.readCourseList(studentNumber),
+            new = newData ?: LoginPage().gotoSummaryPage(studentNumber, password).fillDetails().courses
+        )
+        updates = compareResult.updates
 
-            val timeLine = PCache.readTimeLine(studentNumber)
-            timeLine += updates
-            timeLine.save(studentNumber)
+        //append updates to timeline
+        val timeLine = PCache.readTimeLine(studentNumber)
+        timeLine += updates
+        timeLine.save(studentNumber)
 
-            compareResult.courseList.save(studentNumber)
-        }
+        //save new course list
+        compareResult.courseList.save(studentNumber)
+
+        //append new archived courses to file
+        val archivedCourseList = PCache.readArchivedCourseList(studentNumber)
+        archivedCourseList += compareResult.archivedCourseList
+        archivedCourseList.saveArchive(studentNumber)
 
         sendNotifications(user, updates)
     } catch (e: LoginException) {
@@ -56,7 +55,7 @@ fun runFollowUpUpdate(number: String, newData: CourseList, hash: Int, routeName:
     User.get(number)?.let {
         performUpdate(it, newData)
     }
-    log(LogLevel.INFO, "Request #$hash ${routeName} :: Follow up update done")
+    log(LogLevel.INFO, "Request #$hash $routeName :: Follow up update done")
 }
 
 fun sendNotifications(user: User, updateList: TimeLine) {

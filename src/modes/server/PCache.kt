@@ -12,11 +12,17 @@ import writeToFile
 
 object PCache {
     private val courseListCacheMap = HashMap<String, CourseList>()
+    private val archivedCourseListCacheMap = HashMap<String, CourseList>()
     private val timeLineCacheMap = HashMap<String, TimeLine>()
 
     fun save(number: String, courseList: CourseList) {
         courseListCacheMap[number] = courseList
         courseList.serialize().toJSONString().writeToFile("data/courselists/$number.json")
+    }
+
+    fun saveArchive(number: String, courseList: CourseList) {
+        archivedCourseListCacheMap[number] = courseList
+        courseList.serialize().toJSONString().writeToFile("data/courselists-archived/$number.json")
     }
 
     fun save(number: String, timeLine: TimeLine) {
@@ -28,10 +34,29 @@ object PCache {
         return if (courseListCacheMap.containsKey(number)) {
             courseListCacheMap[number]!!
         } else {
-            val text = readFile("data/courselists/$number.json")
-            val courseList = (jsonParser.parse(text) as JSONObject).toCourseList()
-            courseListCacheMap[number] = courseList
-            courseList
+            try {
+                val text = readFile("data/courselists/$number.json")
+                val courseList = (jsonParser.parse(text) as JSONObject).toCourseList()
+                courseListCacheMap[number] = courseList
+                courseList
+            } catch (e: Exception) {
+                CourseList()
+            }
+        }
+    }
+
+    fun readArchivedCourseList(number: String): CourseList {
+        return if (archivedCourseListCacheMap.containsKey(number)) {
+            archivedCourseListCacheMap[number]!!
+        } else {
+            try {
+                val text = readFile("data/courselists-archived/$number.json")
+                val courseList = (jsonParser.parse(text) as JSONObject).toCourseList()
+                archivedCourseListCacheMap[number] = courseList
+                courseList
+            } catch (e: Exception) {
+                CourseList()
+            }
         }
     }
 
@@ -39,10 +64,14 @@ object PCache {
         return if (timeLineCacheMap.containsKey(number)) {
             timeLineCacheMap[number]!!
         } else {
-            val text = readFile("data/timelines/$number.json")
-            val timeLine = (jsonParser.parse(text) as JSONObject).toTimeLine()
-            timeLineCacheMap[number] = timeLine
-            timeLine
+            try {
+                val text = readFile("data/timelines/$number.json")
+                val timeLine = (jsonParser.parse(text) as JSONObject).toTimeLine()
+                timeLineCacheMap[number] = timeLine
+                timeLine
+            } catch (e: Exception) {
+                TimeLine()
+            }
         }
     }
 
@@ -50,6 +79,10 @@ object PCache {
 
 fun CourseList.save(number: String) {
     PCache.save(number, this)
+}
+
+fun CourseList.saveArchive(number: String) {
+    PCache.saveArchive(number, this)
 }
 
 fun TimeLine.save(number: String) {
