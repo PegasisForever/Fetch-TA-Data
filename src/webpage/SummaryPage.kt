@@ -83,7 +83,7 @@ class SummaryPage(val htmlPage: HtmlPage, val fileName: String? = null, val time
                 detailPages.add(detailPage)
                 course.assignments = detailPage.assignments
                 course.weightTable = detailPage.weightTable
-
+                course.calculate()
             }
         }
 

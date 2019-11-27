@@ -84,16 +84,17 @@ val ANSI_CYAN = "\u001B[36m"
 val ANSI_WHITE = "\u001B[37m"
 
 val jsonParser = JSONParser()
+
 fun HttpExchange.getReqString() = String(
     requestBody.readAllBytes(),
     UTF_8
 )
 
 fun HttpExchange.getIP(): String? {
-    if (requestHeaders.containsKey("X-real-ip")) {
-        return requestHeaders["X-real-ip"]?.get(0)
+    return if (requestHeaders.containsKey("X-real-ip")) {
+        requestHeaders["X-real-ip"]?.get(0)
     } else {
-        return remoteAddress.address.toString()
+        remoteAddress.address.toString()
     }
 }
 
@@ -143,9 +144,9 @@ enum class LogLevel {
     FATAL
 }
 
-val logDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
+private val logDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
 val fileDateFormat = SimpleDateFormat("yyyy-MM-dd")
-const val serverBuildNumber = 13
+const val serverBuildNumber = 14
 fun log(level: LogLevel, msg: String, throwable: Throwable? = null) {
     val date = Date()
     var logText =
@@ -201,7 +202,7 @@ fun ByteArray.unGzip(): String {
     return GZIPInputStream(inputStream()).bufferedReader(UTF_8).use { it.readText() }
 }
 
-val torontoZoneID = ZoneId.of("America/Toronto")
+private val torontoZoneID = ZoneId.of("America/Toronto")
 fun Long.toZonedDateTime(): ZonedDateTime {
     val localDateTime = LocalDateTime.ofInstant(
         Instant.ofEpochMilli(this),
