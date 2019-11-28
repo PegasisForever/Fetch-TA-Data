@@ -13,15 +13,15 @@ import java.io.FileInputStream
 
 private var initialized = false
 
-fun sendFCM(token:String,notification: modes.server.updater.Notification):Boolean {
+fun sendFCM(token: String, notification: modes.server.updater.Notification): Boolean {
     if (!Config.notificationEnabled) {
-        log(LogLevel.INFO, "Notification disbled, token: $token, content: $notification")
+        log(LogLevel.INFO, "Notification disabled, token: $token, content: $notification")
         return true
     }
 
-    var deviceExists=true
+    var deviceExists = true
 
-    if (!initialized){
+    if (!initialized) {
         val serviceAccount = FileInputStream("data/serviceAccountKey.json")
 
         val options = FirebaseOptions.Builder()
@@ -31,7 +31,7 @@ fun sendFCM(token:String,notification: modes.server.updater.Notification):Boolea
 
         FirebaseApp.initializeApp(options)
 
-        initialized=true
+        initialized = true
     }
 
     val message = Message.builder()
@@ -42,12 +42,18 @@ fun sendFCM(token:String,notification: modes.server.updater.Notification):Boolea
     try {
         val response = FirebaseMessaging.getInstance().send(message)
         log(LogLevel.INFO, "Sent notification to $token, content: $notification, response: $response")
-    }catch (e:Throwable){
-        if(e is FirebaseMessagingException && e.errorCode=="registration-token-not-registered"){
-            log(LogLevel.INFO, "Failed to send notification to $token, device not exists. content: $notification",e)
-            deviceExists=false
+    } catch (e: FirebaseMessagingException) {
+        if (e.errorCode == "registration-token-not-registered") {
+            log(LogLevel.INFO, "Failed to send notification to $token, device not exists. content: $notification")
+            deviceExists = false
         }
-        log(LogLevel.INFO, "Failed to send notification to $token, content: $notification",e)
+        log(
+            LogLevel.INFO,
+            "Failed to send notification to $token, content: $notification, error code: ${e.errorCode}",
+            e
+        )
+    } catch (e: Throwable) {
+        log(LogLevel.INFO, "Failed to send notification to $token, content: $notification", e)
     }
 
     return deviceExists
