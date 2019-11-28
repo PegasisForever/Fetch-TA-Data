@@ -105,6 +105,7 @@ class User() {
         }
 
         fun add(newUser: User) {
+            //todo update password
             get(newUser.number)?.run {
                 devices.addAll(newUser.devices)
                 save()
@@ -135,5 +136,10 @@ class User() {
         }
 
         fun get(number: String) = allUsers.find { it.number == number }
+
+        fun validate(number: String, password: String): Boolean {
+            val user = get(number)
+            return user != null && user.password == password
+        }
     }
 }

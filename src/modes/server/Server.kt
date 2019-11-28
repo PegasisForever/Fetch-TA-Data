@@ -39,6 +39,7 @@ fun startServer() {
     //private server
     HttpServer.create(InetSocketAddress(5004), 0).run {
         createContext("/getmark_timeline", GetmarkTimeLine.route)
+        createContext("/getarchived", GetArchived.route)
         createContext("/feedback", Feedback.route)
         createContext("/regi", Regi.route)
         createContext("/deregi", Deregi.route)
