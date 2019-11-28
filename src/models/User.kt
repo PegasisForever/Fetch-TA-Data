@@ -105,9 +105,9 @@ class User() {
         }
 
         fun add(newUser: User) {
-            //todo update password
             get(newUser.number)?.run {
                 devices.addAll(newUser.devices)
+                password = newUser.password
                 save()
                 return
             }
