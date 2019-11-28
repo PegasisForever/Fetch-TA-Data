@@ -5,10 +5,11 @@ import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput
 import findFirst
+import getWebClient
 import models.LoginException
-import webClient
 
 class LoginPage {
+    private val htmlPage: HtmlPage = getWebClient().getPage("https://ta.yrdsb.ca/live/index.php")
     init {
         if (htmlPage.titleText != "YRDSB teachassist login") {
             throw Exception("Cannot get correct page.")
@@ -28,10 +29,6 @@ class LoginPage {
             throw LoginException(errorCode)
         }
         return SummaryPage(summaryHtmlPage)
-    }
-
-    companion object{
-        val htmlPage: HtmlPage = webClient.getPage("https://ta.yrdsb.ca/live/index.php")
     }
 
 }

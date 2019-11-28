@@ -61,7 +61,7 @@ fun readFile(file: File): String {
     return file.readText()
 }
 
-val webClient = WebClient().apply {
+fun getWebClient() = WebClient().apply {
     options.isCssEnabled = false
     options.isJavaScriptEnabled = false
     options.isRedirectEnabled = true
