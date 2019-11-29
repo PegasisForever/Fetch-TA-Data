@@ -8,6 +8,7 @@ import org.json.simple.JSONObject
 import modes.server.serializers.CourseListPublicSerializer.Companion.serializeCourseList as serializePublicCourseList
 import modes.server.serializers.CourseListSerializerV4.serializeCourseList as serializeCourseListV4
 import modes.server.serializers.TimeLineSerializerV4.serializeTimeLine as serializeTimeLineV4
+import modes.server.serializers.TimeLineSerializerV5.serializeTimeLine as serializeTimeLineV5
 
 fun JSONArray.wrapVersion(version: Int): JSONObject {
     val obj = JSONObject()
@@ -17,7 +18,8 @@ fun JSONArray.wrapVersion(version: Int): JSONObject {
 }
 
 val CourseListSerializers = mapOf<Int, (CourseList) -> JSONArray>(
-    4 to ::serializeCourseListV4
+    4 to ::serializeCourseListV4,
+    5 to ::serializeCourseListV4
 )
 
 fun CourseList.serialize(version: Int = latestApiVersion): JSONObject {
@@ -32,7 +34,8 @@ fun CourseList.serializePublic(): JSONArray {
 
 
 val TimeLineSerializers = mapOf<Int, (TimeLine) -> JSONArray>(
-    4 to ::serializeTimeLineV4
+    4 to ::serializeTimeLineV4,
+    5 to ::serializeTimeLineV5
 )
 
 fun TimeLine.serialize(version: Int = latestApiVersion): JSONObject {

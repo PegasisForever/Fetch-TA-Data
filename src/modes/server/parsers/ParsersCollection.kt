@@ -14,7 +14,8 @@ fun unwrapVersion(obj: JSONObject): UnwrappedData {
 }
 
 val CourseListParsers = mapOf<Int, (JSONArray) -> CourseList>(
-    4 to ::CourseListParserV4
+    4 to ::CourseListParserV4,
+    5 to ::CourseListParserV4
 )
 
 fun Any.toCourseList(): CourseList {
@@ -29,7 +30,8 @@ fun Any.toCourseList(): CourseList {
 
 
 val TimeLineParsers = mapOf<Int, (JSONArray) -> TimeLine>(
-    4 to ::TimeLineParserV4
+    4 to ::TimeLineParserV4,
+    5 to ::TimeLineParserV4
 )
 
 fun Any.toTimeLine(): TimeLine {
