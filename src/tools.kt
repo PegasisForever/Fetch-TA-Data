@@ -22,6 +22,8 @@ import java.util.regex.Pattern
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 import kotlin.collections.ArrayList
+import kotlin.math.pow
+import kotlin.math.roundToInt
 
 
 fun find(str: String, regex: String): ArrayList<String>? {
@@ -146,7 +148,7 @@ enum class LogLevel {
 
 private val logDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
 val fileDateFormat = SimpleDateFormat("yyyy-MM-dd")
-const val serverBuildNumber = 14
+const val serverBuildNumber = 15
 fun log(level: LogLevel, msg: String, throwable: Throwable? = null) {
     val date = Date()
     var logText =
@@ -232,4 +234,9 @@ fun Double.toRoundString(digit: Int): String {
     val df = DecimalFormat("#." + "#" * digit)
     df.roundingMode = RoundingMode.CEILING
     return df.format(this)
+}
+
+fun Double.round(digit: Int): Double {
+    val factor = 10.0.pow(digit)
+    return (this * factor).roundToInt() / factor
 }

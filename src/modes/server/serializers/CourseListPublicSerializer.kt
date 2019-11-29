@@ -3,6 +3,7 @@ package modes.server.serializers
 import models.*
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
+import round
 import java.time.format.DateTimeFormatter
 
 //Based on V4
@@ -36,7 +37,7 @@ class CourseListPublicSerializer {
             val obj = JSONObject()
             obj["W"] = weight.W
             obj["CW"] = weight.CW
-            obj["SA"] = weight.SA
+            obj["SA"] = weight.SA.round(1)
 
             return obj
         }
@@ -58,7 +59,7 @@ class CourseListPublicSerializer {
             obj["code"] = course.code
             obj["block"] = course.block
             obj["room"] = course.room
-            obj["overall_mark"] = course.overallMark
+            obj["overall_mark"] = course.overallMark?.round(1)
 
             obj["assignments"] = JSONArray()
             course.assignments?.forEach { assignment ->

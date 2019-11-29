@@ -4,8 +4,8 @@ import models.CourseList
 import modes.server.timeline.TimeLine
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
-import modes.server.parsers.CourseListParserV4.Companion.parseCourseList as CourseListParserV4
-import modes.server.parsers.TimeLineParserV4.Companion.parseTimeLine as TimeLineParserV4
+import modes.server.parsers.CourseListParserV4.parseCourseList as CourseListParserV4
+import modes.server.parsers.TimeLineParserV4.parseTimeLine as TimeLineParserV4
 
 class UnwrappedData(val data: JSONArray, val version: Int)
 
