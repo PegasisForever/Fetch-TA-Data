@@ -181,10 +181,10 @@ class Course {
             if (!avg.isNaN()) {
                 val weight = weightTable!!.getWeight(category)
                 val newSA = avg * 100
-                if (abs(newSA - weight.SA) <= 0.05) {
+                if (abs(newSA - weight.SA) <= 0.051) {
                     weight.SA = newSA
                 } else {
-                    log(LogLevel.WARN, "Calculated SA value is not same as displayed. course code: $code")
+                    log(LogLevel.WARN, "Calculated SA value of $category is not same as displayed. course code: $code")
                 }
 
                 overallGet += avg * weight.W
@@ -194,7 +194,7 @@ class Course {
         val overallAvg = overallGet / overallTotal
         if (!overallAvg.isNaN()) {
             val newOverall = overallAvg * 100
-            if (abs(newOverall - overallMark!!) <= 0.05) {
+            if (abs(newOverall - overallMark!!) <= 0.101) {
                 overallMark = newOverall
             } else {
                 log(LogLevel.WARN, "Calculated overall value is not same as displayed. course code: $code")
