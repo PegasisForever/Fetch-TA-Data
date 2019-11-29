@@ -58,3 +58,11 @@ Run command line: `java -jar fetch_ta_data.jar [student_number] [password]`
 2. Run command line: `java -jar fetch_ta_data.jar server`
 
 3. The private server for app is on port `5004` and the public server is on port `5005`.
+
+## Support Me
+
+Donate: [patreon](https://www.patreon.com/yrdsbta)
+
+Feedback: Create a GitHub issue or email me [admin@pegasis.site](mailto:admin@pegasis.site).
+
+Development: Create a pull request or email me [admin@pegasis.site](mailto:admin@pegasis.site)
