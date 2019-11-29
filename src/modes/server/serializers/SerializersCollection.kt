@@ -5,7 +5,7 @@ import modes.server.latestApiVersion
 import modes.server.timeline.TimeLine
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
-import modes.server.serializers.CourseListPublicSerializer.Companion.serializeCourseList as serializePublicCourseList
+import modes.server.serializers.CourseListPublicSerializer.serializeCourseList as serializePublicCourseList
 import modes.server.serializers.CourseListSerializerV4.serializeCourseList as serializeCourseListV4
 import modes.server.serializers.CourseListSerializerV5.serializeCourseList as serializeCourseListV5
 import modes.server.serializers.TimeLineSerializerV4.serializeTimeLine as serializeTimeLineV4
