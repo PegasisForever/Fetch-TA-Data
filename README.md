@@ -32,7 +32,7 @@ Run command line: `java -jar fetch_ta_data.jar [student_number] [password]`
    │   ├── serviceAccountKey.json
    │   ├── config.json
    │   └── users.json
-   └── fetch_ta_data_jar.jar
+   └── fetch_ta_data.jar
    ```
 
    Text in `config.json`:
