@@ -40,12 +40,10 @@ object TimeLineParserV6 {
         time = (json["time"] as String).toZonedDateTime()
     }
 
-    fun parseTimeLine(json: JSONArray): TimeLine {
-        val list = TimeLine()
-
+    fun parseTimeLine(json: JSONArray) = TimeLine().apply {
         json.forEach { taUpdate ->
             val taUpdateJSON = taUpdate as JSONObject
-            list.add(
+            add(
                 when (taUpdateJSON["category"]) {
                     "assignment_added" -> parseAssignmentAdded(taUpdateJSON)
                     "assignment_updated" -> parseAssignmentUpdated(taUpdateJSON)
@@ -55,8 +53,6 @@ object TimeLineParserV6 {
                 }
             )
         }
-
-        return list
     }
 
 }

@@ -7,54 +7,39 @@ import org.json.simple.JSONObject
 import toZonedDateTime
 
 object TimeLineParserV4 {
-    private fun parseAssignmentAdded(json: JSONObject): AssignmentAdded {
-        val assignmentAdded = AssignmentAdded()
-        assignmentAdded.courseName = json["course_name"] as String?
-        assignmentAdded.assignment = parseAssignment(json["assignment"] as JSONObject)
-        assignmentAdded.assignmentAvg = json["assignment_avg"] as Double?
-        assignmentAdded.overallBefore = json["overall_before"] as Double?
-        assignmentAdded.overallAfter = json["overall_after"] as Double
-        assignmentAdded.time = (json["time"] as String).toZonedDateTime()
-
-        return assignmentAdded
+    private fun parseAssignmentAdded(json: JSONObject) = AssignmentAdded().apply {
+        courseName = json["course_name"] as String?
+        assignment = parseAssignment(json["assignment"] as JSONObject)
+        assignmentAvg = json["assignment_avg"] as Double?
+        overallBefore = json["overall_before"] as Double?
+        overallAfter = json["overall_after"] as Double
+        time = (json["time"] as String).toZonedDateTime()
     }
 
-    private fun parseAssignmentUpdated(json: JSONObject): AssignmentUpdated {
-        val assignmentUpdated = AssignmentUpdated()
-        assignmentUpdated.courseName = json["course_name"] as String?
-        assignmentUpdated.assignmentName = json["assignment_name"] as String
-        assignmentUpdated.assignmentBefore =
-            parseAssignment(json["assignment_before"] as JSONObject)
-        assignmentUpdated.assignmentAfter = parseAssignment(json["assignment_after"] as JSONObject)
-        assignmentUpdated.time = (json["time"] as String).toZonedDateTime()
-
-        return assignmentUpdated
+    private fun parseAssignmentUpdated(json: JSONObject) = AssignmentUpdated().apply {
+        courseName = json["course_name"] as String?
+        assignmentName = json["assignment_name"] as String
+        assignmentBefore = parseAssignment(json["assignment_before"] as JSONObject)
+        assignmentAfter = parseAssignment(json["assignment_after"] as JSONObject)
+        time = (json["time"] as String).toZonedDateTime()
     }
 
-    private fun parseCourseAdded(json: JSONObject): CourseAdded {
-        val courseAdded = CourseAdded()
-        courseAdded.courseName = json["course_name"] as String?
-        courseAdded.courseBlock = json["course_block"] as String?
-        courseAdded.time = (json["time"] as String).toZonedDateTime()
-
-        return courseAdded
+    private fun parseCourseAdded(json: JSONObject) = CourseAdded().apply {
+        courseName = json["course_name"] as String?
+        courseBlock = json["course_block"] as String?
+        time = (json["time"] as String).toZonedDateTime()
     }
 
-    private fun parseCourseRemoved(json: JSONObject): CourseRemoved {
-        val courseRemoved = CourseRemoved()
-        courseRemoved.courseName = json["course_name"] as String?
-        courseRemoved.courseBlock = json["course_block"] as String?
-        courseRemoved.time = (json["time"] as String).toZonedDateTime()
-
-        return courseRemoved
+    private fun parseCourseRemoved(json: JSONObject) = CourseRemoved().apply {
+        courseName = json["course_name"] as String?
+        courseBlock = json["course_block"] as String?
+        time = (json["time"] as String).toZonedDateTime()
     }
 
-    fun parseTimeLine(json: JSONArray): TimeLine {
-        val list = TimeLine()
-
+    fun parseTimeLine(json: JSONArray) = TimeLine().apply {
         json.forEach { taUpdate ->
             val taUpdateJSON = taUpdate as JSONObject
-            list.add(
+            add(
                 when (taUpdateJSON["category"]) {
                     "assignment_added" -> parseAssignmentAdded(taUpdateJSON)
                     "assignment_updated" -> parseAssignmentUpdated(taUpdateJSON)
@@ -64,8 +49,6 @@ object TimeLineParserV4 {
                 }
             )
         }
-
-        return list
     }
 
 }
