@@ -4,9 +4,9 @@ One of the three programs in the project. Other two:  [YRDSB Teach Assist Mobile
 
 Made by a grade 11 student in MCI.
 
-This is a tool for fetching data from [Official Teach Assist](https://ta.yrdsb.ca/yrdsb/index.php) and rearrange it to a machine-friendly JSON format. It is also a server of the unofficial mobile APP and the website. The [TA Public API]() is provided by it.
+This is a tool for fetching data from [Official Teach Assist](https://ta.yrdsb.ca/yrdsb/index.php) and rearrange it to a machine-friendly JSON format. It is also a server of the unofficial mobile APP and the website. The [TA Public API](https://api.pegasis.site/docs/ta/) is provided by it.
 
-When used as a server, it acts as a "compatibility layer" allows me to update TA-fetching-algorithm without updating my app or website. Also, it allows me to fetches data from official TA periodically and send notifications (Using FCM).
+When used as a server, it acts as a "compatibility layer" which allows me to update TA-fetching-algorithm without upgrading my app or website. Also, it allows me to fetch data from official TA periodically and send notifications (Using FCM).
 
 ```
 My YRDSB Teach Assist APP <-┐
@@ -57,9 +57,11 @@ Run command line: `java -jar fetch_ta_data.jar [student_number] [password]`
 
 2. Run command line: `java -jar fetch_ta_data.jar server`
 
-3. The private server for app is on port `5004` and the public server is on port `5005`.
+3. The private server for app will start on port `5004` and the public server is on port `5005`.
 
 ## Support Me
+
+I spent hundreds of hours on this project, consider buy me a cup of coffee?
 
 Donate: [patreon](https://www.patreon.com/yrdsbta)
 
