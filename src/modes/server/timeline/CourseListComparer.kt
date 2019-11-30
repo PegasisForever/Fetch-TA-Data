@@ -30,7 +30,11 @@ fun compareAssignments(
                 courseName = newCourse.getDisplayName()
                 assignmentName = assignment.name
                 assignmentBefore = oldAssignment
+                assignmentAvgBefore = oldAssignment.getAverage(oldCourse.weightTable!!)
+                overallBefore = oldCourse.overallMark
                 assignmentAfter = assignment
+                assignmentAvgAfter = assignment.getAverage(newCourse.weightTable!!)
+                overallAfter = newCourse.overallMark
                 time = compareTime
             }
         }

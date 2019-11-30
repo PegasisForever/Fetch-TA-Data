@@ -25,7 +25,11 @@ class AssignmentUpdated : TAUpdate() {
     var courseName: String? = null
     var assignmentName = ""
     var assignmentBefore = Assignment()
+    var assignmentAvgBefore: Double? = null
+    var overallBefore: Double? = null
     var assignmentAfter = Assignment()
+    var assignmentAvgAfter: Double? = null
+    var overallAfter: Double? = null
 }
 
 class CourseAdded : TAUpdate() {
