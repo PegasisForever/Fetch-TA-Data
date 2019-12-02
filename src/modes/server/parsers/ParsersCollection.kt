@@ -1,7 +1,7 @@
 package modes.server.parsers
 
 import models.CourseList
-import modes.server.timeline.TimeLine
+import models.TimeLine
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import modes.server.parsers.CourseListParserV4.parseCourseList as CourseListParserV4

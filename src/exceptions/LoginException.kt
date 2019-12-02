@@ -1,3 +1,3 @@
-package models
+package exceptions
 
 class LoginException(val code:Int?) : Exception()

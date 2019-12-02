@@ -2,10 +2,10 @@ package modes.server
 
 import jsonParser
 import models.CourseList
+import models.TimeLine
 import modes.server.parsers.toCourseList
 import modes.server.parsers.toTimeLine
 import modes.server.serializers.serialize
-import modes.server.timeline.TimeLine
 import org.json.simple.JSONObject
 import readFile
 import writeToFile

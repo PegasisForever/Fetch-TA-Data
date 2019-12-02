@@ -1,7 +1,7 @@
 package modes.server.serializers
 
+import models.*
 import modes.server.serializers.CourseListSerializerV4.serializeAssignment
-import modes.server.timeline.*
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import toJSONString

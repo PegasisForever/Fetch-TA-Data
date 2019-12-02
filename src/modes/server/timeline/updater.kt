@@ -1,16 +1,15 @@
-package modes.server.updater
+package modes.server.timeline
 
 import LogLevel
+import exceptions.LoginException
 import log
 import models.CourseList
-import models.LoginException
+import models.TimeLine
 import models.User
 import modes.server.PCache
 import modes.server.save
 import modes.server.saveArchive
 import modes.server.sendFCM
-import modes.server.timeline.TimeLine
-import modes.server.timeline.compareCourses
 import webpage.LoginPage
 import java.net.SocketTimeoutException
 import java.util.concurrent.atomic.AtomicBoolean

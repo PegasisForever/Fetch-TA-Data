@@ -1,11 +1,11 @@
 package modes.server.tests
 
 import jsonParser
+import models.CourseAdded
 import models.CourseList
+import models.CourseRemoved
 import modes.server.parsers.toCourseList
 import modes.server.serializers.serialize
-import modes.server.timeline.CourseAdded
-import modes.server.timeline.CourseRemoved
 import modes.server.timeline.compareCourses
 import org.junit.Test
 import kotlin.test.assertEquals

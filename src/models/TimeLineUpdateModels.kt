@@ -1,6 +1,5 @@
-package modes.server.timeline
+package models
 
-import models.Assignment
 import java.time.ZonedDateTime
 
 open class TAUpdate {

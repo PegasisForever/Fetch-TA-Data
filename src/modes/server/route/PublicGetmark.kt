@@ -2,13 +2,13 @@ package modes.server.route
 
 import LogLevel
 import com.sun.net.httpserver.HttpExchange
+import exceptions.LoginException
 import getIP
 import getReqString
 import jsonParser
 import log
-import models.LoginException
 import modes.server.serializers.serializePublic
-import modes.server.updater.runFollowUpUpdate
+import modes.server.timeline.runFollowUpUpdate
 import org.json.simple.JSONObject
 import send
 import webpage.LoginPage

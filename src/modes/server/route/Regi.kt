@@ -2,17 +2,17 @@ package modes.server.route
 
 import LogLevel
 import com.sun.net.httpserver.HttpExchange
+import exceptions.LoginException
 import exceptions.UserParseException
 import getApiVersion
 import getIP
 import getReqString
 import jsonParser
 import log
-import models.LoginException
 import models.User
 import modes.server.PCache
 import modes.server.serializers.serialize
-import modes.server.updater.runFollowUpUpdate
+import modes.server.timeline.runFollowUpUpdate
 import org.json.simple.JSONObject
 import returnIfApiVersionInsufficient
 import send

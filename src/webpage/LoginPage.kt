@@ -4,9 +4,9 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage
 import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput
+import exceptions.LoginException
 import findFirst
 import getWebClient
-import models.LoginException
 
 class LoginPage {
     private val htmlPage: HtmlPage = getWebClient().getPage("https://ta.yrdsb.ca/live/index.php")

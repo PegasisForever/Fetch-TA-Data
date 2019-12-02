@@ -13,7 +13,7 @@ import java.io.FileInputStream
 
 private var initialized = false
 
-fun sendFCM(token: String, notification: modes.server.updater.Notification): Boolean {
+fun sendFCM(token: String, notification: modes.server.timeline.Notification): Boolean {
     if (!Config.notificationEnabled) {
         log(LogLevel.INFO, "Notification disabled, token: $token, content: $notification")
         return true

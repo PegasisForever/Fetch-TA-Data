@@ -1,8 +1,8 @@
-package modes.server.updater
+package modes.server.timeline
 
 import models.Assignment
-import modes.server.timeline.AssignmentAdded
-import modes.server.timeline.TAUpdate
+import models.AssignmentAdded
+import models.TAUpdate
 import toRoundString
 import kotlin.math.abs
 

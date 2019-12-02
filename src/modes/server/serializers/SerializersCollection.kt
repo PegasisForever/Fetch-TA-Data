@@ -1,8 +1,8 @@
 package modes.server.serializers
 
 import models.CourseList
+import models.TimeLine
 import modes.server.latestApiVersion
-import modes.server.timeline.TimeLine
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import modes.server.serializers.CourseListPublicSerializer.serializeCourseList as serializePublicCourseList

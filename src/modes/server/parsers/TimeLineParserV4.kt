@@ -1,7 +1,7 @@
 package modes.server.parsers
 
+import models.*
 import modes.server.parsers.CourseListParserV4.parseAssignment
-import modes.server.timeline.*
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import toZonedDateTime

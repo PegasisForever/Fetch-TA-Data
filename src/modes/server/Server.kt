@@ -6,8 +6,8 @@ import log
 import logUnhandled
 import models.User
 import modes.server.route.*
-import modes.server.updater.autoUpdateThreadRunning
-import modes.server.updater.startAutoUpdateThread
+import modes.server.timeline.autoUpdateThreadRunning
+import modes.server.timeline.startAutoUpdateThread
 import java.lang.Thread.setDefaultUncaughtExceptionHandler
 import java.net.InetSocketAddress
 

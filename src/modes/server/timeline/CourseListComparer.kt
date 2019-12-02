@@ -1,7 +1,6 @@
 package modes.server.timeline
 
-import models.Course
-import models.CourseList
+import models.*
 import java.time.ZonedDateTime
 
 fun compareAssignments(
@@ -91,7 +90,11 @@ fun compareCourses(
         }
     }
 
-    return CourseCompareResult(courseListResult, updateList, archivedCourseListResult)
+    return CourseCompareResult(
+        courseListResult,
+        updateList,
+        archivedCourseListResult
+    )
 }
 
 
