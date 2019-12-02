@@ -25,21 +25,26 @@ fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
             new = newData ?: LoginPage().gotoSummaryPage(studentNumber, password).fillDetails().courses
         )
         updates = compareResult.updates
-
-        //append updates to timeline
-        val timeLine = PCache.readTimeLine(studentNumber)
-        timeLine += updates
-        timeLine.save(studentNumber)
+        //When a user login for the first time, there will be 4 "course added" update,
+        //this prevents sending 4 notifications to the user.
+        val isExistsBefore = PCache.isExistsBefore(studentNumber)
 
         //save new course list
         compareResult.courseList.save(studentNumber)
 
-        //append new archived courses to file
-        val archivedCourseList = PCache.readArchivedCourseList(studentNumber)
-        archivedCourseList += compareResult.archivedCourseList
-        archivedCourseList.saveArchive(studentNumber)
+        if (isExistsBefore) {
+            //append updates to timeline
+            val timeLine = PCache.readTimeLine(studentNumber)
+            timeLine += updates
+            timeLine.save(studentNumber)
 
-        sendNotifications(user, updates)
+            //append new archived courses to file
+            val archivedCourseList = PCache.readArchivedCourseList(studentNumber)
+            archivedCourseList += compareResult.archivedCourseList
+            archivedCourseList.saveArchive(studentNumber)
+
+            sendNotifications(user, updates)
+        }
     } catch (e: LoginException) {
         log(LogLevel.INFO, "Error while performing update for user ${studentNumber}: Login error")
     } catch (e: SocketTimeoutException) {

@@ -59,6 +59,10 @@ fun readFile(path: String): String {
     return String(Files.readAllBytes(Paths.get(path)))
 }
 
+fun isFileExists(path: String): Boolean {
+    return File(path).isFile
+}
+
 fun readFile(file: File): String {
     return file.readText()
 }
@@ -148,7 +152,7 @@ enum class LogLevel {
 
 private val logDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
 val fileDateFormat = SimpleDateFormat("yyyy-MM-dd")
-const val serverBuildNumber = 18
+const val serverBuildNumber = 19
 fun log(level: LogLevel, msg: String, throwable: Throwable? = null) {
     val date = Date()
     var logText =

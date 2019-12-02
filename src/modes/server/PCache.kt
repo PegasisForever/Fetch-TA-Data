@@ -1,5 +1,6 @@
 package modes.server
 
+import isFileExists
 import jsonParser
 import models.CourseList
 import models.TimeLine
@@ -28,6 +29,10 @@ object PCache {
     fun save(number: String, timeLine: TimeLine) {
         timeLineCacheMap[number] = timeLine
         timeLine.serialize().toJSONString().writeToFile("data/timelines/$number.json")
+    }
+
+    fun isExistsBefore(number: String): Boolean {
+        return isFileExists("data/courselists/$number.json")
     }
 
     fun readCourseList(number: String): CourseList {
