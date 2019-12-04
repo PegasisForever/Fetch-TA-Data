@@ -29,13 +29,13 @@ object TimeLineParserV6 {
     }
 
     private fun parseCourseAdded(json: JSONObject) = CourseAdded().apply {
-        courseName = json["course_name"] as String?
+        courseName = json["course_name"] as String
         courseBlock = json["course_block"] as String?
         time = (json["time"] as String).toZonedDateTime()
     }
 
     private fun parseCourseRemoved(json: JSONObject) = CourseRemoved().apply {
-        courseName = json["course_name"] as String?
+        courseName = json["course_name"] as String
         courseBlock = json["course_block"] as String?
         time = (json["time"] as String).toZonedDateTime()
     }

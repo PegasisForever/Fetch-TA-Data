@@ -32,11 +32,11 @@ class AssignmentUpdated : TAUpdate() {
 }
 
 class CourseAdded : TAUpdate() {
-    var courseName: String? = null
+    var courseName = ""
     var courseBlock: String? = null
 }
 
 class CourseRemoved : TAUpdate() {
-    var courseName: String? = null
+    var courseName = ""
     var courseBlock: String? = null
 }
