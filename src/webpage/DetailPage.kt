@@ -89,14 +89,24 @@ class DetailPage(val htmlPage: HtmlPage, val courseCode: String?) {
             val weight = Weight(category)
             weight.W = findFirst(row.getCell(1).asText(), "^[^%]+")!!.toDouble()
             weight.CW = findFirst(row.getCell(2).asText(), "^[^%]+")!!.toDouble()
-            weight.SA = findFirst(row.getCell(3).asText(), "^[^%]+")!!.toDouble()
+            val SAText = findFirst(row.getCell(3).asText(), "^[^%]+")
+            weight.SA = try {
+                SAText!!.toDouble()
+            } catch (e: Throwable) {
+                80.0
+            }
 
             weightTable.weightsList.add(weight)
         }
         val finalRow = weightsTable.getRow(6)
         val finalWeight = Weight(F)
         finalWeight.CW = findFirst(finalRow.getCell(1).asText(), "^[^%]+")!!.toDouble()
-        finalWeight.SA = findFirst(finalRow.getCell(2).asText(), "^[^%]+")!!.toDouble()
+        val SAText = findFirst(finalRow.getCell(2).asText(), "^[^%]+")
+        finalWeight.SA = try {
+            SAText!!.toDouble()
+        } catch (e: Throwable) {
+            80.0
+        }
         weightTable.weightsList.add(finalWeight)
     }
 

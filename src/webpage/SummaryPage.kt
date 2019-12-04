@@ -42,8 +42,17 @@ class SummaryPage(val htmlPage: HtmlPage) {
                 if (row.cells.size == 3) {
                     val markText = row.getCell(2).asText()
                     val currentMarkText = find(markText, "(?<=current mark = )[^%]+")?.get(0)
+                    val levelMarkText = find(markText, "(?<=Level ).*")?.get(0)
                     if (currentMarkText != null) {
                         course.overallMark = currentMarkText.toDouble()
+                    } else if (levelMarkText != null) {
+                        course.overallMark = when (levelMarkText) {
+                            "1" -> 50.0
+                            "2" -> 50.0
+                            "3" -> 80.0
+                            "4" -> 90.0
+                            else -> 80.0
+                        }
                     }
                 }
 
@@ -57,8 +66,8 @@ class SummaryPage(val htmlPage: HtmlPage) {
 
     fun gotoDetailPage(index: Int): DetailPage {
         val detailHTMLPage = htmlPage.getAnchorByHref(
-                summaryTable.getRow(index + 1).getCell(2)
-                    .getElementsByTagName("a")[0].getAttribute("href")
+            summaryTable.getRow(index + 1).getCell(2)
+                .getElementsByTagName("a")[0].getAttribute("href")
         ).click<HtmlPage>()
 
         return DetailPage(detailHTMLPage, courses[index].code)

@@ -1,10 +1,7 @@
 package models
 
-import LogLevel
-import log
 import java.time.LocalDate
 import java.time.ZonedDateTime
-import kotlin.math.abs
 
 enum class Category(val displayName: String) {
     KU("Knowledge / Understanding"),
@@ -177,28 +174,18 @@ class Course {
                 }
             }
 
-            val avg = get / total
-            if (!avg.isNaN()) {
-                val weight = weightTable!!.getWeight(category)
-                val newSA = avg * 100
-                if (abs(newSA - weight.SA) <= 0.051) {
-                    weight.SA = newSA
-                } else {
-                    log(LogLevel.WARN, "Calculated SA value of $category is not same as displayed. course code: $code")
-                }
+            var avg = get / total
+            if (avg.isNaN()) avg = 0.0
+            val weight = weightTable!!.getWeight(category)
+            weight.SA = avg * 100
+            overallGet += avg * weight.W
+            overallTotal += weight.W
 
-                overallGet += avg * weight.W
-                overallTotal += weight.W
-            }
         }
-        val overallAvg = overallGet / overallTotal
+
+        var overallAvg = overallGet / overallTotal
         if (!overallAvg.isNaN()) {
-            val newOverall = overallAvg * 100
-            if (abs(newOverall - overallMark!!) <= 0.101) {
-                overallMark = newOverall
-            } else {
-                log(LogLevel.WARN, "Calculated overall value is not same as displayed. course code: $code")
-            }
+            overallMark = overallAvg * 100
         }
     }
 
