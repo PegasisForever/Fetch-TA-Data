@@ -6,6 +6,9 @@ import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import readFile
 import writeToFile
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 
 class Device() {
     var token = ""
@@ -29,12 +32,22 @@ class Device() {
 
         return obj
     }
+
+    override fun hashCode(): Int {
+        return Objects.hash(token, name, language, receive)
+    }
+
+    override fun equals(other: Any?) = other is Device &&
+            other.token === token &&
+            other.name == name &&
+            other.language == language &&
+            other.receive == receive
 }
 
 class User() {
     var number = ""
     var password = ""
-    var devices = ArrayList<Device>()
+    var devices = HashSet<Device>()
 
     constructor(json: JSONObject) : this() {
         number = json["number"] as String
@@ -106,7 +119,15 @@ class User() {
 
         fun add(newUser: User) {
             get(newUser.number)?.run {
-                devices.addAll(newUser.devices)
+                newUser.devices.forEach { newDevice ->
+                    //If non device of existing user have this token, then add it, else, update language
+                    val existingDevice = devices.find { it.token == newDevice.token }
+                    if (existingDevice == null) {
+                        devices.add(newDevice)
+                    } else {
+                        existingDevice.language = newDevice.language
+                    }
+                }
                 password = newUser.password
                 save()
                 return

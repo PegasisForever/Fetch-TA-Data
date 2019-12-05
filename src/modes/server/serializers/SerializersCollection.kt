@@ -22,7 +22,8 @@ fun JSONArray.wrapVersion(version: Int): JSONObject {
 val CourseListSerializers = mapOf<Int, (CourseList) -> JSONArray>(
     4 to ::serializeCourseListV4,
     5 to ::serializeCourseListV5,
-    6 to ::serializeCourseListV5
+    6 to ::serializeCourseListV5,
+    7 to ::serializeCourseListV5
 )
 
 fun CourseList.serialize(version: Int = latestApiVersion): JSONObject {
@@ -39,7 +40,8 @@ fun CourseList.serializePublic(): JSONArray {
 val TimeLineSerializers = mapOf<Int, (TimeLine) -> JSONArray>(
     4 to ::serializeTimeLineV4,
     5 to ::serializeTimeLineV5,
-    6 to ::serializeTimeLineV6
+    6 to ::serializeTimeLineV6,
+    7 to ::serializeTimeLineV6
 )
 
 fun TimeLine.serialize(version: Int = latestApiVersion): JSONObject {

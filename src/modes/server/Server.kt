@@ -12,7 +12,7 @@ import java.lang.Thread.setDefaultUncaughtExceptionHandler
 import java.net.InetSocketAddress
 
 const val minApiVersion = 4
-const val latestApiVersion = 6
+const val latestApiVersion = 7
 
 fun startServer() {
     var autoUpdateThread: Thread? = null

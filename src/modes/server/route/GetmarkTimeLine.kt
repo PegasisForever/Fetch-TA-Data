@@ -8,6 +8,7 @@ import getIP
 import getReqString
 import jsonParser
 import log
+import models.User
 import modes.server.PCache
 import modes.server.serializers.serialize
 import modes.server.timeline.runFollowUpUpdate
@@ -21,12 +22,19 @@ object GetmarkTimeLine {
     private class ReqData(req: String, version: Int) {
         val number: String
         val password: String
+        var user: User? = null
 
         init {
             try {
                 val json = jsonParser.parse(req) as JSONObject
-                number = json["number"] as String
-                password = json["password"] as String
+                if (version < 7) {
+                    number = json["number"] as String
+                    password = json["password"] as String
+                } else {
+                    user = User.fromClient(json)
+                    number = user!!.number
+                    password = user!!.password
+                }
             } catch (e: Exception) {
                 throw ParseRequestException()
             }
@@ -60,6 +68,7 @@ object GetmarkTimeLine {
 
                 log(LogLevel.INFO, "Request #$hash /getmark_timeline :: Fetched successfully")
 
+                user?.let { User.add(it) }
                 runFollowUpUpdate(number, courses, hash, "/getmark_timeline")
                 res = JSONObject().apply {
                     put("time_line", PCache.readTimeLine(number).serialize(reqApiVersion))
