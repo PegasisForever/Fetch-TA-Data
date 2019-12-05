@@ -174,16 +174,16 @@ class Course {
                 }
             }
 
-            var avg = get / total
-            if (avg.isNaN()) avg = 0.0
-            val weight = weightTable!!.getWeight(category)
-            weight.SA = avg * 100
-            overallGet += avg * weight.W
-            overallTotal += weight.W
-
+            val avg = get / total
+            if (!avg.isNaN()) {
+                val weight = weightTable!!.getWeight(category)
+                weight.SA = avg * 100
+                overallGet += avg * weight.W
+                overallTotal += weight.W
+            }
         }
 
-        var overallAvg = overallGet / overallTotal
+        val overallAvg = overallGet / overallTotal
         if (!overallAvg.isNaN()) {
             overallMark = overallAvg * 100
         }
