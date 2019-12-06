@@ -26,6 +26,7 @@ Run command line: `java -jar fetch_ta_data.jar [student_number] [password]`
    ├── data
    │   ├── timelines
    │   ├── courselists
+   │   ├── courselists-history
    │   ├── courselists-archived
    │   ├── log
    │   ├── feedback.txt

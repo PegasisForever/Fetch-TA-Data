@@ -10,6 +10,8 @@ import modes.server.serializers.serialize
 import org.json.simple.JSONObject
 import readFile
 import writeToFile
+import java.util.*
+import kotlin.collections.HashMap
 
 object PCache {
     private val courseListCacheMap = HashMap<String, CourseList>()
@@ -18,7 +20,9 @@ object PCache {
 
     fun save(number: String, courseList: CourseList) {
         courseListCacheMap[number] = courseList
-        courseList.serialize().toJSONString().writeToFile("data/courselists/$number.json")
+        val str = courseList.serialize().toJSONString()
+        str.writeToFile("data/courselists/$number.json")
+        str.writeToFile("data/courselists-history/$number/${Date().time}.json")
     }
 
     fun saveArchive(number: String, courseList: CourseList) {

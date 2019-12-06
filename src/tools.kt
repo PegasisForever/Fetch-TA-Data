@@ -48,11 +48,15 @@ fun findFirst(str: String, regex: String): String? {
 }
 
 fun String.writeToFile(path: String) {
-    File(path).writeText(this)
+    val file = File(path)
+    file.parentFile.mkdirs()
+    file.writeText(this)
 }
 
 fun String.appendToFile(path: String) {
-    File(path).appendText(this)
+    val file = File(path)
+    file.parentFile.mkdirs()
+    file.appendText(this)
 }
 
 fun readFile(path: String): String {
