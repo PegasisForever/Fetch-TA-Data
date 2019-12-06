@@ -36,6 +36,7 @@ fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
             //append updates to timeline
             val timeLine = PCache.readTimeLine(studentNumber)
             timeLine += updates
+            timeLine.removeUpdateContainsRemovedCourses()
             timeLine.save(studentNumber)
 
             //append new archived courses to file
