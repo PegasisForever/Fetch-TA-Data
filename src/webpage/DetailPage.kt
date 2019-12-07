@@ -78,6 +78,14 @@ class DetailPage(val htmlPage: HtmlPage, val courseCode: String?) {
 
         }
 
+        //rename assignments that have the same name
+        val assignmentNames = HashMap<String, Int>()
+        assignments.forEach {
+            val appearTimes = assignmentNames.getOrDefault(it.name, 0) + 1
+            assignmentNames[it.name] = appearTimes
+            if (appearTimes > 1) it.name += " ($appearTimes)"
+        }
+
         val weightsTable =
             htmlPage.getByXPath<HtmlTable>("//table[@border='1'][@cellpadding='3'][@cellspacing='0'][not(@width)]")
                 .last()
