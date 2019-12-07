@@ -178,8 +178,8 @@ class Course {
             if (!avg.isNaN()) {
                 val weight = weightTable!!.getWeight(category)
                 weight.SA = avg * 100
-                overallGet += avg * weight.W
-                overallTotal += weight.W
+                overallGet += avg * weight.CW
+                overallTotal += weight.CW
             }
         }
 
