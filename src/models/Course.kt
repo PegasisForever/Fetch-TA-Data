@@ -1,7 +1,10 @@
 package models
 
+import LogLevel
+import log
 import java.time.LocalDate
 import java.time.ZonedDateTime
+import kotlin.math.abs
 
 enum class Category(val displayName: String) {
     KU("Knowledge / Understanding"),
@@ -120,7 +123,7 @@ class Assignment {
 class Weight(var category: Category) {
     var W = 0.0
     var CW = 0.0
-    var SA = 0.0
+    var SA = OverallMark(0.0)
 }
 
 class WeightTable {
@@ -136,6 +139,20 @@ class WeightTable {
     }
 }
 
+class OverallMark {
+    var mark: Double? = null
+    var level: String? = null
+
+    constructor(m: Double) {
+        mark = m
+    }
+
+    constructor(l: String) {
+        level = l
+        log(LogLevel.INFO, "overall level str: \"$l\"")
+    }
+}
+
 class Course {
     var assignments: ArrayList<Assignment>? = null
     var weightTable: WeightTable? = null
@@ -145,7 +162,7 @@ class Course {
     var code: String? = null
     var block: String? = null
     var room: String? = null
-    var overallMark: Double? = null
+    var overallMark: OverallMark? = null
     var cached = false
 
     fun getDisplayName(): String {
@@ -177,15 +194,24 @@ class Course {
             val avg = get / total
             if (!avg.isNaN()) {
                 val weight = weightTable!!.getWeight(category)
-                weight.SA = avg * 100
-                overallGet += avg * weight.CW
-                overallTotal += weight.CW
+                if (weight.SA.mark != null && abs(weight.SA.mark!! - avg * 100) > 0.1) {
+                    log(LogLevel.WARN, "Calculated SA value of $category is not same as displayed. course code: $code")
+                } else {
+                    weight.SA = OverallMark(avg * 100)
+                    overallGet += avg * weight.CW
+                    overallTotal += weight.CW
+                }
+
             }
         }
 
         val overallAvg = overallGet / overallTotal
         if (!overallAvg.isNaN()) {
-            overallMark = overallAvg * 100
+            if (overallMark?.mark != null && abs(overallMark!!.mark!! - overallAvg * 100) > 0.1) {
+                log(LogLevel.WARN, "Calculated overall value is not same as displayed. course code: $code")
+            } else {
+                overallMark = OverallMark(overallAvg * 100)
+            }
         }
     }
 

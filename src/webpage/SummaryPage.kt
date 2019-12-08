@@ -8,6 +8,7 @@ import findFirst
 import log
 import models.Course
 import models.CourseList
+import models.OverallMark
 import torontoZoneID
 import java.time.LocalDate
 import java.time.ZonedDateTime
@@ -46,15 +47,9 @@ class SummaryPage(val htmlPage: HtmlPage) {
                     val currentMarkText = find(markText, "(?<=current mark = )[^%]+")?.get(0)
                     val levelMarkText = find(markText, "(?<=Level ).*")?.get(0)
                     if (currentMarkText != null) {
-                        course.overallMark = currentMarkText.toDouble()
+                        course.overallMark = OverallMark(currentMarkText.toDouble())
                     } else if (levelMarkText != null) {
-                        course.overallMark = when (levelMarkText) {
-                            "1" -> 50.0
-                            "2" -> 50.0
-                            "3" -> 80.0
-                            "4" -> 90.0
-                            else -> 80.0
-                        }
+                        course.overallMark = OverallMark(levelMarkText)
                     }
                 }
 

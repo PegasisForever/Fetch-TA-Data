@@ -37,7 +37,7 @@ object CourseListSerializerV4 {
         val obj = JSONObject()
         obj["W"] = weight.W
         obj["CW"] = weight.CW
-        obj["SA"] = weight.SA.round(1)
+        obj["SA"] = weight.SA.mark!!.round(1)
 
         return obj
     }
@@ -59,7 +59,7 @@ object CourseListSerializerV4 {
         obj["code"] = course.code
         obj["block"] = course.block
         obj["room"] = course.room
-        obj["overall_mark"] = course.overallMark?.round(1)
+        obj["overall_mark"] = course.overallMark?.mark!!.round(1)
         obj["cached"] = course.cached
 
         obj["assignments"] = JSONArray()

@@ -39,7 +39,7 @@ object CourseListParserV4 {
     private fun parseWeight(json: JSONObject, category: String) = Weight(CategoryFromInitial(category)).apply {
         W = json["W"] as Double
         CW = json["CW"] as Double
-        SA = json["SA"] as Double
+        SA = OverallMark(json["SA"] as Double)
     }
 
     private fun parseWeightTable(json: JSONObject) = WeightTable().apply {
@@ -59,7 +59,7 @@ object CourseListParserV4 {
         code = json["code"] as String?
         block = json["block"] as String?
         room = json["room"] as String?
-        overallMark = json["overall_mark"] as Double?
+        overallMark = (json["overall_mark"] as Double?)?.let { OverallMark(it) }
         cached = json["cached"] as Boolean
 
         if (overallMark != null) {

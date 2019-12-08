@@ -100,9 +100,9 @@ class DetailPage(htmlPage: HtmlPage, courseCode: String?, time: ZonedDateTime) {
             weight.CW = findFirst(row.getCell(2).asText(), "^[^%]+")!!.toDouble()
             val SAText = findFirst(row.getCell(3).asText(), "^[^%]+")
             weight.SA = try {
-                SAText!!.toDouble()
+                OverallMark(SAText!!.toDouble())
             } catch (e: Throwable) {
-                80.0
+                OverallMark(SAText ?: "")
             }
 
             weightTable.weightsList.add(weight)
@@ -112,9 +112,9 @@ class DetailPage(htmlPage: HtmlPage, courseCode: String?, time: ZonedDateTime) {
         finalWeight.CW = findFirst(finalRow.getCell(1).asText(), "^[^%]+")!!.toDouble()
         val SAText = findFirst(finalRow.getCell(2).asText(), "^[^%]+")
         finalWeight.SA = try {
-            SAText!!.toDouble()
+            OverallMark(SAText!!.toDouble())
         } catch (e: Throwable) {
-            80.0
+            OverallMark(SAText ?: "")
         }
         weightTable.weightsList.add(finalWeight)
     }
