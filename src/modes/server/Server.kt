@@ -2,6 +2,7 @@ package modes.server
 
 import LogLevel
 import com.sun.net.httpserver.HttpServer
+import getCoreCount
 import log
 import logUnhandled
 import models.User
@@ -10,6 +11,9 @@ import modes.server.timeline.autoUpdateThreadRunning
 import modes.server.timeline.startAutoUpdateThread
 import java.lang.Thread.setDefaultUncaughtExceptionHandler
 import java.net.InetSocketAddress
+import java.util.concurrent.SynchronousQueue
+import java.util.concurrent.ThreadPoolExecutor
+import java.util.concurrent.TimeUnit
 
 const val minApiVersion = 4
 const val latestApiVersion = 7
@@ -38,6 +42,7 @@ fun startServer() {
 
     //private server
     HttpServer.create(InetSocketAddress(5004), 0).run {
+        executor = ThreadPoolExecutor(1, getCoreCount() * 2, 60L, TimeUnit.SECONDS, SynchronousQueue())
         createContext("/getmark_timeline", GetmarkTimeLine.route)
         createContext("/getarchived", GetArchived.route)
         createContext("/feedback", Feedback.route)
@@ -48,6 +53,7 @@ fun startServer() {
 
     //public server
     HttpServer.create(InetSocketAddress(5005), 0).run {
+        executor = ThreadPoolExecutor(1, getCoreCount() * 2, 60L, TimeUnit.SECONDS, SynchronousQueue())
         createContext("/getmark", PublicGetMark.route)
         start()
     }

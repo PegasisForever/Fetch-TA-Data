@@ -248,3 +248,5 @@ fun Double.round(digit: Int): Double {
     val factor = 10.0.pow(digit)
     return (this * factor).roundToInt() / factor
 }
+
+fun getCoreCount() = Runtime.getRuntime().availableProcessors()
