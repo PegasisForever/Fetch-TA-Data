@@ -7,8 +7,9 @@ import findFirst
 import log
 import models.*
 import models.Category.F
+import java.time.ZonedDateTime
 
-class DetailPage(val htmlPage: HtmlPage, val courseCode: String?) {
+class DetailPage(htmlPage: HtmlPage, courseCode: String?, time: ZonedDateTime) {
     val assignments = ArrayList<Assignment>()
     val weightTable = WeightTable()
 
@@ -32,7 +33,7 @@ class DetailPage(val htmlPage: HtmlPage, val courseCode: String?) {
                 val assignment = Assignment()
 
                 assignment.name = row.getCell(0).asText()
-                assignment.time = null //TODO
+                assignment.time = time
                 val feedbackText = detailTable.getRow(rowI + 1).asText()
                 if (!feedbackText.isBlank()) {
                     assignment.feedback = feedbackText.replace(Regex("(\\R|\\s)+"), " ").replace("Feedback:", "").trim()

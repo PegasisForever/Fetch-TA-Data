@@ -8,7 +8,9 @@ import findFirst
 import log
 import models.Course
 import models.CourseList
+import torontoZoneID
 import java.time.LocalDate
+import java.time.ZonedDateTime
 
 class SummaryPage(val htmlPage: HtmlPage) {
     val courses = CourseList()
@@ -64,20 +66,21 @@ class SummaryPage(val htmlPage: HtmlPage) {
 
     }
 
-    fun gotoDetailPage(index: Int): DetailPage {
+    fun gotoDetailPage(index: Int, time: ZonedDateTime): DetailPage {
         val detailHTMLPage = htmlPage.getAnchorByHref(
             summaryTable.getRow(index + 1).getCell(2)
                 .getElementsByTagName("a")[0].getAttribute("href")
         ).click<HtmlPage>()
 
-        return DetailPage(detailHTMLPage, courses[index].code)
+        return DetailPage(detailHTMLPage, courses[index].code, time)
     }
 
     fun fillDetails(): SummaryPage {
+        val currentTime = ZonedDateTime.now(torontoZoneID)
         for (i in 0 until courses.size) {
             val course = courses[i]
             if (course.overallMark != null) {
-                val detailPage = gotoDetailPage(i)
+                val detailPage = gotoDetailPage(i, currentTime)
                 detailPages.add(detailPage)
                 course.assignments = detailPage.assignments
                 course.weightTable = detailPage.weightTable

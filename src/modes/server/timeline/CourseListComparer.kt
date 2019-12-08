@@ -1,12 +1,13 @@
 package modes.server.timeline
 
 import models.*
+import torontoZoneID
 import java.time.ZonedDateTime
 
 fun compareAssignments(
     oldCourse: Course,
     newCourse: Course,
-    compareTime: ZonedDateTime = ZonedDateTime.now()
+    compareTime: ZonedDateTime = ZonedDateTime.now(torontoZoneID)
 ): ArrayList<TAUpdate> {
     val updateList = ArrayList<TAUpdate>()
     val old = oldCourse.assignments ?: ArrayList()
@@ -37,6 +38,9 @@ fun compareAssignments(
                 time = compareTime
             }
         }
+        if (oldAssignment?.time != null) {
+            assignment.time = oldAssignment.time
+        }
     }
 
     return updateList
@@ -51,7 +55,7 @@ class CourseCompareResult(
 fun compareCourses(
     old: CourseList,
     new: CourseList,
-    compareTime: ZonedDateTime = ZonedDateTime.now()
+    compareTime: ZonedDateTime = ZonedDateTime.now(torontoZoneID)
 ): CourseCompareResult {
     val courseListResult = CourseList()
     val archivedCourseListResult = CourseList()

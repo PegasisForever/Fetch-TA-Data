@@ -156,7 +156,7 @@ enum class LogLevel {
 
 private val logDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
 val fileDateFormat = SimpleDateFormat("yyyy-MM-dd")
-const val serverBuildNumber = 24
+const val serverBuildNumber = 25
 fun log(level: LogLevel, msg: String, throwable: Throwable? = null) {
     val date = Date()
     var logText =
@@ -212,7 +212,7 @@ fun ByteArray.unGzip(): String {
     return GZIPInputStream(inputStream()).bufferedReader(UTF_8).use { it.readText() }
 }
 
-private val torontoZoneID = ZoneId.of("America/Toronto")
+val torontoZoneID = ZoneId.of("America/Toronto")
 fun Long.toZonedDateTime(): ZonedDateTime {
     val localDateTime = LocalDateTime.ofInstant(
         Instant.ofEpochMilli(this),
