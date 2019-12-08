@@ -195,7 +195,10 @@ class Course {
             if (!avg.isNaN()) {
                 val weight = weightTable!!.getWeight(category)
                 if (weight.SA.mark != null && abs(weight.SA.mark!! - avg * 100) > 0.1) {
-                    log(LogLevel.WARN, "Calculated SA value of $category is not same as displayed. course code: $code")
+                    log(
+                        LogLevel.WARN,
+                        "Calculated SA value of $category is not same as displayed. Calculated:${avg * 100} Displayed:${weight.SA.mark}  course code: $code"
+                    )
                 } else {
                     weight.SA = OverallMark(avg * 100)
                     overallGet += avg * weight.CW

@@ -96,13 +96,13 @@ class DetailPage(htmlPage: HtmlPage, courseCode: String?, time: ZonedDateTime) {
             val category = CategoryFrom(row.getCell(0).asText())
 
             val weight = Weight(category)
-            weight.W = findFirst(row.getCell(1).asText(), "^[^%]+")!!.toDouble()
-            weight.CW = findFirst(row.getCell(2).asText(), "^[^%]+")!!.toDouble()
-            val SAText = findFirst(row.getCell(3).asText(), "^[^%]+")
+            weight.W = findFirst(row.getCell(1).asText(), "^[\\.\\d]+(?=%)")!!.toDouble()
+            weight.CW = findFirst(row.getCell(2).asText(), "^[\\.\\d]+(?=%)")!!.toDouble()
+            val SAText = findFirst(row.getCell(3).asText(), "^[\\.\\d]+(?=%)")
             weight.SA = try {
                 OverallMark(SAText!!.toDouble())
             } catch (e: Throwable) {
-                OverallMark(SAText ?: "")
+                OverallMark(row.getCell(3).asText())
             }
 
             weightTable.weightsList.add(weight)
