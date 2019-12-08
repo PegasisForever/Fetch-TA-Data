@@ -31,6 +31,7 @@
     <SOURCES>
       <root url="jar://$USER_HOME$/.ideaLibSources/htmlunit-2.33-sources.jar!/" />
       <root url="jar://$USER_HOME$/.ideaLibSources/commons-io-2.6-sources.jar!/" />
+      <root url="jar://$USER_HOME$/.ideaLibSources/commons-lang3-3.8-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

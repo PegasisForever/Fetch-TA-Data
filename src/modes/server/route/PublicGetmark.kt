@@ -12,7 +12,6 @@ import modes.server.timeline.runFollowUpUpdate
 import org.json.simple.JSONObject
 import send
 import webpage.LoginPage
-import java.net.SocketTimeoutException
 
 object PublicGetMark {
     private class ReqData(req: String) {
@@ -67,12 +66,14 @@ object PublicGetMark {
         } catch (e: ParseRequestException) {
             log(LogLevel.INFO, "Request #$hash /getmark :: Can't parse request")
             statusCode = 400
-        } catch (e: SocketTimeoutException) {
-            log(LogLevel.WARN, "Request #$hash /getmark :: connect timeout", e)
-            statusCode = 503
         } catch (e: Exception) {
-            log(LogLevel.ERROR, "Request #$hash /getmark :: Unknown error: ${e.message}", e)
-            statusCode = 500
+            if (e.message?.indexOf("SocketTimeoutException") != -1) {
+                log(LogLevel.WARN, "Request #$hash /getmark :: connect timeout", e)
+                statusCode = 503
+            } else {
+                log(LogLevel.ERROR, "Request #$hash /getmark :: Unknown error: ${e.message}", e)
+                statusCode = 500
+            }
         }
 
         log(

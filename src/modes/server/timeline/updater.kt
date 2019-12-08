@@ -11,7 +11,6 @@ import modes.server.save
 import modes.server.saveArchive
 import modes.server.sendFCM
 import webpage.LoginPage
-import java.net.SocketTimeoutException
 import java.util.concurrent.atomic.AtomicBoolean
 
 fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
@@ -48,10 +47,12 @@ fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
         }
     } catch (e: LoginException) {
         log(LogLevel.INFO, "Error while performing update for user ${studentNumber}: Login error")
-    } catch (e: SocketTimeoutException) {
-        log(LogLevel.WARN, "Error while performing update for user ${studentNumber}: Connect timeout")
     } catch (e: Exception) {
-        log(LogLevel.ERROR, "Error while performing update for user ${studentNumber}", e)
+        if (e.message?.indexOf("SocketTimeoutException") != -1) {
+            log(LogLevel.WARN, "Error while performing update for user ${studentNumber}: Connect timeout")
+        } else {
+            log(LogLevel.ERROR, "Error while performing update for user ${studentNumber}", e)
+        }
     }
     return updates
 }

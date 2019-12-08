@@ -16,7 +16,6 @@ import org.json.simple.JSONObject
 import returnIfApiVersionInsufficient
 import send
 import webpage.LoginPage
-import java.net.SocketTimeoutException
 
 object GetmarkTimeLine {
     private class ReqData(req: String, version: Int) {
@@ -81,12 +80,14 @@ object GetmarkTimeLine {
         } catch (e: ParseRequestException) {
             log(LogLevel.INFO, "Request #$hash /getmark_timeline :: Can't parse request")
             statusCode = 400
-        } catch (e: SocketTimeoutException) {
-            log(LogLevel.WARN, "Request #$hash /getmark_timeline :: Connect timeout", e)
-            statusCode = 503
         } catch (e: Exception) {
-            log(LogLevel.ERROR, "Request #$hash /getmark_timeline :: Unknown error: ${e.message}", e)
-            statusCode = 500
+            if (e.message?.indexOf("SocketTimeoutException") != -1) {
+                log(LogLevel.WARN, "Request #$hash /getmark_timeline :: Connect timeout", e)
+                statusCode = 503
+            } else {
+                log(LogLevel.ERROR, "Request #$hash /getmark_timeline :: Unknown error: ${e.message}", e)
+                statusCode = 500
+            }
         }
 
         log(
