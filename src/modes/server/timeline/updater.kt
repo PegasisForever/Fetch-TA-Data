@@ -78,7 +78,7 @@ fun sendNotifications(user: User, updateList: TimeLine) {
 var autoUpdateThreadRunning = AtomicBoolean(false)
 fun startAutoUpdateThread(intervalMinute: Int): Thread {
     val interval = intervalMinute * 60 * 1000
-    val thread = Thread {
+    val thread = Thread({
         autoUpdateThreadRunning.set(true)
         log(LogLevel.INFO, "Auto update thread started")
         while (autoUpdateThreadRunning.get()) {
@@ -96,7 +96,7 @@ fun startAutoUpdateThread(intervalMinute: Int): Thread {
             }
         }
         log(LogLevel.INFO, "Thread stopped")
-    }
+    }, "AutoUpdateThread")
     thread.start()
 
     return thread
