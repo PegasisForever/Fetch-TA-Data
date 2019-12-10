@@ -59,7 +59,7 @@ object CourseListSerializerV4 {
         obj["code"] = course.code
         obj["block"] = course.block
         obj["room"] = course.room
-        obj["overall_mark"] = course.overallMark?.mark!!.round(1)
+        obj["overall_mark"] = course.overallMark?.mark?.round(1)
         obj["cached"] = course.cached
 
         obj["assignments"] = JSONArray()
