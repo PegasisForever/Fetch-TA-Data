@@ -5,6 +5,7 @@ import models.TimeLine
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import modes.server.parsers.CourseListParserV4.parseCourseList as CourseListParserV4
+import modes.server.parsers.CourseListParserV8.parseCourseList as CourseListParserV8
 import modes.server.parsers.TimeLineParserV4.parseTimeLine as TimeLineParserV4
 import modes.server.parsers.TimeLineParserV6.parseTimeLine as TimeLineParserV6
 
@@ -18,7 +19,8 @@ val CourseListParsers = mapOf<Int, (JSONArray) -> CourseList>(
     4 to ::CourseListParserV4,
     5 to ::CourseListParserV4,
     6 to ::CourseListParserV4,
-    7 to ::CourseListParserV4
+    7 to ::CourseListParserV4,
+    8 to ::CourseListParserV8
 )
 
 fun Any.toCourseList(): CourseList {
@@ -36,7 +38,8 @@ val TimeLineParsers = mapOf<Int, (JSONArray) -> TimeLine>(
     4 to ::TimeLineParserV4,
     5 to ::TimeLineParserV4,
     6 to ::TimeLineParserV6,
-    7 to ::TimeLineParserV6
+    7 to ::TimeLineParserV6,
+    8 to ::TimeLineParserV6
 )
 
 fun Any.toTimeLine(): TimeLine {
