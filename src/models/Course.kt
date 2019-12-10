@@ -2,6 +2,7 @@ package models
 
 import LogLevel
 import log
+import sum
 import java.time.LocalDate
 import java.time.ZonedDateTime
 import kotlin.math.abs
@@ -39,30 +40,47 @@ fun CategoryFromInitial(str: String): Category {
     }
 }
 
-class SmallMark(var category: Category) {
-    var available = false
+class SmallMark {
     var finished = true
     var total = 0.0
     var get = 0.0
     var weight = 0.0
 
-    override fun toString(): String {
-        return "${category.name}: finished=$finished"
+    fun isSame(other: SmallMark): Boolean {
+        return finished == other.finished &&
+                total == other.total &&
+                get == other.get &&
+                weight == other.weight
     }
 
-    companion object {
-        fun isSame(sm1: SmallMark, sm2: SmallMark): Boolean {
-            return sm1.available == sm2.available &&
-                    sm1.finished == sm2.finished &&
-                    sm1.total == sm2.total &&
-                    sm1.get == sm2.get &&
-                    sm1.weight == sm2.weight
+}
+
+class SmallMarkGroup(var category: Category) : ArrayList<SmallMark>() {
+    var available = false
+    val hasFinished: Boolean
+        get() = find { it.finished } != null
+    val allFinished: Boolean
+        get() = find { !it.finished } == null
+    val hasWeight: Boolean
+        get() = find { it.weight > 0 } != null
+    val allGet: Double
+        get() = sum { if (it.finished) it.get else 0.0 }
+    val allTotal: Double
+        get() = sum { if (it.finished) it.total else 0.0 }
+    val allWeight: Double
+        get() = sum { if (it.finished) it.weight else 0.0 }
+
+    fun isSame(other: SmallMarkGroup): Boolean {
+        if (size != other.size || category != other.category || available != other.available) return false
+        forEach { smallMark ->
+            if (other.find { it.isSame(smallMark) } == null) return false
         }
+        return true
     }
 }
 
 class Assignment {
-    val smallMarks = ArrayList<SmallMark>()
+    val smallMarkGroups = ArrayList<SmallMarkGroup>()
     var name = ""
     var time: ZonedDateTime? = null
     var feedback: String? = null
@@ -71,10 +89,10 @@ class Assignment {
         var total = 0.0
         var get = 0.0
 
-        smallMarks.forEach { smallMark ->
-            if (smallMark.available && smallMark.finished) {
-                val weight = weightTable.getWeight(smallMark.category).CW
-                total += smallMark.total / smallMark.get * weight
+        smallMarkGroups.forEach { smallMarkGroup ->
+            if (smallMarkGroup.available && smallMarkGroup.hasFinished) {
+                val weight = weightTable.getWeight(smallMarkGroup.category).CW
+                total += smallMarkGroup.allTotal / smallMarkGroup.allGet * weight
                 get += weight
             }
         }
@@ -82,9 +100,13 @@ class Assignment {
         return get / total * 100
     }
 
+    fun get(category: Category): SmallMarkGroup? {
+        return smallMarkGroups.find { it.category == category }
+    }
+
     fun isNoWeight(): Boolean {
-        smallMarks.forEach { smallMark ->
-            if (smallMark.weight != 0.0) {
+        smallMarkGroups.forEach { smallMarkGroup ->
+            if (smallMarkGroup.hasWeight) {
                 return false
             }
         }
@@ -92,8 +114,8 @@ class Assignment {
     }
 
     fun isFinished(): Boolean {
-        smallMarks.forEach { smallMark ->
-            if (!smallMark.finished) {
+        smallMarkGroups.forEach { smallMarkGroup ->
+            if (!smallMarkGroup.allFinished) {
                 return false
             }
         }
@@ -102,18 +124,12 @@ class Assignment {
 
     //everything need to be the same
     fun isSame(other: Assignment): Boolean {
-        if (smallMarks.size != other.smallMarks.size) {
+        if (smallMarkGroups.size != other.smallMarkGroups.size) {
             return false
         }
-        smallMarks.forEach { as1SmallMark ->
-            other.smallMarks.forEach { as2SmallMark ->
-                if (as1SmallMark.category == as2SmallMark.category && !SmallMark.isSame(
-                        as1SmallMark,
-                        as2SmallMark
-                    )
-                ) {
-                    return false
-                }
+        smallMarkGroups.forEach { as1SmallMarkGroup ->
+            if (other.smallMarkGroups.find { it.isSame(as1SmallMarkGroup) } == null) {
+                return false
             }
         }
         return true
@@ -184,10 +200,10 @@ class Course {
             var get = 0.0
             var total = 0.0
             assignments!!.forEach { assignment ->
-                val smallMark = assignment.smallMarks.find { it.category == category }
-                if (smallMark != null && smallMark.finished && smallMark.available) {
-                    get += smallMark.get / smallMark.total * smallMark.weight
-                    total += smallMark.weight
+                val smallMarkGroup = assignment.get(category)
+                if (smallMarkGroup != null && smallMarkGroup.hasFinished && smallMarkGroup.available) {
+                    get += smallMarkGroup.allGet / smallMarkGroup.allTotal * smallMarkGroup.allWeight
+                    total += smallMarkGroup.allWeight
                 }
             }
 

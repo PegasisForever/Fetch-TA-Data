@@ -39,37 +39,41 @@ class DetailPage(htmlPage: HtmlPage, courseCode: String?, time: ZonedDateTime) {
                     assignment.feedback = feedbackText.replace(Regex("(\\R|\\s)+"), " ").replace("Feedback:", "").trim()
                 }
 
-                val smallMarkCategoryAdded = ArrayList<Category>()
+                val smallMarkGroupCategoryAdded = ArrayList<Category>()
                 for (cellI in 1 until row.cells.size) {
                     val cell = row.getCell(cellI)
                     val category = categoryOfEachColumn[cellI - 1]
-                    val smallMark = SmallMark(category)
+                    val smallMarkGroup = SmallMarkGroup(category)
+                    smallMarkGroupCategoryAdded.add(category)
 
-                    val smallMarkText = cell.asText()
+                    val smallMarkElems = cell.getElementsByTagName("tr")
+                    smallMarkGroup.available = smallMarkElems.size > 0
+                    smallMarkElems.forEach { smallMarkElem ->
+                        val smallMarkText = smallMarkElem.asText()
+                        val smallMark = SmallMark()
+                        if (smallMarkText != "" && smallMarkText != "no mark") {
+                            val getText = findFirst(smallMarkText, "^[^ ]+(?= / )")
+                            smallMark.get = if (getText != null) {
+                                getText.toDouble()
+                            } else {
+                                smallMark.finished = false
+                                0.0
+                            }
+                            smallMark.total = findFirst(smallMarkText, "(?<=/ )[^ ]+(?= = )")!!.toDouble()
+                            smallMark.weight = if (smallMarkText.indexOf("no weight") != -1) {
+                                0.0
+                            } else {
+                                findFirst(smallMarkText, "(?<=weight=)[^ ]+$")!!.toDouble()
+                            }
 
-                    if (smallMarkText != "" && smallMarkText != "no mark") {
-                        smallMark.available = true
-                        val getText = findFirst(smallMarkText, "^[^ ]+(?= / )")
-                        smallMark.get = if (getText != null) {
-                            getText.toDouble()
-                        } else {
-                            smallMark.finished = false
-                            0.0
                         }
-                        smallMark.total = findFirst(smallMarkText, "(?<=/ )[^ ]+(?= = )")!!.toDouble()
-                        smallMark.weight = if (smallMarkText.indexOf("no weight") != -1) {
-                            0.0
-                        } else {
-                            findFirst(smallMarkText, "(?<=weight=)[^ ]+$")!!.toDouble()
-                        }
-
+                        smallMarkGroup.add(smallMark)
                     }
-                    assignment.smallMarks.add(smallMark)
-                    smallMarkCategoryAdded.add(category)
+                    assignment.smallMarkGroups.add(smallMarkGroup)
                 }
                 enumValues<Category>().forEach { category ->
-                    if (!smallMarkCategoryAdded.contains(category)) {
-                        assignment.smallMarks.add(SmallMark(category))
+                    if (!smallMarkGroupCategoryAdded.contains(category)) {
+                        assignment.smallMarkGroups.add(SmallMarkGroup(category))
                     }
                 }
                 assignments.add(assignment)

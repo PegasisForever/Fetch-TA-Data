@@ -7,22 +7,22 @@ import toJSONString
 import java.time.format.DateTimeFormatter
 
 object CourseListSerializerV5 {
-    private fun serializeSmallMark(smallMark: SmallMark): JSONObject {
+    private fun serializeSmallMarkGroup(smallMarkGroup: SmallMarkGroup): JSONObject {
         val obj = JSONObject()
-        obj["available"] = smallMark.available
-        obj["finished"] = smallMark.finished
-        obj["total"] = smallMark.total
-        obj["get"] = smallMark.get
-        obj["weight"] = smallMark.weight
+        obj["available"] = smallMarkGroup.available
+        obj["finished"] = smallMarkGroup.hasFinished
+        obj["total"] = smallMarkGroup.allTotal
+        obj["get"] = smallMarkGroup.allGet
+        obj["weight"] = smallMarkGroup.allWeight
 
         return obj
     }
 
     fun serializeAssignment(assignment: Assignment): JSONObject {
         val obj = JSONObject()
-        assignment.smallMarks.forEach { smallMark ->
-            if (smallMark.available) {
-                obj[smallMark.category.name] = serializeSmallMark(smallMark)
+        assignment.smallMarkGroups.forEach { smallMarkGroup ->
+            if (smallMarkGroup.available) {
+                obj[smallMarkGroup.category.name] = serializeSmallMarkGroup(smallMarkGroup)
             }
         }
         obj["name"] = assignment.name

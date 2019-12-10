@@ -8,13 +8,18 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 object CourseListParserV4 {
-    private fun parseSmallMark(json: JSONObject, category: String) = SmallMark(CategoryFromInitial(category)).apply {
-        available = json["available"] as Boolean
+    private fun parseSmallMark(json: JSONObject) = SmallMark().apply {
         finished = json["finished"] as Boolean
         total = json["total"] as Double
         get = json["get"] as Double
         weight = json["weight"] as Double
     }
+
+    private fun parseSmallMarkGroup(json: JSONObject, category: String) =
+        SmallMarkGroup(CategoryFromInitial(category)).apply {
+            available = json["available"] as Boolean
+            add(parseSmallMark(json))
+        }
 
     fun parseAssignment(json: JSONObject) = Assignment().apply {
         val smallMarkCategoryAdded = ArrayList<String>()
@@ -25,13 +30,13 @@ object CourseListParserV4 {
                 "feedback" -> feedback = value as String?
                 else -> {
                     smallMarkCategoryAdded.add(key as String)
-                    smallMarks.add(parseSmallMark(value as JSONObject, key))
+                    smallMarkGroups.add(parseSmallMarkGroup(value as JSONObject, key))
                 }
             }
         }
         enumValues<Category>().forEach { category ->
             if (!smallMarkCategoryAdded.contains(category.name)) {
-                smallMarks.add(SmallMark(category))
+                smallMarkGroups.add(SmallMarkGroup(category))
             }
         }
     }

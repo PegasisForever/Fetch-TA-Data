@@ -250,3 +250,19 @@ fun Double.round(digit: Int): Double {
 }
 
 fun getCoreCount() = Runtime.getRuntime().availableProcessors()
+
+inline fun <T> ArrayList<T>.sum(action: (T) -> Double): Double {
+    var sum = 0.0
+    this.forEach {
+        sum += action(it)
+    }
+    return sum
+}
+
+inline fun <T, U> forEach(list1: Iterable<T>, list2: Iterable<U>, action: (T, U) -> Unit) {
+    list1.forEach { list1Item ->
+        list2.forEach { list2Item ->
+            action(list1Item, list2Item)
+        }
+    }
+}
