@@ -47,11 +47,11 @@ class DetailPage(htmlPage: HtmlPage, courseCode: String?, time: ZonedDateTime) {
                     smallMarkGroupCategoryAdded.add(category)
 
                     val smallMarkElems = cell.getElementsByTagName("tr")
-                    smallMarkGroup.available = smallMarkElems.size > 0
                     smallMarkElems.forEach { smallMarkElem ->
                         val smallMarkText = smallMarkElem.asText()
                         val smallMark = SmallMark()
                         if (smallMarkText != "" && smallMarkText != "no mark") {
+                            smallMarkGroup.available = true
                             val getText = findFirst(smallMarkText, "^[^ ]+(?= / )")
                             smallMark.get = if (getText != null) {
                                 getText.toDouble()
