@@ -213,21 +213,25 @@ class Course {
                 if (weight.SA.mark != null && abs(weight.SA.mark!! - avg * 100) > 0.1) {
                     log(
                         LogLevel.WARN,
-                        "Calculated SA value of $category is not same as displayed. Calculated:${avg * 100} Displayed:${weight.SA.mark}  course code: $code"
+                        "Calculated SA value of $category is not same as displayed. Calculated:${avg * 100} Displayed:${weight.SA.mark} course code: $code"
                     )
+                    overallGet += weight.SA.mark!!
+                    overallTotal += weight.CW
                 } else {
                     weight.SA = OverallMark(avg * 100)
                     overallGet += avg * weight.CW
                     overallTotal += weight.CW
                 }
-
             }
         }
 
         val overallAvg = overallGet / overallTotal
         if (!overallAvg.isNaN()) {
             if (overallMark?.mark != null && abs(overallMark!!.mark!! - overallAvg * 100) > 0.1) {
-                log(LogLevel.WARN, "Calculated overall value is not same as displayed. course code: $code")
+                log(
+                    LogLevel.WARN,
+                    "Calculated overall value is not same as displayed. Calculated:${overallAvg * 100} Displayed:${overallMark?.mark} course code: $code"
+                )
             } else {
                 overallMark = OverallMark(overallAvg * 100)
             }
