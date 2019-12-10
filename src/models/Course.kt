@@ -45,6 +45,8 @@ class SmallMark {
     var total = 0.0
     var get = 0.0
     var weight = 0.0
+    val percentage: Double
+        get() = get / total
 
     fun isSame(other: SmallMark): Boolean {
         return finished == other.finished &&
@@ -69,6 +71,16 @@ class SmallMarkGroup(var category: Category) : ArrayList<SmallMark>() {
         get() = sum { if (it.finished) it.total else 0.0 }
     val allWeight: Double
         get() = sum { if (it.finished) it.weight else 0.0 }
+    val percentage: Double
+        get() {
+            var get = 0.0
+            var total = 0.0
+            forEach { smallMark ->
+                get += smallMark.percentage * smallMark.weight
+                total += smallMark.weight
+            }
+            return get / total
+        }
 
     fun isSame(other: SmallMarkGroup): Boolean {
         if (size != other.size || category != other.category || available != other.available) return false
@@ -201,8 +213,8 @@ class Course {
             var total = 0.0
             assignments!!.forEach { assignment ->
                 val smallMarkGroup = assignment.get(category)
-                if (smallMarkGroup != null && smallMarkGroup.hasFinished && smallMarkGroup.available) {
-                    get += smallMarkGroup.allGet / smallMarkGroup.allTotal * smallMarkGroup.allWeight
+                if (smallMarkGroup != null && smallMarkGroup.hasFinished && smallMarkGroup.available && smallMarkGroup.hasWeight) {
+                    get += smallMarkGroup.percentage * smallMarkGroup.allWeight
                     total += smallMarkGroup.allWeight
                 }
             }
@@ -215,7 +227,7 @@ class Course {
                         LogLevel.WARN,
                         "Calculated SA value of $category is not same as displayed. Calculated:${avg * 100} Displayed:${weight.SA.mark} course code: $code"
                     )
-                    overallGet += weight.SA.mark!!
+                    overallGet += weight.SA.mark!! / 100 * weight.CW
                     overallTotal += weight.CW
                 } else {
                     weight.SA = OverallMark(avg * 100)
