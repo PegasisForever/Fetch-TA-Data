@@ -50,8 +50,7 @@ class DetailPage(htmlPage: HtmlPage, courseCode: String?, time: ZonedDateTime) {
                     smallMarkElems.forEach { smallMarkElem ->
                         val smallMarkText = smallMarkElem.asText()
                         val smallMark = SmallMark()
-                        if (smallMarkText != "" && smallMarkText != "no mark") {
-                            smallMarkGroup.available = true
+                        if (smallMarkText != "no mark") {
                             val getText = findFirst(smallMarkText, "^[^ ]+(?= / )")
                             smallMark.get = if (getText != null) {
                                 getText.toDouble()

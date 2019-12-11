@@ -58,7 +58,8 @@ class SmallMark {
 }
 
 class SmallMarkGroup(var category: Category) : ArrayList<SmallMark>() {
-    var available = false
+    val available: Boolean
+        get() = size > 0
     val hasFinished: Boolean
         get() = find { it.finished } != null
     val allFinished: Boolean
@@ -85,7 +86,8 @@ class SmallMarkGroup(var category: Category) : ArrayList<SmallMark>() {
     fun isSame(other: SmallMarkGroup): Boolean {
         if (size != other.size || category != other.category || available != other.available) return false
         forEach { smallMark ->
-            if (other.find { it.isSame(smallMark) } == null) return false
+            if (other.find { it.isSame(smallMark) } == null)
+                return false
         }
         return true
     }

@@ -19,8 +19,6 @@ object CourseListSerializerV8 {
 
     private fun serializeSmallMarkGroup(smallMarkGroup: SmallMarkGroup): JSONObject {
         val obj = JSONObject()
-        obj["available"] = smallMarkGroup.available
-
         val smallMarksArray = JSONArray()
         smallMarkGroup.forEach {
             smallMarksArray.add(serializeSmallMark(it))

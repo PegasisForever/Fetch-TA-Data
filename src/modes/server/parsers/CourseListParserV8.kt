@@ -17,7 +17,6 @@ object CourseListParserV8 {
 
     private fun parseSmallMarkGroup(json: JSONObject, category: String) =
         SmallMarkGroup(CategoryFromInitial(category)).apply {
-            available = json["available"] as Boolean
             (json["smallmarks"] as JSONArray).forEach { smallMarkJSON ->
                 add(parseSmallMark(smallMarkJSON as JSONObject))
             }
