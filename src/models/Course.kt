@@ -12,8 +12,8 @@ enum class Category(val displayName: String) {
     T("Thinking"),
     C("Communication"),
     A("Application"),
-    O("Other"),
-    F("Other/Culminating")
+    O("Other/Culminating"),
+    F("Final / Culminating")
 }
 
 fun CategoryFrom(str: String): Category {
