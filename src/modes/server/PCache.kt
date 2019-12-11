@@ -50,7 +50,7 @@ object PCache {
                 val courseList = (jsonParser.parse(text) as JSONObject).toCourseList()
                 courseListCacheMap[number] = courseList
                 courseList
-            } catch (e: NoSuchFileException) {
+            } catch (e: java.nio.file.NoSuchFileException) {
                 CourseList()
             } catch (e: Throwable) {
                 log(LogLevel.ERROR, "Error when reading course list of $number", e)
@@ -68,7 +68,7 @@ object PCache {
                 val courseList = (jsonParser.parse(text) as JSONObject).toCourseList()
                 archivedCourseListCacheMap[number] = courseList
                 courseList
-            } catch (e: NoSuchFileException) {
+            } catch (e: java.nio.file.NoSuchFileException) {
                 CourseList()
             } catch (e: Throwable) {
                 log(LogLevel.ERROR, "Error when reading archived course list of $number", e)
@@ -86,7 +86,7 @@ object PCache {
                 val timeLine = (jsonParser.parse(text) as JSONObject).toTimeLine()
                 timeLineCacheMap[number] = timeLine
                 timeLine
-            } catch (e: NoSuchFileException) {
+            } catch (e: java.nio.file.NoSuchFileException) {
                 TimeLine()
             } catch (e: Throwable) {
                 log(LogLevel.ERROR, "Error when reading time line of $number", e)
