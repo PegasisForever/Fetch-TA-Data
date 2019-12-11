@@ -48,7 +48,7 @@ object CourseListSerializerV8 {
         val obj = JSONObject()
         obj["W"] = weight.W
         obj["CW"] = weight.CW
-        obj["SA"] = weight.SA.mark
+        obj["SA"] = weight.SA.mark ?: 0.0
 
         return obj
     }

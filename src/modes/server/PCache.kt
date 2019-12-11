@@ -1,7 +1,9 @@
 package modes.server
 
+import LogLevel
 import isFileExists
 import jsonParser
+import log
 import models.CourseList
 import models.TimeLine
 import modes.server.parsers.toCourseList
@@ -48,7 +50,10 @@ object PCache {
                 val courseList = (jsonParser.parse(text) as JSONObject).toCourseList()
                 courseListCacheMap[number] = courseList
                 courseList
-            } catch (e: Exception) {
+            } catch (e: NoSuchFileException) {
+                CourseList()
+            } catch (e: Throwable) {
+                log(LogLevel.ERROR, "Error when reading course list of $number", e)
                 CourseList()
             }
         }
@@ -63,7 +68,10 @@ object PCache {
                 val courseList = (jsonParser.parse(text) as JSONObject).toCourseList()
                 archivedCourseListCacheMap[number] = courseList
                 courseList
-            } catch (e: Exception) {
+            } catch (e: NoSuchFileException) {
+                CourseList()
+            } catch (e: Throwable) {
+                log(LogLevel.ERROR, "Error when reading archived course list of $number", e)
                 CourseList()
             }
         }
@@ -78,7 +86,10 @@ object PCache {
                 val timeLine = (jsonParser.parse(text) as JSONObject).toTimeLine()
                 timeLineCacheMap[number] = timeLine
                 timeLine
-            } catch (e: Exception) {
+            } catch (e: NoSuchFileException) {
+                TimeLine()
+            } catch (e: Throwable) {
+                log(LogLevel.ERROR, "Error when reading time line of $number", e)
                 TimeLine()
             }
         }
