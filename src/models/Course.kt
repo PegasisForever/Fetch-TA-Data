@@ -106,8 +106,8 @@ class Assignment {
         smallMarkGroups.forEach { smallMarkGroup ->
             if (smallMarkGroup.available && smallMarkGroup.hasFinished) {
                 val weight = weightTable.getWeight(smallMarkGroup.category).CW
-                total += smallMarkGroup.allTotal / smallMarkGroup.allGet * weight
-                get += weight
+                total += smallMarkGroup.percentage * smallMarkGroup.allWeight * weight
+                get += smallMarkGroup.allWeight * weight
             }
         }
 
