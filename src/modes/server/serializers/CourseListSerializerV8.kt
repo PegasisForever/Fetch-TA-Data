@@ -30,9 +30,9 @@ object CourseListSerializerV8 {
 
     fun serializeAssignment(assignment: Assignment): JSONObject {
         val obj = JSONObject()
-        assignment.smallMarkGroups.forEach { smallMarkGroup ->
+        assignment.forEach { category, smallMarkGroup ->
             if (smallMarkGroup.available) {
-                obj[smallMarkGroup.category.name] = serializeSmallMarkGroup(smallMarkGroup)
+                obj[category.name] = serializeSmallMarkGroup(smallMarkGroup)
             }
         }
         obj["name"] = assignment.name
@@ -53,8 +53,8 @@ object CourseListSerializerV8 {
 
     private fun serializeWeightTable(weightTable: WeightTable): JSONObject {
         val obj = JSONObject()
-        weightTable.weightsList.forEach { weight ->
-            obj[weight.category.name] = serializeWeight(weight)
+        weightTable.forEach { category, weight ->
+            obj[category] = serializeWeight(weight)
         }
 
         return obj

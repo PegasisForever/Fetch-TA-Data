@@ -18,7 +18,7 @@ fun compareAssignments(
 
         if (oldAssignment == null) { //new assignment
             updateList += AssignmentAdded().apply {
-                courseName = newCourse.getDisplayName()
+                courseName = newCourse.displayName
                 this.assignment = assignment
                 assignmentAvg = assignment.getAverage(newCourse.weightTable!!)
                 overallBefore = oldCourse.overallMark?.mark
@@ -27,7 +27,7 @@ fun compareAssignments(
             }
         } else if (!assignment.isSame(oldAssignment)) { //assignment updated
             updateList += AssignmentUpdated().apply {
-                courseName = newCourse.getDisplayName()
+                courseName = newCourse.displayName
                 assignmentName = assignment.name
                 assignmentBefore = oldAssignment
                 assignmentAvgBefore = oldAssignment.getAverage(oldCourse.weightTable!!)
@@ -66,7 +66,7 @@ fun compareCourses(
         val oldCourse = old.find { newCourse.isSame(it) }
         courseListResult += if (oldCourse == null) { //this course is only in the new course list
             updateList += CourseAdded().apply {
-                courseName = newCourse.getDisplayName()
+                courseName = newCourse.displayName
                 courseBlock = newCourse.block
                 time = compareTime
             }
@@ -86,7 +86,7 @@ fun compareCourses(
         val isRemoved = new.find { oldCourse.isSame(it) } == null
         if (isRemoved) {
             updateList += CourseRemoved().apply {
-                courseName = oldCourse.getDisplayName()
+                courseName = oldCourse.displayName
                 courseBlock = oldCourse.block
                 time = compareTime
             }

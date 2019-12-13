@@ -39,12 +39,10 @@ class DetailPage(htmlPage: HtmlPage, courseCode: String?, time: ZonedDateTime) {
                     assignment.feedback = feedbackText.replace(Regex("(\\R|\\s)+"), " ").replace("Feedback:", "").trim()
                 }
 
-                val smallMarkGroupCategoryAdded = ArrayList<Category>()
                 for (cellI in 1 until row.cells.size) {
                     val cell = row.getCell(cellI)
                     val category = categoryOfEachColumn[cellI - 1]
-                    val smallMarkGroup = SmallMarkGroup(category)
-                    smallMarkGroupCategoryAdded.add(category)
+                    val smallMarkGroup = SmallMarkGroup()
 
                     val smallMarkElems = cell.getElementsByTagName("tr")
                     smallMarkElems.forEach { smallMarkElem ->
@@ -68,12 +66,10 @@ class DetailPage(htmlPage: HtmlPage, courseCode: String?, time: ZonedDateTime) {
                         }
                         smallMarkGroup.add(smallMark)
                     }
-                    assignment.smallMarkGroups.add(smallMarkGroup)
+                    assignment[category] = smallMarkGroup
                 }
                 enumValues<Category>().forEach { category ->
-                    if (!smallMarkGroupCategoryAdded.contains(category)) {
-                        assignment.smallMarkGroups.add(SmallMarkGroup(category))
-                    }
+                    assignment.putIfAbsent(category, SmallMarkGroup())
                 }
                 assignments.add(assignment)
             } catch (e: Exception) {
@@ -98,7 +94,7 @@ class DetailPage(htmlPage: HtmlPage, courseCode: String?, time: ZonedDateTime) {
             val row = weightsTable.getRow(rowI)
             val category = CategoryFrom(row.getCell(0).asText())
 
-            val weight = Weight(category)
+            val weight = Weight()
             weight.W = findFirst(row.getCell(1).asText(), "^[\\.\\d]+(?=%)")!!.toDouble()
             weight.CW = findFirst(row.getCell(2).asText(), "^[\\.\\d]+(?=%)")!!.toDouble()
             val SAText = findFirst(row.getCell(3).asText(), "^[\\.\\d]+(?=%)")
@@ -108,10 +104,10 @@ class DetailPage(htmlPage: HtmlPage, courseCode: String?, time: ZonedDateTime) {
                 OverallMark(row.getCell(3).asText())
             }
 
-            weightTable.weightsList.add(weight)
+            weightTable[category] = weight
         }
         val finalRow = weightsTable.getRow(6)
-        val finalWeight = Weight(F)
+        val finalWeight = Weight()
         finalWeight.CW = findFirst(finalRow.getCell(1).asText(), "^[^%]+")!!.toDouble()
         val SAText = findFirst(finalRow.getCell(2).asText(), "^[^%]+")
         finalWeight.SA = try {
@@ -119,7 +115,7 @@ class DetailPage(htmlPage: HtmlPage, courseCode: String?, time: ZonedDateTime) {
         } catch (e: Throwable) {
             OverallMark(SAText ?: "")
         }
-        weightTable.weightsList.add(finalWeight)
+        weightTable[F] = finalWeight
     }
 
 

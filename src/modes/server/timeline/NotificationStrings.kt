@@ -91,7 +91,7 @@ object NotificationStrings {
     private fun getAssignmentAddedNoti(language: String, update: AssignmentAdded) = with(update) {
         when {
             //Course first assignment, finished and have weight
-            overallBefore == null && assignment.isFinished() && !assignment.isNoWeight() && assignmentAvg != null -> when (language) {
+            overallBefore == null && assignment.isFinished && !assignment.isNoWeight && assignmentAvg != null -> when (language) {
                 "en" -> Notification(
                     "First assessment in $courseName",
                     "You got average ${assignmentAvg?.toRoundString(1)}% in \"${assignment.getDisplayName(
@@ -106,7 +106,7 @@ object NotificationStrings {
             }
 
             //Course first assignment, not finished
-            overallBefore == null && !assignment.isFinished() -> when (language) {
+            overallBefore == null && !assignment.isFinished -> when (language) {
                 "en" -> Notification(
                     "New unfinished assessment in $courseName",
                     "Teacher didn't finish marking or you didn't hand in " +
@@ -120,7 +120,7 @@ object NotificationStrings {
             }
 
             //Course first assignment, no weight
-            overallBefore == null && assignment.isNoWeight() -> when (language) {
+            overallBefore == null && assignment.isNoWeight -> when (language) {
                 "en" -> Notification(
                     "New no weight assessment in $courseName",
                     "You got average ${assignmentAvg?.toRoundString(1)}% in \"${assignment.getDisplayName(
@@ -139,7 +139,7 @@ object NotificationStrings {
             }
 
             //Assignment finished and have weight
-            overallBefore != null && assignment.isFinished() && !assignment.isNoWeight() && assignmentAvg != null -> when (language) {
+            overallBefore != null && assignment.isFinished && !assignment.isNoWeight && assignmentAvg != null -> when (language) {
                 "en" -> {
                     val compareText = when {
                         //same
@@ -208,7 +208,7 @@ object NotificationStrings {
             }
 
             //Assignment not finished
-            overallBefore != null && !assignment.isFinished() -> when (language) {
+            overallBefore != null && !assignment.isFinished -> when (language) {
                 "en" -> Notification(
                     "New unfinished assessment in $courseName",
                     "Teacher didn't finish marking or you didn't hand in " +
@@ -223,7 +223,7 @@ object NotificationStrings {
             }
 
             //Assignment don't have weight
-            overallBefore != null && assignment.isNoWeight() -> when (language) {
+            overallBefore != null && assignment.isNoWeight -> when (language) {
                 "en" -> Notification(
                     "New no weight assessment in $courseName",
                     "You got average ${assignmentAvg?.toRoundString(1)}% in " +

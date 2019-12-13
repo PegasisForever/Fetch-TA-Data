@@ -15,32 +15,27 @@ object CourseListParserV4 {
         weight = json["weight"] as Double
     }
 
-    private fun parseSmallMarkGroup(json: JSONObject, category: String) =
-        SmallMarkGroup(CategoryFromInitial(category)).apply {
-            add(parseSmallMark(json))
-        }
+    private fun parseSmallMarkGroup(json: JSONObject) = SmallMarkGroup().apply {
+        add(parseSmallMark(json))
+    }
 
     fun parseAssignment(json: JSONObject) = Assignment().apply {
-        val smallMarkCategoryAdded = ArrayList<String>()
         json.forEach { key, value ->
             when (key) {
                 "name" -> name = value as String
                 "time" -> time = (value as String?)?.toZonedDateTime()
                 "feedback" -> feedback = value as String?
                 else -> {
-                    smallMarkCategoryAdded.add(key as String)
-                    smallMarkGroups.add(parseSmallMarkGroup(value as JSONObject, key))
+                    this[CategoryFromInitial(key as String)] = parseSmallMarkGroup(value as JSONObject)
                 }
             }
         }
         enumValues<Category>().forEach { category ->
-            if (!smallMarkCategoryAdded.contains(category.name)) {
-                smallMarkGroups.add(SmallMarkGroup(category))
-            }
+            putIfAbsent(category, SmallMarkGroup())
         }
     }
 
-    private fun parseWeight(json: JSONObject, category: String) = Weight(CategoryFromInitial(category)).apply {
+    private fun parseWeight(json: JSONObject) = Weight().apply {
         W = json["W"] as Double
         CW = json["CW"] as Double
         SA = OverallMark(json["SA"] as Double)
@@ -48,7 +43,7 @@ object CourseListParserV4 {
 
     private fun parseWeightTable(json: JSONObject) = WeightTable().apply {
         json.forEach { key, value ->
-            weightsList.add(parseWeight(value as JSONObject, key as String))
+            this[CategoryFromInitial(key as String)] = parseWeight(value as JSONObject)
         }
     }
 

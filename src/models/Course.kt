@@ -2,6 +2,7 @@ package models
 
 import LogLevel
 import log
+import safeDiv
 import sum
 import java.time.LocalDate
 import java.time.ZonedDateTime
@@ -46,7 +47,7 @@ class SmallMark {
     var get = 0.0
     var weight = 0.0
     val percentage: Double
-        get() = get / total
+        get() = get safeDiv total
 
     fun isSame(other: SmallMark): Boolean {
         return finished == other.finished &&
@@ -57,7 +58,7 @@ class SmallMark {
 
 }
 
-class SmallMarkGroup(var category: Category) : ArrayList<SmallMark>() {
+class SmallMarkGroup : ArrayList<SmallMark>() {
     val available: Boolean
         get() = size > 0
     val hasFinished: Boolean
@@ -80,11 +81,11 @@ class SmallMarkGroup(var category: Category) : ArrayList<SmallMark>() {
                 get += smallMark.percentage * smallMark.weight
                 total += smallMark.weight
             }
-            return get / total
+            return get safeDiv total
         }
 
     fun isSame(other: SmallMarkGroup): Boolean {
-        if (size != other.size || category != other.category || available != other.available) return false
+        if (size != other.size || available != other.available) return false
         forEach { smallMark ->
             if (other.find { it.isSame(smallMark) } == null)
                 return false
@@ -93,56 +94,51 @@ class SmallMarkGroup(var category: Category) : ArrayList<SmallMark>() {
     }
 }
 
-class Assignment {
-    val smallMarkGroups = ArrayList<SmallMarkGroup>()
+class Assignment : HashMap<Category, SmallMarkGroup>() {
     var name = ""
     var time: ZonedDateTime? = null
     var feedback: String? = null
+    val isNoWeight: Boolean
+        get() {
+            forEach { entry ->
+                if (entry.value.hasWeight) {
+                    return false
+                }
+            }
+            return true
+        }
+    val isFinished: Boolean
+        get() {
+            forEach { entry ->
+                if (!entry.value.allFinished) {
+                    return false
+                }
+            }
+            return true
+        }
 
     fun getAverage(weightTable: WeightTable): Double {
         var total = 0.0
         var get = 0.0
 
-        smallMarkGroups.forEach { smallMarkGroup ->
+        forEach { category, smallMarkGroup ->
             if (smallMarkGroup.available && smallMarkGroup.hasFinished) {
-                val weight = weightTable.getWeight(smallMarkGroup.category).CW
+                val weight = weightTable[category]!!.CW
                 total += smallMarkGroup.percentage * smallMarkGroup.allWeight * weight
                 get += smallMarkGroup.allWeight * weight
             }
         }
 
-        return get / total * 100
-    }
-
-    fun get(category: Category): SmallMarkGroup? {
-        return smallMarkGroups.find { it.category == category }
-    }
-
-    fun isNoWeight(): Boolean {
-        smallMarkGroups.forEach { smallMarkGroup ->
-            if (smallMarkGroup.hasWeight) {
-                return false
-            }
-        }
-        return true
-    }
-
-    fun isFinished(): Boolean {
-        smallMarkGroups.forEach { smallMarkGroup ->
-            if (!smallMarkGroup.allFinished) {
-                return false
-            }
-        }
-        return true
+        return get safeDiv total
     }
 
     //everything need to be the same
     fun isSame(other: Assignment): Boolean {
-        if (smallMarkGroups.size != other.smallMarkGroups.size) {
+        if (size != other.size) {
             return false
         }
-        smallMarkGroups.forEach { as1SmallMarkGroup ->
-            if (other.smallMarkGroups.find { it.isSame(as1SmallMarkGroup) } == null) {
+        enumValues<Category>().forEach { category ->
+            if (!this[category]!!.isSame(other[category]!!)) {
                 return false
             }
         }
@@ -150,24 +146,13 @@ class Assignment {
     }
 }
 
-class Weight(var category: Category) {
+class Weight {
     var W = 0.0
     var CW = 0.0
     var SA = OverallMark(0.0)
 }
 
-class WeightTable {
-    val weightsList = ArrayList<Weight>()
-
-    fun getWeight(category: Category): Weight {
-        weightsList.forEach { weight ->
-            if (weight.category == category) {
-                return weight
-            }
-        }
-        throw java.lang.Exception("Cannot found $category in $weightsList")
-    }
-}
+class WeightTable : HashMap<Category, Weight>()
 
 class OverallMark {
     var mark: Double? = null
@@ -195,13 +180,12 @@ class Course {
     var overallMark: OverallMark? = null
     var cached = false
 
-    fun getDisplayName(): String {
-        return when {
+    val displayName: String
+        get() = when {
             name != null -> name!!
             code != null -> code!!
             else -> "Unnamed Course"
         }
-    }
 
     //calculate more accurate course overall and avg marks
     fun calculate() {
@@ -214,7 +198,7 @@ class Course {
             var get = 0.0
             var total = 0.0
             assignments!!.forEach { assignment ->
-                val smallMarkGroup = assignment.get(category)
+                val smallMarkGroup = assignment[category]
                 if (smallMarkGroup != null && smallMarkGroup.hasFinished && smallMarkGroup.available && smallMarkGroup.hasWeight) {
                     get += smallMarkGroup.percentage * smallMarkGroup.allWeight
                     total += smallMarkGroup.allWeight
@@ -222,8 +206,8 @@ class Course {
             }
 
             val avg = get / total
-            if (!avg.isNaN()) {
-                val weight = weightTable!!.getWeight(category)
+            if (total > 0.0) {
+                val weight = weightTable!![category]!!
                 if (weight.SA.mark != null && abs(weight.SA.mark!! - avg * 100) > 0.1) {
                     log(
                         LogLevel.WARN,
@@ -240,7 +224,7 @@ class Course {
         }
 
         val overallAvg = overallGet / overallTotal
-        if (!overallAvg.isNaN()) {
+        if (overallTotal > 0.0) {
             if (overallMark?.mark != null && abs(overallMark!!.mark!! - overallAvg * 100) > 0.1) {
                 log(
                     LogLevel.WARN,

@@ -266,3 +266,9 @@ inline fun <T, U> forEach(list1: Iterable<T>, list2: Iterable<U>, action: (T, U)
         }
     }
 }
+
+infix fun Double.safeDiv(other: Double) = if (other == 0.0) {
+    0.0
+} else {
+    this / other
+}
