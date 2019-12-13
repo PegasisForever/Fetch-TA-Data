@@ -16,7 +16,7 @@ import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 
 const val minApiVersion = 4
-const val latestApiVersion = 8
+const val latestApiVersion = 9
 
 fun startServer() {
     var autoUpdateThread: Thread? = null

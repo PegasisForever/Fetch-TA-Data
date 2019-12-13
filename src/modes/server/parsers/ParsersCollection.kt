@@ -8,6 +8,7 @@ import modes.server.parsers.CourseListParserV4.parseCourseList as CourseListPars
 import modes.server.parsers.CourseListParserV8.parseCourseList as CourseListParserV8
 import modes.server.parsers.TimeLineParserV4.parseTimeLine as TimeLineParserV4
 import modes.server.parsers.TimeLineParserV6.parseTimeLine as TimeLineParserV6
+import modes.server.parsers.TimeLineParserV9.parseTimeLine as TimeLineParserV9
 
 class UnwrappedData(val data: JSONArray, val version: Int)
 
@@ -20,7 +21,8 @@ val CourseListParsers = mapOf<Int, (JSONArray) -> CourseList>(
     5 to ::CourseListParserV4,
     6 to ::CourseListParserV4,
     7 to ::CourseListParserV4,
-    8 to ::CourseListParserV8
+    8 to ::CourseListParserV8,
+    9 to ::CourseListParserV8
 )
 
 fun Any.toCourseList(): CourseList {
@@ -39,7 +41,8 @@ val TimeLineParsers = mapOf<Int, (JSONArray) -> TimeLine>(
     5 to ::TimeLineParserV4,
     6 to ::TimeLineParserV6,
     7 to ::TimeLineParserV6,
-    8 to ::TimeLineParserV6
+    8 to ::TimeLineParserV6,
+    9 to ::TimeLineParserV9
 )
 
 fun Any.toTimeLine(): TimeLine {
