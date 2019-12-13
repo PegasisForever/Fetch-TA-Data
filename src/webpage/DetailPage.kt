@@ -92,7 +92,7 @@ class DetailPage(htmlPage: HtmlPage, courseCode: String?, time: ZonedDateTime) {
 
         for (rowI in 1..5) {
             val row = weightsTable.getRow(rowI)
-            val category = CategoryFrom(row.getCell(0).asText())
+            val category = categoryFrom(row.getCell(0).asText())
 
             val weight = Weight()
             weight.W = findFirst(row.getCell(1).asText(), "^[\\.\\d]+(?=%)")!!.toDouble()

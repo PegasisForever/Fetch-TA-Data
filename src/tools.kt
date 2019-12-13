@@ -1,5 +1,6 @@
 import com.gargoylesoftware.htmlunit.WebClient
 import com.sun.net.httpserver.HttpExchange
+import models.WeightedDouble
 import modes.server.latestApiVersion
 import modes.server.minApiVersion
 import org.apache.commons.lang3.exception.ExceptionUtils
@@ -22,6 +23,7 @@ import java.util.regex.Pattern
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 import kotlin.collections.ArrayList
+import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -251,12 +253,31 @@ fun Double.round(digit: Int): Double {
 
 fun getCoreCount() = Runtime.getRuntime().availableProcessors()
 
-inline fun <T> ArrayList<T>.sum(action: (T) -> Double): Double {
+inline fun <T> Collection<T>.sum(action: (T) -> Double): Double {
     var sum = 0.0
     this.forEach {
         sum += action(it)
     }
     return sum
+}
+
+inline fun <T> Collection<T>.avg(action: (T) -> Double): Double {
+    var sum = 0.0
+    forEach {
+        sum += action(it)
+    }
+    return sum safeDiv size.toDouble()
+}
+
+inline fun <T> Collection<T>.weightedAvg(action: (T) -> WeightedDouble): Double {
+    var get = 0.0
+    var total = 0.0
+    forEach {
+        val weightedDouble = action(it)
+        get += weightedDouble.value * weightedDouble.weight
+        total += weightedDouble.weight
+    }
+    return get safeDiv total
 }
 
 inline fun <T, U> forEach(list1: Iterable<T>, list2: Iterable<U>, action: (T, U) -> Unit) {
@@ -271,4 +292,14 @@ infix fun Double.safeDiv(other: Double) = if (other == 0.0) {
     0.0
 } else {
     this / other
+}
+
+infix fun Int.pow(b: Int) = toDouble().pow(b.toDouble()).toInt()
+
+infix fun Double.near(b: Double) = this to b
+
+infix fun Pair<Double, Double>.threshold(t: Double) = abs(first - second) < t
+
+operator fun ClosedRange<Int>.contains(value: Double): Boolean {
+    return value >= start && value <= endInclusive
 }

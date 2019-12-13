@@ -28,7 +28,7 @@ object CourseListParserV8 {
                 "time" -> time = (value as String?)?.toZonedDateTime()
                 "feedback" -> feedback = value as String?
                 else -> {
-                    this[CategoryFromInitial(key as String)] = parseSmallMarkGroup(value as JSONObject)
+                    this[categoryFromInitial(key as String)] = parseSmallMarkGroup(value as JSONObject)
                 }
             }
         }
@@ -45,7 +45,7 @@ object CourseListParserV8 {
 
     private fun parseWeightTable(json: JSONObject) = WeightTable().apply {
         json.forEach { key, value ->
-            this[CategoryFromInitial(key as String)] = parseWeight(value as JSONObject)
+            this[categoryFromInitial(key as String)] = parseWeight(value as JSONObject)
         }
     }
 

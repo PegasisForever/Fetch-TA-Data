@@ -1,9 +1,15 @@
 package models
 
 import LogLevel
+import contains
 import log
+import models.Category.*
+import near
+import pow
 import safeDiv
 import sum
+import threshold
+import weightedAvg
 import java.time.LocalDate
 import java.time.ZonedDateTime
 import kotlin.math.abs
@@ -17,26 +23,26 @@ enum class Category(val displayName: String) {
     F("Final / Culminating")
 }
 
-fun CategoryFrom(str: String): Category {
+fun categoryFrom(str: String): Category {
     return when {
-        str.indexOf("Know") != -1 -> Category.KU
-        str.indexOf("Think") != -1 -> Category.T
-        str.indexOf("Commu") != -1 -> Category.C
-        str.indexOf("Appli") != -1 -> Category.A
-        str.indexOf("Other") != -1 -> Category.O
-        str.indexOf("Final") != -1 -> Category.F
+        str.indexOf("Know") != -1 -> KU
+        str.indexOf("Think") != -1 -> T
+        str.indexOf("Commu") != -1 -> C
+        str.indexOf("Appli") != -1 -> A
+        str.indexOf("Other") != -1 -> O
+        str.indexOf("Final") != -1 -> F
         else -> throw Exception("Can't prase category. Text: ${str}")
     }
 }
 
-fun CategoryFromInitial(str: String): Category {
+fun categoryFromInitial(str: String): Category {
     return when (str) {
-        "KU" -> Category.KU
-        "T" -> Category.T
-        "C" -> Category.C
-        "A" -> Category.A
-        "O" -> Category.O
-        "F" -> Category.F
+        "KU" -> KU
+        "T" -> T
+        "C" -> C
+        "A" -> A
+        "O" -> O
+        "F" -> F
         else -> throw Exception("Can't prase category. Text: ${str}")
     }
 }
@@ -155,7 +161,7 @@ class Weight {
 class WeightTable : HashMap<Category, Weight>()
 
 class OverallMark {
-    var mark: Double? = null
+    var mark: Double? = null //scale: 0-100
     var level: String? = null
 
     constructor(m: Double) {
@@ -164,8 +170,32 @@ class OverallMark {
 
     constructor(l: String) {
         level = l
-        log(LogLevel.INFO, "overall level str: \"$l\"")
     }
+
+    fun isInRange(m: Double) =
+        if (mark != null) {
+            mark!! near m threshold 0.1
+        } else {
+            when (level!!.toLowerCase()) {
+                "4+" -> m in 90..100
+                "4" -> m in 80..100
+                "4-" -> m in 80..90
+                "3+" -> m in 75..80
+                "3" -> m in 70..80
+                "3-" -> m in 70..75
+                "2+" -> m in 65..70
+                "2" -> m in 60..70
+                "2-" -> m in 60..65
+                "1+" -> m in 55..60
+                "1" -> m in 50..60
+                "1-" -> m in 50..55
+                "r" -> m in 0..50
+                "" -> m == 0.0
+                else -> false
+            }
+        }
+
+    override fun toString() = "mark: $mark level: $level"
 }
 
 class Course {
@@ -192,6 +222,41 @@ class Course {
         if (weightTable == null) {
             return
         }
+
+        val otherAssignments = assignments!!.filter { it[O]!!.available }
+        val otherSize = otherAssignments.size
+        if (otherSize > 0) for (state in 0 until (2 pow otherSize)) {
+            for (i in 0 until otherSize) {
+                val placement = state and (1 shl i) != 0
+                val assignment = otherAssignments[i]
+                if (placement) {
+                    assignment[O] = assignment[F].takeIf { it!!.available } ?: assignment[O]!!
+                    assignment[F] = SmallMarkGroup()
+                } else {
+                    assignment[F] = assignment[O].takeIf { it!!.available } ?: assignment[F]!!
+                    assignment[O] = SmallMarkGroup()
+                }
+            }
+            val Oavg = otherAssignments.weightedAvg {
+                it[O]!!.percentage weighted it[O]!!.allWeight
+            }
+            val Favg = otherAssignments.weightedAvg {
+                it[F]!!.percentage weighted it[F]!!.allWeight
+            }
+            val expectedO = weightTable!![O]!!.SA
+            val expectedF = weightTable!![F]!!.SA
+            if (expectedO.isInRange(Oavg * 100) && expectedF.isInRange(Favg * 100)) {
+                break
+            } else if (expectedO.isInRange(Favg * 100) && expectedF.isInRange(Oavg * 100)) {
+                otherAssignments.forEach { assignment ->
+                    val temp = assignment[O]
+                    assignment[O] = assignment[F]!!
+                    assignment[F] = temp!!
+                }
+                break
+            }
+        }
+
         var overallGet = 0.0
         var overallTotal = 0.0
         enumValues<Category>().forEach { category ->
@@ -208,10 +273,10 @@ class Course {
             val avg = get / total
             if (total > 0.0) {
                 val weight = weightTable!![category]!!
-                if (weight.SA.mark != null && abs(weight.SA.mark!! - avg * 100) > 0.1) {
+                if (!weight.SA.isInRange(avg * 100)) {
                     log(
                         LogLevel.WARN,
-                        "Calculated SA value of $category is not same as displayed. Calculated:${avg * 100} Displayed:${weight.SA.mark} course code: $code"
+                        "Calculated SA value of $category is not same as displayed. Calculated:${avg * 100} Displayed:${weight.SA} course code: $code"
                     )
                     overallGet += weight.SA.mark!! / 100 * weight.CW
                     overallTotal += weight.CW
