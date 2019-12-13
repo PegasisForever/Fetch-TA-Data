@@ -89,6 +89,7 @@ fun startAutoUpdateThread(intervalMinute: Int): Thread {
             }
 
             val remainTime = interval - (System.currentTimeMillis() - startTime)
+            log(LogLevel.INFO, "Auto update done, ${(System.currentTimeMillis() - startTime) / 1000 / 60} minutes.")
             try {
                 Thread.sleep(remainTime)
             } catch (e: InterruptedException) {
