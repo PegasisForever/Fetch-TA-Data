@@ -42,7 +42,7 @@ fun startServer() {
 
     //private server
     HttpServer.create(InetSocketAddress(5004), 0).run {
-        executor = ThreadPoolExecutor(1, getCoreCount() * 2, 60L, TimeUnit.SECONDS, SynchronousQueue())
+        executor = ThreadPoolExecutor(1, getCoreCount() * 100, 30L, TimeUnit.SECONDS, SynchronousQueue())
         createContext("/getmark_timeline", GetmarkTimeLine.route)
         createContext("/getarchived", GetArchived.route)
         createContext("/feedback", Feedback.route)
@@ -53,7 +53,7 @@ fun startServer() {
 
     //public server
     HttpServer.create(InetSocketAddress(5005), 0).run {
-        executor = ThreadPoolExecutor(1, getCoreCount() * 2, 60L, TimeUnit.SECONDS, SynchronousQueue())
+        executor = ThreadPoolExecutor(1, getCoreCount() * 100, 30L, TimeUnit.SECONDS, SynchronousQueue())
         createContext("/getmark", PublicGetMark.route)
         start()
     }
