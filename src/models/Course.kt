@@ -162,6 +162,27 @@ class WeightTable : HashMap<Category, Weight>()
 
 class OverallMark {
     var mark: Double? = null //scale: 0-100
+        get() = if (field != null) {
+            field
+        } else {
+            when (level!!.toLowerCase()) {
+                "4+" -> 95.0
+                "4" -> 90.0
+                "4-" -> 85.0
+                "3+" -> 77.5
+                "3" -> 75.0
+                "3-" -> 72.5
+                "2+" -> 67.5
+                "2" -> 65.0
+                "2-" -> 62.5
+                "1+" -> 57.5
+                "1" -> 55.0
+                "1-" -> 52.5
+                "r" -> 50.0
+                "" -> 0.0
+                else -> 0.0
+            }
+        }
     var level: String? = null
 
     constructor(m: Double) {
@@ -271,8 +292,8 @@ class Course {
             }
 
             val avg = get / total
+            val weight = weightTable!![category]!!
             if (total > 0.0) {
-                val weight = weightTable!![category]!!
                 if (!weight.SA.isInRange(avg * 100)) {
                     log(
                         LogLevel.WARN,
@@ -285,6 +306,9 @@ class Course {
                     overallGet += avg * weight.CW
                     overallTotal += weight.CW
                 }
+            } else if (weight.SA.mark!! > 0) {
+                overallGet += weight.SA.mark!! / 100 * weight.CW
+                overallTotal += weight.CW
             }
         }
 
