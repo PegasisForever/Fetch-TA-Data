@@ -12,7 +12,6 @@ import threshold
 import weightedAvg
 import java.time.LocalDate
 import java.time.ZonedDateTime
-import kotlin.math.abs
 
 enum class Category(val displayName: String) {
     KU("Knowledge / Understanding"),
@@ -196,7 +195,7 @@ class OverallMark {
     }
 
     fun isInRange(m: Double) =
-        if (mark != null) {
+        if (level == null) {
             mark!! near m threshold 0.1
         } else {
             when (level!!.toLowerCase()) {
@@ -316,10 +315,10 @@ class Course {
 
         val overallAvg = overallGet / overallTotal
         if (overallTotal > 0.0) {
-            if (overallMark?.mark != null && abs(overallMark!!.mark!! - overallAvg * 100) > 0.1) {
+            if (!overallMark!!.isInRange(overallAvg * 100)) {
                 log(
                     LogLevel.WARN,
-                    "Calculated overall value is not same as displayed. Calculated:${overallAvg * 100} Displayed:${overallMark?.mark} course code: $code"
+                    "Calculated overall value is not same as displayed. Calculated:${overallAvg * 100} Displayed:${overallMark} course code: $code"
                 )
             } else {
                 overallMark = OverallMark(overallAvg * 100)
