@@ -84,8 +84,10 @@ class SmallMarkGroup : ArrayList<SmallMark>() {
             var get = 0.0
             var total = 0.0
             forEach { smallMark ->
-                get += smallMark.percentage * smallMark.weight
-                total += smallMark.weight
+                if (smallMark.finished) {
+                    get += smallMark.percentage * smallMark.weight
+                    total += smallMark.weight
+                }
             }
             return get safeDiv total
         }
