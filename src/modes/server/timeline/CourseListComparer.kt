@@ -20,7 +20,7 @@ fun compareAssignments(
             updateList += AssignmentAdded().apply {
                 courseName = newCourse.displayName
                 this.assignment = assignment
-                assignmentAvg = assignment.getAverage(newCourse.weightTable!!)
+                assignmentAvg = assignment.getAverage(newCourse.weightTable!!) * 100
                 overallBefore = oldCourse.overallMark?.mark
                 overallAfter = newCourse.overallMark!!.mark!!
                 time = compareTime
@@ -30,10 +30,10 @@ fun compareAssignments(
                 courseName = newCourse.displayName
                 assignmentName = assignment.name
                 assignmentBefore = oldAssignment
-                assignmentAvgBefore = oldAssignment.getAverage(oldCourse.weightTable!!)
+                assignmentAvgBefore = oldAssignment.getAverage(oldCourse.weightTable!!) * 100
                 overallBefore = oldCourse.overallMark?.mark
                 assignmentAfter = assignment
-                assignmentAvgAfter = assignment.getAverage(newCourse.weightTable!!)
+                assignmentAvgAfter = assignment.getAverage(newCourse.weightTable!!) * 100
                 overallAfter = newCourse.overallMark?.mark
                 time = compareTime
             }
