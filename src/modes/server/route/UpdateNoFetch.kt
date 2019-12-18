@@ -41,7 +41,7 @@ object UpdateNoFetch {
             "Request #$hash /update_nofetch <- $ipAddress, api version=$reqApiVersion, data=$reqString"
         )
 
-        if (exchange.returnIfApiVersionInsufficient()) {
+        if (exchange.returnIfApiVersionInsufficient(7)) {
             log(LogLevel.INFO, "Request #$hash /update_nofetch -> $ipAddress, api version insufficient")
             return@out
         }

@@ -7,6 +7,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils
 import org.json.simple.parser.JSONParser
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.lang.Integer.max
 import java.math.RoundingMode
 import java.nio.charset.StandardCharsets.UTF_8
 import java.nio.file.Files
@@ -126,8 +127,8 @@ fun HttpExchange.send(statusCode: Int, body: ByteArray = ByteArray(0)) {
     responseBody.close()
 }
 
-fun HttpExchange.returnIfApiVersionInsufficient(): Boolean {
-    if (getApiVersion() < minApiVersion) {
+fun HttpExchange.returnIfApiVersionInsufficient(minApi: Int = 0): Boolean {
+    if (getApiVersion() < max(minApi, minApiVersion)) {
         send(426)
         return true
     }
