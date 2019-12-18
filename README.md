@@ -16,49 +16,17 @@ My YRDSB Teach Assist Web <-┘
 
 ## To Get JSON-Formatted Data From TA
 
-Run command line: `java -jar fetch_ta_data.jar [student_number] [password]`
+`java -jar fetch_ta_data.jar getmark [student_number] [password]`
 
-## To Run as Server
+add `-h` to get help
 
-1. Create following folders and files:
+## To Run as a Server
 
-   ```
-   ├── data
-   │   ├── timelines
-   │   ├── courselists
-   │   ├── courselists-history
-   │   ├── courselists-archived
-   │   ├── log
-   │   ├── feedback.txt
-   │   ├── serviceAccountKey.json
-   │   ├── config.json
-   │   └── users.json
-   └── fetch_ta_data.jar
-   ```
+`java -jar fetch_ta_data.jar server`
 
-   Text in `config.json`:
+add `-h` to get help
 
-   ```json
-   {
-     "notification": true,
-     "auto_update": true,
-     "auto_update_interval_minute": 40
-   }
-   ```
-
-   Text in `users.json`:
-
-   ```json
-   []
-   ```
-
-   `serviceAccountKey.json` is used for sending FCM messages, you can get this file from FCM.
-
-   Leave other folders and files blank.
-
-2. Run command line: `java -jar fetch_ta_data.jar server`
-
-3. The private server for app will start on port `5004` and the public server is on port `5005`.
+The config file is `data/config.json`. If you need to send notifications, you need to add `data/serviceAccountKey.json` file (download it from firebase cloud messaging)
 
 ## Support Me
 

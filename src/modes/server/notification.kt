@@ -8,6 +8,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingException
 import com.google.firebase.messaging.Message
 import com.google.firebase.messaging.Notification
+import fileExists
 import log
 import java.io.FileInputStream
 
@@ -22,6 +23,10 @@ fun sendFCM(token: String, notification: modes.server.timeline.Notification): Bo
     var deviceExists = true
 
     if (!initialized) {
+        if (!fileExists("data/serviceAccountKey.json")) {
+            log(LogLevel.WARN, "data/serviceAccountKey.json doesn't exist, can't send notifications.")
+            return true
+        }
         val serviceAccount = FileInputStream("data/serviceAccountKey.json")
 
         val options = FirebaseOptions.Builder()
