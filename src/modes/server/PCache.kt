@@ -20,6 +20,7 @@ object PCache {
     private val archivedCourseListCacheMap = HashMap<String, CourseList>()
     private val timeLineCacheMap = HashMap<String, TimeLine>()
 
+    @Synchronized
     fun save(number: String, courseList: CourseList) {
         courseListCacheMap[number] = courseList
         val str = courseList.serialize().toJSONString()
@@ -27,11 +28,13 @@ object PCache {
         str.writeToFile("data/courselists-history/$number/${Date().time}.json")
     }
 
+    @Synchronized
     fun saveArchive(number: String, courseList: CourseList) {
         archivedCourseListCacheMap[number] = courseList
         courseList.serialize().toJSONString().writeToFile("data/courselists-archived/$number.json")
     }
 
+    @Synchronized
     fun save(number: String, timeLine: TimeLine) {
         timeLineCacheMap[number] = timeLine
         timeLine.serialize().toJSONString().writeToFile("data/timelines/$number.json")

@@ -7,7 +7,7 @@ import org.json.simple.JSONObject
 import readFile
 import writeToFile
 import java.util.*
-import kotlin.collections.ArrayList
+import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.collections.HashSet
 
 class Device() {
@@ -99,7 +99,7 @@ class User() {
             }
         }
 
-        val allUsers = ArrayList<User>()
+        val allUsers = CopyOnWriteArrayList<User>()
         private const val fileName = "data/users.json"
 
         fun init() {
