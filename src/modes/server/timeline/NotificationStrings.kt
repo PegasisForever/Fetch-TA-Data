@@ -190,7 +190,7 @@ object NotificationStrings {
                         overallBefore!! < overallAfter -> {
                             "课程总分从 ${overallBefore!!.toRoundString(1)}% " +
                                     "升高到了 ${overallAfter.toRoundString(1)}%" +
-                                    "（+${(overallAfter + overallBefore!!).toRoundString(1)}%）"
+                                    "（+${(overallAfter - overallBefore!!).toRoundString(1)}%）"
                         }
 
                         //wtf
