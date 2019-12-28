@@ -161,7 +161,7 @@ enum class LogLevel {
 
 private val logDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
 val fileDateFormat = SimpleDateFormat("yyyy-MM-dd")
-const val serverBuildNumber = 32
+const val serverBuildNumber = 33
 var isQuiet = false
 fun log(level: LogLevel, msg: String, throwable: Throwable? = null) {
     if (isQuiet) {
