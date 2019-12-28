@@ -6,7 +6,6 @@ import log
 import models.CourseList
 import models.TimeLine
 import models.User
-import modes.server.sendFCM
 import modes.server.storage.LastUpdateTime
 import modes.server.storage.PCache
 import modes.server.storage.save

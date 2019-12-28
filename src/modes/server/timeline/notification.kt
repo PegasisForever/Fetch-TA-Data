@@ -1,4 +1,4 @@
-package modes.server
+package modes.server.timeline
 
 import LogLevel
 import com.google.auth.oauth2.GoogleCredentials

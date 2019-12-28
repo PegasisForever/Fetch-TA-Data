@@ -50,6 +50,7 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, publicPort: Int) {
             executor = ThreadPoolExecutor(1, getCoreCount() * 100, 30L, TimeUnit.SECONDS, SynchronousQueue())
             createContext("/getmark_timeline", GetmarkTimeLine.route)
             createContext("/getcalendar", GetCalendar.route)
+            createContext("/getannouncement", GetAnnouncement.route)
             createContext("/update_nofetch", UpdateNoFetch.route)
             createContext("/getarchived", GetArchived.route)
             createContext("/feedback", Feedback.route)
