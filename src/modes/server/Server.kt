@@ -47,6 +47,7 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, publicPort: Int) {
         HttpServer.create(InetSocketAddress(privatePort), 0).run {
             executor = ThreadPoolExecutor(1, getCoreCount() * 100, 30L, TimeUnit.SECONDS, SynchronousQueue())
             createContext("/getmark_timeline", GetmarkTimeLine.route)
+            createContext("/getcalendar", GetCalendar.route)
             createContext("/update_nofetch", UpdateNoFetch.route)
             createContext("/getarchived", GetArchived.route)
             createContext("/feedback", Feedback.route)
