@@ -9,10 +9,12 @@ import jsonParser
 import log
 import models.User
 import modes.server.serializers.serialize
+import modes.server.storage.LastUpdateTime
 import modes.server.storage.PCache
 import org.json.simple.JSONObject
 import returnIfApiVersionInsufficient
 import send
+import toJSONString
 
 object UpdateNoFetch {
     private class ReqData(req: String, version: Int) {
@@ -52,8 +54,9 @@ object UpdateNoFetch {
                     log(LogLevel.INFO, "Request #$hash /update_nofetch :: User validated")
                     User.add(this)
                     res = JSONObject().apply {
-                        put("time_line", PCache.readTimeLine(number).serialize(reqApiVersion))
-                        put("course_list", PCache.readCourseList(number).serialize(reqApiVersion))
+                        this["time_line"] = PCache.readTimeLine(number).serialize(reqApiVersion)
+                        this["course_list"] = PCache.readCourseList(number).serialize(reqApiVersion)
+                        this["update_time"] = LastUpdateTime[number]?.toJSONString()
                     }.toJSONString()
                 } else {
                     log(LogLevel.INFO, "Request #$hash /update_nofetch :: Wrong user or password")

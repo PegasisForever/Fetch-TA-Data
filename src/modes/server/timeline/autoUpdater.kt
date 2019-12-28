@@ -7,10 +7,12 @@ import models.CourseList
 import models.TimeLine
 import models.User
 import modes.server.sendFCM
+import modes.server.storage.LastUpdateTime
 import modes.server.storage.PCache
 import modes.server.storage.save
 import modes.server.storage.saveArchive
 import webpage.LoginPage
+import java.time.ZonedDateTime
 import java.util.concurrent.atomic.AtomicBoolean
 
 fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
@@ -45,6 +47,8 @@ fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
 
             sendNotifications(user, updates)
         }
+
+        LastUpdateTime[studentNumber] = ZonedDateTime.now()
     } catch (e: LoginException) {
         log(LogLevel.INFO, "Error while performing update for user ${studentNumber}: Login error")
     } catch (e: Exception) {

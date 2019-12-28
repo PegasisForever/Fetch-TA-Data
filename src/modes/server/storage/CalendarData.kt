@@ -1,10 +1,6 @@
 package modes.server.storage
 
-import jsonParser
-import org.json.simple.JSONArray
-
-val CalendarData = """
-[
+const val CalendarData = """[
   {
     "name": {
       "zh": "劳动节",
@@ -143,5 +139,3 @@ val CalendarData = """
   }
 ]
 """
-    .let { jsonParser.parse(it) as JSONArray }
-    .toJSONString() //remove all new lines and spaces
