@@ -28,10 +28,6 @@
       <root url="jar://$PROJECT_DIR$/lib/xml-apis-1.4.01.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES>
-      <root url="jar://$USER_HOME$/.ideaLibSources/htmlunit-2.33-sources.jar!/" />
-      <root url="jar://$USER_HOME$/.ideaLibSources/commons-io-2.6-sources.jar!/" />
-      <root url="jar://$USER_HOME$/.ideaLibSources/commons-lang3-3.8-sources.jar!/" />
-    </SOURCES>
+    <SOURCES />
   </library>
 </component>
