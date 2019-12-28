@@ -4,7 +4,7 @@ import LogLevel
 import com.sun.net.httpserver.HttpExchange
 import getIP
 import log
-import modes.server.CalendarData
+import modes.server.storage.CalendarData
 import send
 
 object GetCalendar {

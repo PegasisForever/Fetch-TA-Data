@@ -1,4 +1,4 @@
-package modes.server
+package modes.server.storage
 
 import jsonParser
 import org.json.simple.JSONArray

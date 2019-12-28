@@ -7,6 +7,8 @@ import log
 import logUnhandled
 import models.User
 import modes.server.route.*
+import modes.server.storage.Config
+import modes.server.storage.initFiles
 import modes.server.timeline.autoUpdateThreadRunning
 import modes.server.timeline.startAutoUpdateThread
 import java.lang.Thread.setDefaultUncaughtExceptionHandler

@@ -1,4 +1,4 @@
-package modes.server
+package modes.server.storage
 
 import fileExists
 import writeToFile

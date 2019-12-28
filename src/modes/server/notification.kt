@@ -10,6 +10,7 @@ import com.google.firebase.messaging.Message
 import com.google.firebase.messaging.Notification
 import fileExists
 import log
+import modes.server.storage.Config
 import java.io.FileInputStream
 
 private var initialized = false
