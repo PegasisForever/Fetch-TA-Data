@@ -6,6 +6,7 @@ import site.pegasis.ta.fetch.getCoreCount
 import site.pegasis.ta.fetch.log
 import site.pegasis.ta.fetch.logUnhandled
 import site.pegasis.ta.fetch.models.User
+import site.pegasis.ta.fetch.modes.server.controller.Controller
 import site.pegasis.ta.fetch.modes.server.route.*
 import site.pegasis.ta.fetch.modes.server.storage.Config
 import site.pegasis.ta.fetch.modes.server.storage.initFiles
@@ -20,7 +21,7 @@ import java.util.concurrent.TimeUnit
 const val minApiVersion = 4
 const val latestApiVersion = 9
 
-fun startServer(enablePrivate: Boolean, privatePort: Int, publicPort: Int) {
+fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort:Int, publicPort: Int) {
     var autoUpdateThread: Thread? = null
 
     log(
@@ -67,6 +68,15 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, publicPort: Int) {
         log(
             LogLevel.INFO,
             "Private server started on port $privatePort"
+        )
+
+        HttpServer.create(InetSocketAddress(controlPort), 0).run {
+            createContext("/", Controller.route)
+            start()
+        }
+        log(
+            LogLevel.INFO,
+            "Private server controller started on port $controlPort"
         )
     }
 

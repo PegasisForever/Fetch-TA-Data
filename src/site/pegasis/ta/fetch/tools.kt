@@ -9,6 +9,8 @@ import site.pegasis.ta.fetch.modes.server.latestApiVersion
 import site.pegasis.ta.fetch.modes.server.minApiVersion
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.PrintWriter
+import java.io.StringWriter
 import java.lang.Integer.max
 import java.math.RoundingMode
 import java.nio.charset.StandardCharsets.UTF_8
@@ -312,4 +314,11 @@ infix fun Pair<Double, Double>.threshold(t: Double) = abs(first - second) < t
 
 operator fun ClosedRange<Int>.contains(value: Double): Boolean {
     return value >= start && value <= endInclusive
+}
+
+fun Throwable.toStackTrace(): String {
+    val sw = StringWriter()
+    val pw = PrintWriter(sw)
+    printStackTrace(pw)
+    return sw.toString()
 }

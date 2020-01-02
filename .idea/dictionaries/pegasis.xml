@@ -2,12 +2,14 @@
   <dictionary name="pegasis">
     <words>
       <w>deregi</w>
+      <w>fetchta</w>
       <w>gargoylesoftware</w>
       <w>getarchived</w>
       <w>getmark</w>
       <w>noti</w>
       <w>regi</w>
       <w>testall</w>
+      <w>yrdsb</w>
     </words>
   </dictionary>
 </component>

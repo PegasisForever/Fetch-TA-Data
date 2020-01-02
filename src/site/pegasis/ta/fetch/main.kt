@@ -1,68 +1,105 @@
 package site.pegasis.ta.fetch
 
-import com.github.ajalt.clikt.core.CliktCommand
-import com.github.ajalt.clikt.core.subcommands
-import com.github.ajalt.clikt.parameters.arguments.argument
-import com.github.ajalt.clikt.parameters.options.default
-import com.github.ajalt.clikt.parameters.options.flag
-import com.github.ajalt.clikt.parameters.options.option
-import com.github.ajalt.clikt.parameters.types.choice
-import com.github.ajalt.clikt.parameters.types.int
+import picocli.CommandLine
 import site.pegasis.ta.fetch.modes.getMark
-import site.pegasis.ta.fetch.modes.server.parsers.CourseListParsers
+import site.pegasis.ta.fetch.modes.server.latestApiVersion
+import site.pegasis.ta.fetch.modes.server.minApiVersion
 import site.pegasis.ta.fetch.modes.server.startServer
+import java.util.concurrent.Callable
 import java.util.logging.Level
 
-fun main(args: Array<String>) = FetchTa()
-    .subcommands(GetMark(), Server())
-    .main(args)
+fun main(args: Array<String>) {
+    CommandLine(FetchTa())
+        .addSubcommand(GetMark())
+        .addSubcommand(Server())
+        .execute(*args)
+}
 
-class FetchTa : CliktCommand() {
-    override fun run() {
+@CommandLine.Command(
+    name = "fetchta",
+    mixinStandardHelpOptions = true,
+    version = ["BN$serverBuildNumber"]
+)
+class FetchTa : Callable<Unit> {
+    override fun call() {
         java.util.logging.Logger.getLogger("com.gargoylesoftware").level = Level.OFF
     }
 }
 
-class GetMark : CliktCommand(help = "Fetch a student's mark from YRDSB Teach Assist") {
-    private val studentNumber by argument()
-    private val password by argument()
-    private val apiLevel by option(
-        "--api", "-a",
-        help = "API Level of the output JSON, default to ${CourseListParsers.keys.max()}"
-    )
-        .choice(*CourseListParsers.keys.map { it.toString() }.toTypedArray())
-        .default(CourseListParsers.keys.max()!!.toString())
-    private val quiet by option(
-        "--quiet", "-q",
-        help = "Don't output logs"
-    )
-        .flag(default = false)
+class ApiVersionConverter : CommandLine.ITypeConverter<Int> {
+    override fun convert(p0: String): Int {
+        val apiVersion = p0.toInt()
+        if (apiVersion < minApiVersion || apiVersion > latestApiVersion) {
+            error("Api version must between $minApiVersion and $latestApiVersion.")
+        }
+        return apiVersion
+    }
 
-    override fun run() {
-        getMark(studentNumber, password, apiLevel.toInt(), quiet)
+}
+
+@CommandLine.Command(
+    description = ["Fetch a student's mark from YRDSB Teach Assist"],
+    name = "getmark",
+    mixinStandardHelpOptions = true,
+    version = ["BN$serverBuildNumber"]
+)
+class GetMark : Callable<Unit> {
+    @CommandLine.Parameters(index = "0")
+    private var studentNumber = ""
+
+    @CommandLine.Parameters(index = "1")
+    private var password = ""
+
+    @CommandLine.Option(
+        names = ["--api", "-a"],
+        description = ["API Level of the output JSON, default to $latestApiVersion."],
+        converter = [ApiVersionConverter::class]
+    )
+    private var apiLevel = latestApiVersion
+
+    @CommandLine.Option(
+        names = ["--quiet", "-q"],
+        description = ["Don't output logs."]
+    )
+    private var quiet = false
+
+    override fun call() {
+        getMark(studentNumber, password, apiLevel, quiet)
     }
 }
 
-class Server : CliktCommand(help = "Run as a server of unofficial YRDSB Teach Assist") {
-    private val enablePrivate by option(
-        "--enable-private", "-p",
-        help = "Enable private server"
+@CommandLine.Command(
+    description = ["Run as a server of unofficial YRDSB Teach Assist"],
+    name = "server",
+    mixinStandardHelpOptions = true,
+    version = ["BN$serverBuildNumber"]
+)
+class Server : Callable<Unit> {
+    @CommandLine.Option(
+        names = ["--enable-private", "-p"],
+        description = ["Enable private server."]
     )
-        .flag(default = false)
-    private val privatePort by option(
-        "--private-port",
-        help = "Port of private server, default to 5004"
-    )
-        .int()
-        .default(5004)
-    private val publicPort by option(
-        "--public-port",
-        help = "Port of public server, default to 5005"
-    )
-        .int()
-        .default(5005)
+    private var enablePrivate = false
 
-    override fun run() {
-        startServer(enablePrivate, privatePort, publicPort)
+    @CommandLine.Option(
+        names = ["--private-port"],
+        description = ["Port of private server, default to 5004."]
+    )
+    private var privatePort = 5004
+
+    @CommandLine.Option(
+        names = ["--control-port"],
+        description = ["Control port of private server, default to 5006."]
+    )
+    private var controlPort = 5006
+
+    @CommandLine.Option(
+        names = ["--public-port"],
+        description = ["Port of public server, default to 5005."]
+    )
+    private var publicPort = 5005
+
+    override fun call() {
+        startServer(enablePrivate, privatePort, controlPort, publicPort)
     }
 }
