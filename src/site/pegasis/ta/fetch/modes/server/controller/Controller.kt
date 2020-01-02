@@ -40,13 +40,16 @@ object Controller {
             val stringWriter = StringWriter()
             val printWriter = PrintWriter(stringWriter)
 
+            val errStringWriter = StringWriter()
+            val errPrintWriter = PrintWriter(errStringWriter)
+
             val commandLine = CommandLine(TAControl())
                 .addSubcommand(Reload(printWriter))
             commandLine.out = printWriter
-            commandLine.err = printWriter
+            commandLine.err = errPrintWriter
             commandLine.execute(*args)
 
-            res = stringWriter.toString()
+            res = stringWriter.toString() + ANSI_RED + errStringWriter.toString() + ANSI_RESET
 
             log(
                 LogLevel.INFO,
