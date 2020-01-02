@@ -2,9 +2,22 @@ package site.pegasis.ta.fetch.modes.server.controller
 
 import com.sun.net.httpserver.HttpExchange
 import org.json.simple.JSONArray
+import picocli.CommandLine
 import site.pegasis.ta.fetch.*
+import java.io.PrintWriter
+import java.io.StringWriter
+import java.util.concurrent.Callable
 
 object Controller {
+
+    @CommandLine.Command(
+        name = "tacontrol",
+        mixinStandardHelpOptions = true,
+        version = ["BN$serverBuildNumber"]
+    )
+    class TAControl : Callable<Unit> {
+        override fun call() {}
+    }
 
     val route = { exchange: HttpExchange ->
         var statusCode = 200
@@ -22,7 +35,23 @@ object Controller {
         try {
             val args = (jsonParser.parse(reqString) as JSONArray)
                 .map { it as String }
+                .toTypedArray()
 
+            val stringWriter = StringWriter()
+            val printWriter = PrintWriter(stringWriter)
+
+            val commandLine = CommandLine(TAControl())
+                .addSubcommand(Reload(printWriter))
+            commandLine.out = printWriter
+            commandLine.err = printWriter
+            commandLine.execute(*args)
+
+            res = stringWriter.toString()
+
+            log(
+                LogLevel.INFO,
+                "Control #$hash -> $ipAddress, data=$res"
+            )
         } catch (e: Throwable) {
             log(
                 LogLevel.ERROR,
@@ -30,7 +59,7 @@ object Controller {
                 e
             )
             statusCode = 500
-            res =  ANSI_RED + e.toStackTrace() + ANSI_RESET
+            res = ANSI_RED + e.toStackTrace() + ANSI_RESET
         }
 
         exchange.send(statusCode, res, false)

@@ -5,7 +5,10 @@ import site.pegasis.ta.fetch.*
 import java.time.ZonedDateTime
 
 object LastUpdateTime {
-    private val updateTimeMap = HashMap<String, ZonedDateTime>().apply {
+    private val updateTimeMap = HashMap<String, ZonedDateTime>()
+
+    fun load(){
+        updateTimeMap.clear()
         val jsonObject = jsonParser.parse(readFile("data/lastUpdateTime.json")) as JSONObject
         jsonObject.forEach { jsonNumber, jsonTime ->
             this[jsonNumber as String] = (jsonTime as String).toZonedDateTime()

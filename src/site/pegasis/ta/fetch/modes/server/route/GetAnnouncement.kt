@@ -2,6 +2,7 @@ package site.pegasis.ta.fetch.modes.server.route
 
 import com.sun.net.httpserver.HttpExchange
 import site.pegasis.ta.fetch.*
+import site.pegasis.ta.fetch.modes.server.storage.PCache
 
 object GetAnnouncement {
     val route = { exchange: HttpExchange ->
@@ -14,7 +15,7 @@ object GetAnnouncement {
 
         exchange.send(
             200, try {
-                readFile("data/announcement.txt")
+                PCache.getAnnouncement()
             } catch (e: Throwable) {
                 ""
             }

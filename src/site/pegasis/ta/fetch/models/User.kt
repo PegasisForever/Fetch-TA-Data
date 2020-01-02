@@ -102,7 +102,8 @@ class User() {
         val allUsers = CopyOnWriteArrayList<User>()
         private const val fileName = "data/users.json"
 
-        fun init() {
+        fun load() {
+            allUsers.clear()
             val users = jsonParser.parse(
                 readFile(fileName)
             ) as JSONArray

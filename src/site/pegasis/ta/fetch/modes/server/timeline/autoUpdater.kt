@@ -6,10 +6,7 @@ import site.pegasis.ta.fetch.log
 import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.TimeLine
 import site.pegasis.ta.fetch.models.User
-import site.pegasis.ta.fetch.modes.server.storage.LastUpdateTime
-import site.pegasis.ta.fetch.modes.server.storage.PCache
-import site.pegasis.ta.fetch.modes.server.storage.save
-import site.pegasis.ta.fetch.modes.server.storage.saveArchive
+import site.pegasis.ta.fetch.modes.server.storage.*
 import site.pegasis.ta.fetch.webpage.LoginPage
 import java.time.ZonedDateTime
 import java.util.concurrent.atomic.AtomicBoolean
@@ -91,9 +88,21 @@ fun sendNotifications(user: User, updateList: TimeLine) {
     }
 }
 
-var autoUpdateThreadRunning = AtomicBoolean(false)
-fun startAutoUpdateThread(intervalMinute: Int): Thread {
-    val interval = intervalMinute * 60 * 1000
+
+fun updateAutoUpdateThread(){
+    if (Config.autoUpdateEnabled) {
+        startAutoUpdateThread()
+    }else{
+        stopAutoUpdateThread()
+    }
+}
+
+private var autoUpdateThread: Thread? = null
+private val autoUpdateThreadRunning = AtomicBoolean(false)
+
+fun startAutoUpdateThread() {
+    if (autoUpdateThreadRunning.get()) return
+
     val thread = Thread({
         autoUpdateThreadRunning.set(true)
         log(
@@ -110,6 +119,7 @@ fun startAutoUpdateThread(intervalMinute: Int): Thread {
                 )
             }
 
+            val interval = Config.autoUpdateIntervalMinute * 60 * 1000
             val remainTime = interval - (System.currentTimeMillis() - startTime)
             log(
                 LogLevel.INFO,
@@ -124,6 +134,7 @@ fun startAutoUpdateThread(intervalMinute: Int): Thread {
                 )
             }
         }
+        autoUpdateThreadRunning.set(false)
         log(
             LogLevel.INFO,
             "Thread stopped"
@@ -131,5 +142,12 @@ fun startAutoUpdateThread(intervalMinute: Int): Thread {
     }, "AutoUpdateThread")
     thread.start()
 
-    return thread
+    autoUpdateThread = thread
+}
+
+fun stopAutoUpdateThread() {
+    if (!autoUpdateThreadRunning.get()) return
+
+    autoUpdateThreadRunning.set(false)
+    autoUpdateThread?.interrupt()
 }

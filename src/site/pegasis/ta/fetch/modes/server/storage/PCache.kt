@@ -14,6 +14,14 @@ object PCache {
     private val courseListCacheMap = HashMap<String, CourseList>()
     private val archivedCourseListCacheMap = HashMap<String, CourseList>()
     private val timeLineCacheMap = HashMap<String, TimeLine>()
+    private var announcementCache:String?=null
+
+    fun clearCache(){
+        courseListCacheMap.clear()
+        archivedCourseListCacheMap.clear()
+        timeLineCacheMap.clear()
+        announcementCache=null
+    }
 
     @Synchronized
     fun save(number: String, courseList: CourseList) {
@@ -33,6 +41,13 @@ object PCache {
     fun save(number: String, timeLine: TimeLine) {
         timeLineCacheMap[number] = timeLine
         timeLine.serialize().toJSONString().writeToFile("data/timelines/$number.json")
+    }
+
+    fun getAnnouncement():String{
+        if (announcementCache==null){
+            announcementCache=readFile("data/announcement.txt")
+        }
+        return announcementCache!!
     }
 
     fun isExistsBefore(number: String): Boolean {

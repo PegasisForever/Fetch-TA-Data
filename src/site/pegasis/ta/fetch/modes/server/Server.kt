@@ -9,9 +9,10 @@ import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.controller.Controller
 import site.pegasis.ta.fetch.modes.server.route.*
 import site.pegasis.ta.fetch.modes.server.storage.Config
+import site.pegasis.ta.fetch.modes.server.storage.LastUpdateTime
 import site.pegasis.ta.fetch.modes.server.storage.initFiles
-import site.pegasis.ta.fetch.modes.server.timeline.autoUpdateThreadRunning
-import site.pegasis.ta.fetch.modes.server.timeline.startAutoUpdateThread
+import site.pegasis.ta.fetch.modes.server.timeline.updateAutoUpdateThread
+import site.pegasis.ta.fetch.modes.server.timeline.stopAutoUpdateThread
 import java.lang.Thread.setDefaultUncaughtExceptionHandler
 import java.net.InetSocketAddress
 import java.util.concurrent.SynchronousQueue
@@ -22,8 +23,6 @@ const val minApiVersion = 4
 const val latestApiVersion = 9
 
 fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort:Int, publicPort: Int) {
-    var autoUpdateThread: Thread? = null
-
     log(
         LogLevel.INFO,
         "Starting server"
@@ -34,8 +33,7 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort:Int, publi
     }
     Runtime.getRuntime().addShutdownHook(object : Thread() {
         override fun run() {
-            autoUpdateThreadRunning.set(false)
-            autoUpdateThread?.interrupt()
+            stopAutoUpdateThread()
             log(
                 LogLevel.INFO,
                 "Server stopped"
@@ -45,11 +43,11 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort:Int, publi
 
     initFiles()
 
-    User.init()
+    Config.load()
+    LastUpdateTime.load()
+    User.load()
 
-    if (Config.autoUpdateEnabled) {
-        autoUpdateThread = startAutoUpdateThread(Config.autoUpdateIntervalMinute)
-    }
+    updateAutoUpdateThread()
 
     //private server
     if (enablePrivate) {
