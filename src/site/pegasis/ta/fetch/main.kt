@@ -1,6 +1,7 @@
 package site.pegasis.ta.fetch
 
 import picocli.CommandLine
+import picocli.CommandLine.*
 import site.pegasis.ta.fetch.modes.getMark
 import site.pegasis.ta.fetch.modes.server.latestApiVersion
 import site.pegasis.ta.fetch.modes.server.minApiVersion
@@ -15,7 +16,7 @@ fun main(args: Array<String>) {
         .execute(*args)
 }
 
-@CommandLine.Command(
+@Command(
     name = "fetchta",
     mixinStandardHelpOptions = true,
     version = ["BN$serverBuildNumber"]
@@ -37,20 +38,20 @@ class ApiVersionConverter : CommandLine.ITypeConverter<Int> {
 
 }
 
-@CommandLine.Command(
+@Command(
     description = ["Fetch a student's mark from YRDSB Teach Assist"],
     name = "getmark",
     mixinStandardHelpOptions = true,
     version = ["BN$serverBuildNumber"]
 )
 class GetMark : Callable<Unit> {
-    @CommandLine.Parameters(index = "0")
+    @Parameters(index = "0")
     private var studentNumber = ""
 
-    @CommandLine.Parameters(index = "1")
+    @Parameters(index = "1")
     private var password = ""
 
-    @CommandLine.Option(
+    @Option(
         names = ["--api", "-a"],
         description = ["API Level of the output JSON, default to $latestApiVersion."],
         converter = [ApiVersionConverter::class]
@@ -68,32 +69,32 @@ class GetMark : Callable<Unit> {
     }
 }
 
-@CommandLine.Command(
+@Command(
     description = ["Run as a server of unofficial YRDSB Teach Assist"],
     name = "server",
     mixinStandardHelpOptions = true,
     version = ["BN$serverBuildNumber"]
 )
 class Server : Callable<Unit> {
-    @CommandLine.Option(
+    @Option(
         names = ["--enable-private", "-p"],
         description = ["Enable private server."]
     )
     private var enablePrivate = false
 
-    @CommandLine.Option(
+    @Option(
         names = ["--private-port"],
         description = ["Port of private server, default to 5004."]
     )
     private var privatePort = 5004
 
-    @CommandLine.Option(
+    @Option(
         names = ["--control-port"],
         description = ["Control port of private server, default to 5006."]
     )
     private var controlPort = 5006
 
-    @CommandLine.Option(
+    @Option(
         names = ["--public-port"],
         description = ["Port of public server, default to 5005."]
     )

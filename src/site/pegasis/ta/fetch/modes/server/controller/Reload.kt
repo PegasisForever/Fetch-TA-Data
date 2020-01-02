@@ -1,6 +1,6 @@
 package site.pegasis.ta.fetch.modes.server.controller
 
-import picocli.CommandLine
+import picocli.CommandLine.*
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.storage.Config
 import site.pegasis.ta.fetch.modes.server.storage.LastUpdateTime
@@ -10,7 +10,7 @@ import site.pegasis.ta.fetch.serverBuildNumber
 import java.io.PrintWriter
 import java.util.concurrent.Callable
 
-@CommandLine.Command(
+@Command(
     name = "reload",
     description = ["Reload server config and all cached file"],
     mixinStandardHelpOptions = true,

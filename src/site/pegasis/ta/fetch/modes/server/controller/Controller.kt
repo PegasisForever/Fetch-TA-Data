@@ -3,14 +3,14 @@ package site.pegasis.ta.fetch.modes.server.controller
 import com.sun.net.httpserver.HttpExchange
 import org.json.simple.JSONArray
 import picocli.CommandLine
+import picocli.CommandLine.*
 import site.pegasis.ta.fetch.*
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.util.concurrent.Callable
 
 object Controller {
-
-    @CommandLine.Command(
+    @Command(
         name = "tacontrol",
         mixinStandardHelpOptions = true,
         version = ["BN$serverBuildNumber"]
