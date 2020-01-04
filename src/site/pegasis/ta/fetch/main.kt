@@ -27,7 +27,7 @@ class FetchTa : Callable<Unit> {
     }
 }
 
-class ApiVersionConverter : CommandLine.ITypeConverter<Int> {
+class ApiVersionConverter : ITypeConverter<Int> {
     override fun convert(p0: String): Int {
         val apiVersion = p0.toInt()
         if (apiVersion < minApiVersion || apiVersion > latestApiVersion) {

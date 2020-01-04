@@ -89,10 +89,10 @@ fun sendNotifications(user: User, updateList: TimeLine) {
 }
 
 
-fun updateAutoUpdateThread(){
+fun updateAutoUpdateThread() {
     if (Config.autoUpdateEnabled) {
         startAutoUpdateThread()
-    }else{
+    } else {
         stopAutoUpdateThread()
     }
 }
@@ -105,40 +105,28 @@ fun startAutoUpdateThread() {
 
     val thread = Thread({
         autoUpdateThreadRunning.set(true)
-        log(
-            LogLevel.INFO,
-            "Auto update thread started"
-        )
-        while (autoUpdateThreadRunning.get()) {
-            val startTime = System.currentTimeMillis()
-            User.allUsers.forEach { user ->
-                val updates = performUpdate(user)
-                log(
-                    LogLevel.INFO,
-                    "Auto performed update for user ${user.number}, ${updates.size} updates"
-                )
-            }
+        log(LogLevel.INFO, "Auto update thread started")
 
-            val interval = Config.autoUpdateIntervalMinute * 60 * 1000
-            val remainTime = interval - (System.currentTimeMillis() - startTime)
-            log(
-                LogLevel.INFO,
-                "Auto update done, ${(System.currentTimeMillis() - startTime) / 1000 / 60} minutes."
-            )
-            try {
+        try {
+            while (autoUpdateThreadRunning.get()) {
+                val startTime = System.currentTimeMillis()
+                User.allUsers.forEach { user ->
+                    if (!autoUpdateThreadRunning.get()) throw InterruptedException()
+                    val updates = performUpdate(user)
+                    log(LogLevel.INFO, "Auto performed update for user ${user.number}, ${updates.size} updates")
+                }
+
+                val interval = Config.autoUpdateIntervalMinute * 60 * 1000
+                val remainTime = interval - (System.currentTimeMillis() - startTime)
+                log(LogLevel.INFO, "Auto update done, ${(System.currentTimeMillis() - startTime) / 1000 / 60} minutes.")
                 Thread.sleep(remainTime)
-            } catch (e: InterruptedException) {
-                log(
-                    LogLevel.INFO,
-                    "Thread interrupted"
-                )
             }
+        } catch (e: InterruptedException) {
+            log(LogLevel.INFO, "Thread interrupted")
         }
+
         autoUpdateThreadRunning.set(false)
-        log(
-            LogLevel.INFO,
-            "Thread stopped"
-        )
+        log(LogLevel.INFO, "Thread stopped")
     }, "AutoUpdateThread")
     thread.start()
 
