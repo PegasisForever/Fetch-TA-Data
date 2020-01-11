@@ -46,11 +46,27 @@ class SmallMark {
     val percentage: Double
         get() = get safeDiv total
 
-    fun isSame(other: SmallMark): Boolean {
-        return finished == other.finished &&
-                total == other.total &&
-                get == other.get &&
-                weight == other.weight
+    fun copy() = SmallMark().apply {
+        finished = this@SmallMark.finished
+        total = this@SmallMark.total
+        get = this@SmallMark.get
+        weight = this@SmallMark.weight
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return other is SmallMark &&
+            finished == other.finished &&
+            total == other.total &&
+            get == other.get &&
+            weight == other.weight
+    }
+
+    override fun hashCode(): Int {
+        var result = finished.hashCode()
+        result = 31 * result + total.hashCode()
+        result = 31 * result + get.hashCode()
+        result = 31 * result + weight.hashCode()
+        return result
     }
 
 }
@@ -86,10 +102,16 @@ class SmallMarkGroup : ArrayList<SmallMark>() {
     fun isSame(other: SmallMarkGroup): Boolean {
         if (size != other.size || available != other.available) return false
         forEach { smallMark ->
-            if (other.find { it.isSame(smallMark) } == null)
+            if (other.find { it == smallMark } == null)
                 return false
         }
         return true
+    }
+
+    fun copy() = SmallMarkGroup().apply {
+        this@SmallMarkGroup.forEach {
+            add(it.copy())
+        }
     }
 }
 
@@ -131,17 +153,21 @@ class Assignment : HashMap<Category, SmallMarkGroup>() {
         return get safeDiv total
     }
 
-    //everything need to be the same
-    fun isSame(other: Assignment): Boolean {
-        if (size != other.size) {
-            return false
+    fun copy() = Assignment().apply {
+        name = this@Assignment.name
+        time = this@Assignment.time
+        feedback = this@Assignment.feedback
+        this@Assignment.forEach { category, smallMarkGroup ->
+            put(category, smallMarkGroup.copy())
         }
-        enumValues<Category>().forEach { category ->
-            if (!this[category]!!.isSame(other[category]!!)) {
-                return false
-            }
+    }
+}
+
+class AssignmentList : ArrayList<Assignment>() {
+    fun copy() = AssignmentList().apply {
+        this@AssignmentList.forEach { assignment ->
+            add(assignment.copy())
         }
-        return true
     }
 }
 
@@ -149,9 +175,35 @@ class Weight {
     var W = 0.0
     var CW = 0.0
     var SA = OverallMark(0.0)
+
+    fun copy() = Weight().apply {
+        W = this@Weight.W
+        CW = this@Weight.CW
+        SA = this@Weight.SA
+    }
+
+    override operator fun equals(other: Any?): Boolean {
+        return other is Weight &&
+            W == other.W &&
+            CW == other.CW &&
+            SA == other.SA
+    }
+
+    override fun hashCode(): Int {
+        var result = W.hashCode()
+        result = 31 * result + CW.hashCode()
+        result = 31 * result + SA.hashCode()
+        return result
+    }
 }
 
-class WeightTable : HashMap<Category, Weight>()
+class WeightTable : HashMap<Category, Weight>() {
+    fun copy() = WeightTable().apply {
+        this@WeightTable.forEach { category, weight ->
+            put(category, weight.copy())
+        }
+    }
+}
 
 class OverallMark {
     var mark: Double? = null //scale: 0-100
@@ -210,10 +262,29 @@ class OverallMark {
         }
 
     override fun toString() = "mark: $mark level: $level"
+
+    fun copy() =
+        if (this.level != null) {
+            OverallMark(level!!)
+        } else {
+            OverallMark(mark!!)
+        }
+
+    override operator fun equals(other: Any?): Boolean {
+        return other is OverallMark &&
+            level == other.level &&
+            mark == other.mark
+    }
+
+    override fun hashCode(): Int {
+        var result = level.hashCode()
+        result = 31 * result + mark.hashCode()
+        return result
+    }
 }
 
 class Course {
-    var assignments: ArrayList<Assignment>? = null
+    var assignments: AssignmentList? = null
     var weightTable: WeightTable? = null
     var startTime: LocalDate? = null
     var endTime: LocalDate? = null
@@ -319,9 +390,56 @@ class Course {
     }
 
     //only things like name need to be the same
-    fun isSame(other: Course): Boolean {
+    fun isSameName(other: Course): Boolean {
         return name == other.name && code == other.code && block == other.block && room == other.room
+    }
+
+    fun copy() = Course().apply {
+        assignments = this@Course.assignments?.copy()
+        weightTable = this@Course.weightTable?.copy()
+        startTime = this@Course.startTime
+        endTime = this@Course.endTime
+        name = this@Course.name
+        code = this@Course.code
+        block = this@Course.block
+        room = this@Course.room
+        overallMark = this@Course.overallMark?.copy()
+        cached = this@Course.cached
+    }
+
+    override operator fun equals(other: Any?): Boolean {
+        return other is Course &&
+            assignments == other.assignments &&
+            weightTable == other.weightTable &&
+            startTime == other.startTime &&
+            endTime == other.endTime &&
+            name == other.name &&
+            code == other.code &&
+            block == other.block &&
+            room == other.room &&
+            overallMark == other.overallMark &&
+            cached == other.cached
+    }
+
+    override fun hashCode(): Int {
+        var result = assignments?.hashCode() ?: 0
+        result = 31 * result + (weightTable?.hashCode() ?: 0)
+        result = 31 * result + (startTime?.hashCode() ?: 0)
+        result = 31 * result + (endTime?.hashCode() ?: 0)
+        result = 31 * result + (name?.hashCode() ?: 0)
+        result = 31 * result + (code?.hashCode() ?: 0)
+        result = 31 * result + (block?.hashCode() ?: 0)
+        result = 31 * result + (room?.hashCode() ?: 0)
+        result = 31 * result + (overallMark?.hashCode() ?: 0)
+        result = 31 * result + cached.hashCode()
+        return result
     }
 }
 
-class CourseList : ArrayList<Course>()
+class CourseList : ArrayList<Course>() {
+    fun copy() = CourseList().apply {
+        this@CourseList.forEach { course ->
+            add(course.copy())
+        }
+    }
+}
