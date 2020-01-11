@@ -18,8 +18,8 @@ fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
 
     try {
         val compareResult = compareCourses(
-            old = PCache.readCourseList(studentNumber),
-            new = newData ?: LoginPage().gotoSummaryPage(studentNumber, password).fillDetails().courses
+            oldIn = PCache.readCourseList(studentNumber),
+            newIn = newData ?: LoginPage().gotoSummaryPage(studentNumber, password).fillDetails().courses
         )
         updates = compareResult.updates
         //When a user login for the first time, there will be 4 "course added" update,

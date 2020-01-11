@@ -10,8 +10,8 @@ fun compareAssignments(
     compareTime: ZonedDateTime = ZonedDateTime.now(torontoZoneID)
 ): ArrayList<TAUpdate> {
     val updateList = ArrayList<TAUpdate>()
-    val old = oldCourse.assignments ?: ArrayList()
-    val new = newCourse.assignments ?: ArrayList()
+    val old = oldCourse.assignments ?: AssignmentList()
+    val new = newCourse.assignments ?: AssignmentList()
 
     new.forEach { assignment ->
         val oldAssignment = old.find { it.name == assignment.name }
@@ -25,7 +25,7 @@ fun compareAssignments(
                 overallAfter = newCourse.overallMark!!.mark!!
                 time = compareTime
             }
-        } else if (!assignment.isSame(oldAssignment)) { //assignment updated
+        } else if (assignment!=oldAssignment) { //assignment updated
             updateList += AssignmentUpdated().apply {
                 courseName = newCourse.displayName
                 assignmentName = assignment.name
@@ -53,17 +53,19 @@ class CourseCompareResult(
 )
 
 fun compareCourses(
-    old: CourseList,
-    new: CourseList,
+    oldIn: CourseList,
+    newIn: CourseList,
     compareTime: ZonedDateTime = ZonedDateTime.now(torontoZoneID)
 ): CourseCompareResult {
+    val old = oldIn.copy()
+    val new = newIn.copy()
     val courseListResult = CourseList()
     val archivedCourseListResult = CourseList()
     val updateList = TimeLine()
 
     //for each course in new course list, test if it's new added, mark hidden by teacher, or normal
     new.forEach { newCourse ->
-        val oldCourse = old.find { newCourse.isSame(it) }
+        val oldCourse = old.find { newCourse.isSameName(it) }
         courseListResult += if (oldCourse == null) { //this course is only in the new course list
             updateList += CourseAdded().apply {
                 courseName = newCourse.displayName
@@ -83,7 +85,7 @@ fun compareCourses(
 
     //find removed courses
     old.forEach { oldCourse ->
-        val isRemoved = new.find { oldCourse.isSame(it) } == null
+        val isRemoved = new.find { oldCourse.isSameName(it) } == null
         if (isRemoved) {
             updateList += CourseRemoved().apply {
                 courseName = oldCourse.displayName

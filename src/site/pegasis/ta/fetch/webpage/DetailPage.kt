@@ -10,7 +10,7 @@ import site.pegasis.ta.fetch.models.Category.F
 import java.time.ZonedDateTime
 
 class DetailPage(htmlPage: HtmlPage, courseCode: String?, time: ZonedDateTime) {
-    val assignments = ArrayList<Assignment>()
+    val assignments = AssignmentList()
     val weightTable = WeightTable()
 
     init {

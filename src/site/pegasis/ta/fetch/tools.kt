@@ -118,10 +118,10 @@ fun HttpExchange.getIP(): String? {
 fun HttpExchange.send(statusCode: Int, body: String, isGzip: Boolean = true) {
     send(
         statusCode, if (body != "" && isGzip) {
-            body.gzip()
-        } else {
-            body.toByteArray()
-        }
+        body.gzip()
+    } else {
+        body.toByteArray()
+    }
     )
 }
 
@@ -308,9 +308,14 @@ infix fun Double.safeDiv(other: Double) = if (other == 0.0) {
 
 infix fun Int.pow(b: Int) = toDouble().pow(b.toDouble()).toInt()
 
-infix fun Double.near(b: Double) = this to b
+infix fun Double?.near(b: Double?) = this to b
 
-infix fun Pair<Double, Double>.threshold(t: Double) = abs(first - second) < t
+infix fun Pair<Double?, Double?>.threshold(t: Double) = when {
+    first == null && second == null -> true
+    first == null -> false
+    second == null -> false
+    else -> abs(first!! - second!!) < t
+}
 
 operator fun ClosedRange<Int>.contains(value: Double): Boolean {
     return value >= start && value <= endInclusive
@@ -321,4 +326,8 @@ fun Throwable.toStackTrace(): String {
     val pw = PrintWriter(sw)
     printStackTrace(pw)
     return sw.toString()
+}
+
+fun ZonedDateTime.isCloseTo(other: ZonedDateTime): Boolean {
+    return abs(this.toEpochSecond() - other.toEpochSecond()) <= 1
 }

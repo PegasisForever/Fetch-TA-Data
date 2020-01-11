@@ -64,7 +64,7 @@ object CourseListParserV8 {
         cached = json["cached"] as Boolean
 
         if (overallMark != null) {
-            assignments = ArrayList()
+            assignments = AssignmentList()
             (json["assignments"] as JSONArray).forEach { assignmentJSON ->
                 assignments!!.add(parseAssignment(assignmentJSON as JSONObject))
             }
