@@ -45,6 +45,8 @@ object Controller {
 
             val commandLine = CommandLine(TAControl())
                 .addSubcommand(Reload(printWriter))
+                .addSubcommand(Clean(printWriter))
+                .addSubcommand(Regen(printWriter))
             commandLine.out = printWriter
             commandLine.err = errPrintWriter
             commandLine.execute(*args)
