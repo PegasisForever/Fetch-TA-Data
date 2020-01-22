@@ -9,12 +9,16 @@ object Feedback {
     private class ReqData(req: String) {
         val contactInfo: String
         val feedback: String
+        val platform: String
+        val version: String
 
         init {
             try {
                 val json = jsonParser.parse(req) as JSONObject
                 contactInfo = json["contact_info"] as String
                 feedback = json["feedback"] as String
+                platform = (json["platform"] ?: "") as String
+                version = (json["version"] ?: "") as String
             } catch (e: Exception) {
                 throw ParseRequestException()
             }
@@ -47,6 +51,8 @@ object Feedback {
                     ${fileDateFormat.format(Date())}
                     Contact Info: $contactInfo
                     Feedback: $feedback
+                    Platform: $platform
+                    Version: $version
                     ----------------------------------------------
                     
                     
