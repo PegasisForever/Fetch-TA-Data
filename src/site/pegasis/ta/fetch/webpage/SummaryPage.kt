@@ -33,7 +33,7 @@ class SummaryPage(val htmlPage: HtmlPage) {
 
                 val timeText = row.getCell(1).asText()
                 val times = find(timeText, "\\d+-\\d+-\\d+")
-                if (times?.size == 2) {
+                if (times?.size == 2) noThrow {
                     course.startTime = LocalDate.parse(times[0])
                     course.endTime = LocalDate.parse(times[1])
                 }

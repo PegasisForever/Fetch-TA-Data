@@ -333,3 +333,11 @@ fun Throwable.toStackTrace(): String {
 fun ZonedDateTime.isCloseTo(other: ZonedDateTime): Boolean {
     return abs(this.toEpochSecond() - other.toEpochSecond()) <= 1
 }
+
+fun noThrow(action: () -> Unit){
+    try {
+        action()
+    }catch (ignored:Throwable){
+
+    }
+}
