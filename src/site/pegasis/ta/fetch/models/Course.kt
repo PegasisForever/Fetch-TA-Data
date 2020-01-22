@@ -310,6 +310,7 @@ class Course {
 
         val otherAssignments = assignments!!.filter { it[O]!!.available }
         val otherSize = otherAssignments.size
+        var foundSolution = false
         if (otherSize > 0) for (state in 0 until (2 pow otherSize)) {
             for (i in 0 until otherSize) {
                 val placement = state and (1 shl i) != 0
@@ -331,6 +332,7 @@ class Course {
             val expectedO = weightTable!![O]!!.SA
             val expectedF = weightTable!![F]!!.SA
             if (expectedO.isInRange(Oavg * 100) && expectedF.isInRange(Favg * 100)) {
+                foundSolution = true
                 break
             } else if (expectedO.isInRange(Favg * 100) && expectedF.isInRange(Oavg * 100)) {
                 otherAssignments.forEach { assignment ->
@@ -338,7 +340,18 @@ class Course {
                     assignment[O] = assignment[F]!!
                     assignment[F] = temp!!
                 }
+                foundSolution = true
                 break
+            }
+        }
+        //If not found solution, all assignment that name contains "final" will be final mark
+        if (!foundSolution) {
+            for (i in 0 until otherSize) {
+                val assignment = otherAssignments[i]
+                if (assignment.name.contains("final", true)) {
+                    assignment[F] = assignment[O].takeIf { it!!.available } ?: assignment[F]!!
+                    assignment[O] = SmallMarkGroup()
+                }
             }
         }
 
