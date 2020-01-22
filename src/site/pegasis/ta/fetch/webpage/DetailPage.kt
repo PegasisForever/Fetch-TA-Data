@@ -119,12 +119,12 @@ class DetailPage(htmlPage: HtmlPage, courseCode: String?, time: ZonedDateTime) {
         }
         val finalRow = weightsTable.getRow(6)
         val finalWeight = Weight()
-        finalWeight.CW = findFirst(finalRow.getCell(1).asText(), "^[^%]+")!!.toDouble()
-        val SAText = findFirst(finalRow.getCell(2).asText(), "^[^%]+")
+        finalWeight.CW = findFirst(finalRow.getCell(1).asText(), "^[\\.\\d]+(?=%)")!!.toDouble()
+        val SAText = findFirst(finalRow.getCell(2).asText(), "^[\\.\\d]+(?=%)")
         finalWeight.SA = try {
             OverallMark(SAText!!.toDouble())
         } catch (e: Throwable) {
-            OverallMark(SAText ?: "")
+            OverallMark(finalRow.getCell(2).asText())
         }
         weightTable[F] = finalWeight
     }

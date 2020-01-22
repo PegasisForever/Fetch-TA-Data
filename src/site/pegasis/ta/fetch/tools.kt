@@ -54,6 +54,8 @@ fun findFirst(str: String, regex: String): String? {
     return find(str, regex)?.get(0)
 }
 
+fun String.matches(regex: String) = this.matches(Regex(regex))
+
 fun String.writeToFile(path: String) {
     val file = File(path)
     file.parentFile.mkdirs()
