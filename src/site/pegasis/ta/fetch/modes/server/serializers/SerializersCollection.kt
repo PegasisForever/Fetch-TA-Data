@@ -9,6 +9,7 @@ import site.pegasis.ta.fetch.modes.server.serializers.CourseListPublicSerializer
 import site.pegasis.ta.fetch.modes.server.serializers.CourseListSerializerV4.serializeCourseList as serializeCourseListV4
 import site.pegasis.ta.fetch.modes.server.serializers.CourseListSerializerV5.serializeCourseList as serializeCourseListV5
 import site.pegasis.ta.fetch.modes.server.serializers.CourseListSerializerV8.serializeCourseList as serializeCourseListV8
+import site.pegasis.ta.fetch.modes.server.serializers.CourseListSerializerV10.serializeCourseList as serializeCourseListV10
 import site.pegasis.ta.fetch.modes.server.serializers.TimeLineSerializerV4.serializeTimeLine as serializeTimeLineV4
 import site.pegasis.ta.fetch.modes.server.serializers.TimeLineSerializerV5.serializeTimeLine as serializeTimeLineV5
 import site.pegasis.ta.fetch.modes.server.serializers.TimeLineSerializerV6.serializeTimeLine as serializeTimeLineV6
@@ -27,7 +28,8 @@ val CourseListSerializers = mapOf<Int, (CourseList) -> JSONArray>(
     6 to ::serializeCourseListV5,
     7 to ::serializeCourseListV5,
     8 to ::serializeCourseListV8,
-    9 to ::serializeCourseListV8
+    9 to ::serializeCourseListV8,
+    10 to ::serializeCourseListV10
 )
 
 fun CourseList.serialize(version: Int = latestApiVersion): JSONObject {
@@ -47,7 +49,8 @@ val TimeLineSerializers = mapOf<Int, (TimeLine) -> JSONArray>(
     6 to ::serializeTimeLineV6,
     7 to ::serializeTimeLineV6,
     8 to ::serializeTimeLineV6,
-    9 to ::serializeTimeLineV9
+    9 to ::serializeTimeLineV9,
+    10 to ::serializeTimeLineV9
 )
 
 fun TimeLine.serialize(version: Int = latestApiVersion): JSONObject {

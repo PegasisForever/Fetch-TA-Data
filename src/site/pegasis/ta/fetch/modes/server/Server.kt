@@ -20,7 +20,7 @@ import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 
 const val minApiVersion = 4
-const val latestApiVersion = 9
+const val latestApiVersion = 10
 
 fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort:Int, publicPort: Int) {
     log(
