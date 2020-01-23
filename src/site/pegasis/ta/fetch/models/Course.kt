@@ -294,6 +294,7 @@ class Course {
     var room: String? = null
     var overallMark: OverallMark? = null
     var cached = false
+    var id: Int? = null
 
     val displayName: String
         get() = when {

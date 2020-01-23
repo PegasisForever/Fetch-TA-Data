@@ -69,6 +69,9 @@ class SummaryPage(val htmlPage: HtmlPage) {
             summaryTable.getRow(index + 1).getCell(2)
                 .getElementsByTagName("a")[0].getAttribute("href")
         ).click<HtmlPage>()
+        noThrow {
+            courses[index].id = findFirst(detailHTMLPage.baseURL.toExternalForm(),"(?<=subject_id=)\\d+")!!.toInt()
+        }
 
         return DetailPage(detailHTMLPage, courses[index].code, time)
     }
