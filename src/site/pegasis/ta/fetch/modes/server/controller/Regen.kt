@@ -62,6 +62,7 @@ class Regen(private val printWriter: PrintWriter) : Callable<Unit> {
                 if (oldCourseList != null) {
                     archivedCourseList += compareResult.archivedCourseList
                     timeLine += compareResult.updates
+                    timeLine.removeUpdateContainsRemovedCourses()
                 }
                 oldCourseList = compareResult.courseList
             }
