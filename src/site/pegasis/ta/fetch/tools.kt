@@ -165,7 +165,7 @@ enum class LogLevel {
 
 private val logDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
 val fileDateFormat = SimpleDateFormat("yyyy-MM-dd")
-const val serverBuildNumber = 35
+const val serverBuildNumber = 36
 var isQuiet = false
 fun log(level: LogLevel, msg: String, throwable: Throwable? = null) {
     if (isQuiet) {
@@ -334,19 +334,19 @@ fun ZonedDateTime.isCloseTo(other: ZonedDateTime): Boolean {
     return abs(this.toEpochSecond() - other.toEpochSecond()) <= 1
 }
 
-fun noThrow(action: () -> Unit){
+fun noThrow(action: () -> Unit) {
     try {
         action()
-    }catch (ignored:Throwable){
+    } catch (ignored: Throwable) {
 
     }
 }
 
-fun getInput(s:String,password:Boolean=false):String{
+fun getInput(s: String, password: Boolean = false): String {
     print(s)
-    return if(password){
+    return if (password) {
         System.console()?.readPassword()?.joinToString("") ?: readLine()!!
-    }else{
+    } else {
         readLine()!!
     }
 }
