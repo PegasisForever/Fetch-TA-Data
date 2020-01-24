@@ -17,17 +17,17 @@ import java.util.concurrent.Callable
 
 @CommandLine.Command(
     name = "regen",
-    description = ["Regenerate timeline and archived course list for a user"],
+    description = ["Regenerate timeline and archived course list for a user."],
     mixinStandardHelpOptions = true,
     version = ["BN$serverBuildNumber"]
 )
 class Regen(private val printWriter: PrintWriter) : Callable<Unit> {
-    @CommandLine.Parameters(index = "0", description = ["Use all to regen for all users"])
+    @CommandLine.Parameters(index = "0", description = ["Use all to regen for all users."])
     private var studentNumber = ""
 
     @CommandLine.Option(
         names = ["--override", "-o"],
-        description = ["If override files when contents are different"]
+        description = ["Override files when contents are different."]
     )
     private var override = false
 

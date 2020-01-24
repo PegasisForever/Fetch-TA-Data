@@ -12,7 +12,7 @@ import java.util.concurrent.Callable
 
 @Command(
     name = "reload",
-    description = ["Reload server config and all cached file"],
+    description = ["Reload server config and all cached file."],
     mixinStandardHelpOptions = true,
     version = ["BN$serverBuildNumber"]
 )
@@ -24,6 +24,6 @@ class Reload(private val printWriter: PrintWriter): Callable<Unit> {
         PCache.clearCache()
         updateAutoUpdateThread()
 
-        printWriter.println("Server config and cached file reloaded")
+        printWriter.println("Server config and cached file reloaded.")
     }
 }

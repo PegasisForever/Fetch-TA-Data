@@ -8,7 +8,7 @@ import java.util.concurrent.Callable
 
 @Command(
     name = "clean",
-    description = ["Remove duplicate files in course list history"],
+    description = ["Remove duplicate files in course list history."],
     mixinStandardHelpOptions = true,
     version = ["BN$serverBuildNumber"]
 )
