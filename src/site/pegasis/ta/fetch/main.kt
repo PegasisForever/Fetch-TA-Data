@@ -45,10 +45,10 @@ class ApiVersionConverter : ITypeConverter<Int> {
     version = ["BN$serverBuildNumber"]
 )
 class GetMark : Callable<Unit> {
-    @Parameters(index = "0")
+    @Parameters(index = "0", defaultValue = "")
     private var studentNumber = ""
 
-    @Parameters(index = "1")
+    @Parameters(index = "1", defaultValue = "")
     private var password = ""
 
     @Option(
@@ -64,7 +64,23 @@ class GetMark : Callable<Unit> {
     )
     private var quiet = false
 
+    @CommandLine.Option(
+        names = ["--interactive", "-i"],
+        description = ["Ask for student number and password"]
+    )
+    private var interactive = false
+
     override fun call() {
+        if (interactive) {
+            studentNumber = getInput("Student number: ")
+            password = getInput("Password: ", password = true)
+            println(studentNumber)
+            println(password)
+        } else if (studentNumber.isBlank() || password.isBlank()) {
+            System.err.println("Please specify student number and password." + "")
+            return
+        }
+
         getMark(studentNumber, password, apiLevel, quiet)
     }
 }

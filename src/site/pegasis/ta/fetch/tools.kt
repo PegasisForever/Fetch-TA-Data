@@ -341,3 +341,12 @@ fun noThrow(action: () -> Unit){
 
     }
 }
+
+fun getInput(s:String,password:Boolean=false):String{
+    print(s)
+    return if(password){
+        System.console()?.readPassword()?.joinToString("") ?: readLine()!!
+    }else{
+        readLine()!!
+    }
+}
