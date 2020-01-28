@@ -67,14 +67,10 @@ fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
     return updates
 }
 
-fun runFollowUpUpdate(number: String, newData: CourseList, hash: Int, routeName: String) {
+fun runFollowUpUpdate(number: String, newData: CourseList) {
     User.get(number)?.let {
         performUpdate(it, newData)
     }
-    log(
-        LogLevel.INFO,
-        "Request #$hash $routeName :: Follow up update done"
-    )
 }
 
 fun sendNotifications(user: User, updateList: TimeLine) {

@@ -57,7 +57,7 @@ object Regi {
                     LogLevel.INFO,
                     "Request #$hash /regi :: User verified successfully"
                 )
-                runFollowUpUpdate(number, courses, hash, "/regi")
+                runFollowUpUpdate(number, courses)
 
                 res = JSONObject().apply {
                     put("time_line", PCache.readTimeLine(number).serialize(reqApiVersion))

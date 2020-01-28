@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpExchange
 import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.*
 import site.pegasis.ta.fetch.exceptions.LoginException
+import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.serializers.serialize
 import site.pegasis.ta.fetch.modes.server.storage.PCache
@@ -34,6 +35,7 @@ object GetmarkTimeLine {
     }
 
     val route = out@{ exchange: HttpExchange ->
+        val timing = Timing()
         var statusCode = 200  //200:success  400:bad request  401:pwd incorrect  500:internal error
         var res = ""
 
@@ -41,18 +43,15 @@ object GetmarkTimeLine {
         val reqString = exchange.getReqString()
         val ipAddress = exchange.getIP()
         val reqApiVersion = exchange.getApiVersion()
-        log(
-            LogLevel.INFO,
-            "Request #$hash /getmark_timeline <- $ipAddress, api version=$reqApiVersion, data=$reqString"
-        )
+
+        logInfo("Request #$hash /getmark_timeline <- $ipAddress, api version=$reqApiVersion, data=${reqString.removeBlank()}")
 
         if (exchange.returnIfApiVersionInsufficient()) {
-            log(
-                LogLevel.INFO,
-                "Request #$hash /getmark_timeline -> $ipAddress, api version insufficient"
-            )
+            logInfo("Request #$hash -> api version insufficient")
             return@out
         }
+
+        timing("init")
 
         try {
             with(ReqData(reqString, reqApiVersion)) {
@@ -60,53 +59,41 @@ object GetmarkTimeLine {
                     .gotoSummaryPage(number, password)
                     .fillDetails()
                     .courses
-
-                log(
-                    LogLevel.INFO,
-                    "Request #$hash /getmark_timeline :: Fetched successfully"
-                )
+                timing("fetch")
 
                 user?.let { User.add(it) }
-                runFollowUpUpdate(number, courses, hash, "/getmark_timeline")
+                runFollowUpUpdate(number, courses)
+                timing("update")
+
                 res = JSONObject().apply {
                     put("time_line", PCache.readTimeLine(number).serialize(reqApiVersion))
                     put("course_list", PCache.readCourseList(number).serialize(reqApiVersion))
                 }.toJSONString()
+                timing("join")
             }
-        } catch (e: LoginException) {
-            log(
-                LogLevel.INFO,
-                "Request #$hash /getmark_timeline :: Login error"
-            )
-            statusCode = 401
-        } catch (e: ParseRequestException) {
-            log(
-                LogLevel.INFO,
-                "Request #$hash /getmark_timeline :: Can't parse request"
-            )
-            statusCode = 400
         } catch (e: Exception) {
-            if (e.message?.indexOf("SocketTimeoutException") != -1) {
-                log(
-                    LogLevel.WARN,
-                    "Request #$hash /getmark_timeline :: Connect timeout",
-                    e
-                )
-                statusCode = 503
-            } else {
-                log(
-                    LogLevel.ERROR,
-                    "Request #$hash /getmark_timeline :: Unknown error: ${e.message}",
-                    e
-                )
-                statusCode = 500
+            statusCode = when {
+                e is LoginException -> {
+                    logInfo("Request #$hash :: Login error")
+                    401
+                }
+                e is ParseRequestException -> {
+                    logInfo("Request #$hash :: Can't parse request")
+                    400
+                }
+                e.message?.indexOf("SocketTimeoutException") != -1 -> {
+                    logWarn("Request #$hash :: Connect timeout", e)
+                    503
+                }
+                else -> {
+                    logError("Request #$hash :: Unknown error: ${e.message}", e)
+                    500
+                }
             }
         }
 
-        log(
-            LogLevel.INFO,
-            "Request #$hash /getmark_timeline -> $ipAddress, status=$statusCode, data=$res"
-        )
         exchange.send(statusCode, res)
+        timing("send")
+        logInfo("Request #$hash /getmark_timeline -> $ipAddress, status=$statusCode", timing = timing)
     }
 }

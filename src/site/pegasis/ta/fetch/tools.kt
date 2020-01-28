@@ -4,6 +4,7 @@ import com.gargoylesoftware.htmlunit.WebClient
 import com.sun.net.httpserver.HttpExchange
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.json.simple.parser.JSONParser
+import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.WeightedDouble
 import site.pegasis.ta.fetch.modes.server.latestApiVersion
 import site.pegasis.ta.fetch.modes.server.minApiVersion
@@ -167,16 +168,21 @@ private val logDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
 val fileDateFormat = SimpleDateFormat("yyyy-MM-dd")
 const val serverBuildNumber = 36
 var isQuiet = false
-fun log(level: LogLevel, msg: String, throwable: Throwable? = null) {
+fun log(level: LogLevel, msg: String, throwable: Throwable? = null, timing: Timing? = null) {
     if (isQuiet) {
         return
     }
     val date = Date()
     var logText =
-        "${logDateFormat.format(date)}\t|\tBN$serverBuildNumber\t|\t${level.name}\t|\t${Thread.currentThread().name}\t|\t${msg.replace(
-            "\n",
-            "\\n"
-        )}\n"
+        "${logDateFormat.format(date)}\t|" +
+            "\tBN$serverBuildNumber\t|" +
+            "\t${level.name}\t|" +
+            "\t${Thread.currentThread().name}\t|" +
+            "\t${msg.replace("\n", "\\n")}\t"
+    if (timing != null) {
+        logText += "|\t${timing.getResult()}"
+    }
+    logText += "\n"
     if (throwable != null) {
         logText += ExceptionUtils.getStackTrace(throwable)
     }
@@ -193,6 +199,16 @@ fun log(level: LogLevel, msg: String, throwable: Throwable? = null) {
     logText = color + logText + ANSI_RESET
     print(logText)
 }
+
+fun logInfo(msg: String, throwable: Throwable? = null, timing: Timing? = null) =
+    log(LogLevel.INFO, msg, throwable, timing)
+
+fun logWarn(msg: String, throwable: Throwable? = null, timing: Timing? = null) =
+    log(LogLevel.WARN, msg, throwable, timing)
+
+fun logError(msg: String, throwable: Throwable? = null, timing: Timing? = null) =
+    log(LogLevel.ERROR, msg, throwable, timing)
+
 
 fun logUnhandled(thread: Thread?, throwable: Throwable) {
     if (isQuiet) {
@@ -349,4 +365,8 @@ fun getInput(s: String, password: Boolean = false): String {
     } else {
         readLine()!!
     }
+}
+
+fun String.removeBlank():String{
+    return this.replace("\n","").replace(" ","")
 }

@@ -59,7 +59,7 @@ object PublicGetMark {
                     "Request #$hash /getmark :: Fetch successfully"
                 )
 
-                runFollowUpUpdate(number, courses, hash, "/getmark")
+                runFollowUpUpdate(number, courses)
             }
         } catch (e: LoginException) {
             log(
