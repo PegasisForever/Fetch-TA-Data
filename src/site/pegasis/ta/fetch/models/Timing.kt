@@ -21,6 +21,13 @@ class Timing {
     operator fun invoke(name: String) {
         setPoint(name)
     }
+
+    operator fun <T> invoke(name:String,action:()->T):T{
+        lastTime = System.currentTimeMillis()
+        val result= action()
+        setPoint(name)
+        return result
+    }
 }
 
 class TimingItem(val name: String, val time: Long)

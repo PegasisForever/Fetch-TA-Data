@@ -7,9 +7,13 @@ import com.gargoylesoftware.htmlunit.html.HtmlTextInput
 import site.pegasis.ta.fetch.exceptions.LoginException
 import site.pegasis.ta.fetch.findFirst
 import site.pegasis.ta.fetch.getWebClient
+import site.pegasis.ta.fetch.models.Timing
 
-class LoginPage {
-    private val htmlPage: HtmlPage = getWebClient().getPage("https://ta.yrdsb.ca/live/index.php")
+class LoginPage(private val timing: Timing = Timing()) {
+    private val htmlPage: HtmlPage = timing("load login page") {
+        getWebClient().getPage("https://ta.yrdsb.ca/live/index.php")
+    }
+
     init {
         if (htmlPage.titleText != "YRDSB teachassist login") {
             throw Exception("Cannot get correct page.")
@@ -23,12 +27,14 @@ class LoginPage {
         passwordInput.valueAttribute = password
 
         val loginBtn = htmlPage.getElementByName<HtmlSubmitInput>("submit")
-        val summaryHtmlPage = loginBtn.click<HtmlPage>()
+        val summaryHtmlPage = timing("load summary page"){
+            loginBtn.click<HtmlPage>()
+        }
         if (summaryHtmlPage.titleText != "Student Reports") {
             val errorCode = findFirst(summaryHtmlPage.url.toString(), "\\d")?.toInt()
             throw LoginException(errorCode)
         }
-        return SummaryPage(summaryHtmlPage)
+        return SummaryPage(summaryHtmlPage, timing)
     }
 
 }

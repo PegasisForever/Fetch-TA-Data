@@ -55,11 +55,10 @@ object GetmarkTimeLine {
 
         try {
             with(ReqData(reqString, reqApiVersion)) {
-                val courses = LoginPage()
+                val courses = LoginPage(timing)
                     .gotoSummaryPage(number, password)
                     .fillDetails()
                     .courses
-                timing("fetch")
 
                 user?.let { User.add(it) }
                 runFollowUpUpdate(number, courses)
@@ -94,6 +93,6 @@ object GetmarkTimeLine {
 
         exchange.send(statusCode, res)
         timing("send")
-        logInfo("Request #$hash /getmark_timeline -> $ipAddress, status=$statusCode", timing = timing)
+        logInfo("Request #$hash ->, status=$statusCode", timing = timing)
     }
 }
