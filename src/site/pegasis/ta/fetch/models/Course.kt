@@ -419,6 +419,7 @@ class Course {
         room = this@Course.room
         overallMark = this@Course.overallMark?.copy()
         cached = this@Course.cached
+        id = this@Course.id
     }
 
     override operator fun equals(other: Any?): Boolean {
