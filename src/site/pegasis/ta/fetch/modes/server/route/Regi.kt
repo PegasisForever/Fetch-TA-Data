@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpExchange
 import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.*
 import site.pegasis.ta.fetch.exceptions.LoginException
+import site.pegasis.ta.fetch.exceptions.ParseRequestException
 import site.pegasis.ta.fetch.exceptions.UserParseException
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.serializers.serialize
