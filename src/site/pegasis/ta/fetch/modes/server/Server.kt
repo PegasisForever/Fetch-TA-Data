@@ -1,18 +1,18 @@
 package site.pegasis.ta.fetch.modes.server
 
 import com.sun.net.httpserver.HttpServer
-import site.pegasis.ta.fetch.LogLevel
 import site.pegasis.ta.fetch.getCoreCount
-import site.pegasis.ta.fetch.log
+import site.pegasis.ta.fetch.logInfo
 import site.pegasis.ta.fetch.logUnhandled
+import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.controller.Controller
 import site.pegasis.ta.fetch.modes.server.route.*
 import site.pegasis.ta.fetch.modes.server.storage.Config
 import site.pegasis.ta.fetch.modes.server.storage.LastUpdateTime
 import site.pegasis.ta.fetch.modes.server.storage.initFiles
-import site.pegasis.ta.fetch.modes.server.timeline.updateAutoUpdateThread
 import site.pegasis.ta.fetch.modes.server.timeline.stopAutoUpdateThread
+import site.pegasis.ta.fetch.modes.server.timeline.updateAutoUpdateThread
 import java.lang.Thread.setDefaultUncaughtExceptionHandler
 import java.net.InetSocketAddress
 import java.util.concurrent.SynchronousQueue
@@ -22,11 +22,8 @@ import java.util.concurrent.TimeUnit
 const val minApiVersion = 4
 const val latestApiVersion = 10
 
-fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort:Int, publicPort: Int) {
-    log(
-        LogLevel.INFO,
-        "Starting server"
-    )
+fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publicPort: Int) {
+    val timing = Timing()
 
     setDefaultUncaughtExceptionHandler { thread: Thread?, e: Throwable ->
         logUnhandled(thread, e)
@@ -34,20 +31,16 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort:Int, publi
     Runtime.getRuntime().addShutdownHook(object : Thread() {
         override fun run() {
             stopAutoUpdateThread()
-            log(
-                LogLevel.INFO,
-                "Server stopped"
-            )
+            logInfo("Server stopped")
         }
     })
 
     initFiles()
-
     Config.load()
     LastUpdateTime.load()
     User.load()
-
     updateAutoUpdateThread()
+    timing("load data")
 
     //private server
     if (enablePrivate) {
@@ -63,19 +56,15 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort:Int, publi
             createContext("/deregi", Deregi.route)
             start()
         }
-        log(
-            LogLevel.INFO,
-            "Private server started on port $privatePort"
-        )
+        logInfo("Private server started on port $privatePort")
 
         HttpServer.create(InetSocketAddress(controlPort), 0).run {
             createContext("/", Controller.route)
             start()
         }
-        log(
-            LogLevel.INFO,
-            "Private server controller started on port $controlPort"
-        )
+        logInfo("Private server controller started on port $controlPort")
+
+        timing("start private")
     }
 
     //public server
@@ -84,8 +73,8 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort:Int, publi
         createContext("/getmark", PublicGetMark.route)
         start()
     }
-    log(
-        LogLevel.INFO,
-        "Public server started on port $publicPort"
-    )
+    logInfo("Public server started on port $publicPort")
+    timing("start public")
+
+    logInfo("Server fully started", timing = timing)
 }
