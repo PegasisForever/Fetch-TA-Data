@@ -94,6 +94,6 @@ object GetmarkTimeLine {
 
         exchange.send(statusCode, res)
         timing("send")
-        logInfo("Request #$hash ->, status=$statusCode", timing = timing)
+        logInfo("Request #$hash -> status=$statusCode", timing = timing)
     }
 }

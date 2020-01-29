@@ -155,6 +155,17 @@ fun HttpExchange.getApiVersion(): Int {
     return apiVersion
 }
 
+fun HttpExchange.makePublic():Boolean{
+    responseHeaders.add("Access-Control-Allow-Origin", "*")
+    if (requestMethod.toUpperCase() == "OPTIONS") {
+        responseHeaders.add("Access-Control-Allow-Methods", "GET, OPTIONS")
+        responseHeaders.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
+        sendResponseHeaders(204, -1)
+        return true
+    }
+    return false
+}
+
 
 enum class LogLevel {
     DEBUG,

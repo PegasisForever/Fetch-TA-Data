@@ -6,6 +6,7 @@ import site.pegasis.ta.fetch.*
 import site.pegasis.ta.fetch.exceptions.LoginException
 import site.pegasis.ta.fetch.exceptions.ParseRequestException
 import site.pegasis.ta.fetch.exceptions.UserParseException
+import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.serializers.serialize
 import site.pegasis.ta.fetch.modes.server.storage.PCache
@@ -27,6 +28,7 @@ object Regi {
     }
 
     val route = out@{ exchange: HttpExchange ->
+        val timing = Timing()
         var statusCode = 200  //200:success  400:bad request  401:pwd incorrect  500:internal error
         var res = ""
 
@@ -34,68 +36,59 @@ object Regi {
         val reqString = exchange.getReqString()
         val ipAddress = exchange.getIP()
         val reqApiVersion = exchange.getApiVersion()
-        log(
-            LogLevel.INFO,
-            "Request #$hash /regi <- $ipAddress, api version=$reqApiVersion, data=$reqString"
-        )
+        logInfo("Request #$hash /regi <- $ipAddress, api version=$reqApiVersion, data=$reqString")
 
         if (exchange.returnIfApiVersionInsufficient()) {
-            log(
-                LogLevel.INFO,
-                "Request #$hash /regi -> $ipAddress, api version insufficient"
-            )
+            logInfo("Request #$hash -> api version insufficient")
             return@out
         }
 
+        timing("init")
+
         try {
             with(ReqData(reqString, reqApiVersion).user) {
-                val courses = LoginPage()
+                val courses = LoginPage(timing)
                     .gotoSummaryPage(number, password)
                     .fillDetails()
                     .courses
+
                 User.add(this)
-                log(
-                    LogLevel.INFO,
-                    "Request #$hash /regi :: User verified successfully"
-                )
                 runFollowUpUpdate(number, courses)
+                timing("update")
 
                 res = JSONObject().apply {
                     put("time_line", PCache.readTimeLine(number).serialize(reqApiVersion))
                     put("course_list", PCache.readCourseList(number).serialize(reqApiVersion))
                 }.toJSONString()
+                timing("join")
             }
-        } catch (e: LoginException) {
-            log(
-                LogLevel.INFO,
-                "Request #$hash /regi :: Login error"
-            )
-            statusCode = 401
-        } catch (e: ParseRequestException) {
-            log(
-                LogLevel.INFO,
-                "Request #$hash /regi :: Can't parse request"
-            )
-            statusCode = 400
-        } catch (e: UserParseException) {
-            log(
-                LogLevel.INFO,
-                "Request #$hash /regi :: Can't parse given user"
-            )
-            statusCode = 400
         } catch (e: Exception) {
-            log(
-                LogLevel.ERROR,
-                "Request #$hash /regi :: Unknown error: ${e.message}",
-                e
-            )
-            statusCode = 500
+            statusCode = when {
+                e is LoginException -> {
+                    logInfo("Request #$hash :: Login error")
+                    401
+                }
+                e is ParseRequestException -> {
+                    logInfo("Request #$hash :: Can't parse request")
+                    400
+                }
+                e is UserParseException -> {
+                    logInfo("Request #$hash :: Can't parse given user")
+                    400
+                }
+                e.message?.indexOf("SocketTimeoutException") != -1 -> {
+                    logWarn("Request #$hash :: Connect timeout", e)
+                    503
+                }
+                else -> {
+                    logError("Request #$hash :: Unknown error: ${e.message}", e)
+                    500
+                }
+            }
         }
 
-        log(
-            LogLevel.INFO,
-            "Request #$hash /regi -> $ipAddress, status=$statusCode, data=$res"
-        )
         exchange.send(statusCode, res)
+        timing("send")
+        logInfo("Request #$hash -> status=$statusCode", timing = timing)
     }
 }

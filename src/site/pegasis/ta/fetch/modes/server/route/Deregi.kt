@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpExchange
 import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.*
 import site.pegasis.ta.fetch.exceptions.ParseRequestException
+import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.User
 
 object Deregi {
@@ -21,47 +22,40 @@ object Deregi {
     }
 
     val route = out@{ exchange: HttpExchange ->
+        val timing = Timing()
         var statusCode = 200  //200:success  400:bad request  500:internal error
 
         val hash = exchange.hashCode()
         val reqString = exchange.getReqString()
         val ipAddress = exchange.getIP()
         val reqApiVersion = exchange.getApiVersion()
-        log(
-            LogLevel.INFO,
-            "Request #$hash /deregi <- $ipAddress, api version=$reqApiVersion, data=$reqString"
-        )
+        logInfo("Request #$hash /deregi <- $ipAddress, api version=$reqApiVersion, data=$reqString")
 
         if (exchange.returnIfApiVersionInsufficient()) {
-            log(
-                LogLevel.INFO,
-                "Request #$hash /deregi -> $ipAddress, api version insufficient"
-            )
+            logInfo("Request #$hash /deregi -> api version insufficient")
             return@out
         }
+
+        timing("init")
 
         try {
             val user = ReqData(reqString, reqApiVersion).user
             User.remove(user)
-        } catch (e: ParseRequestException) {
-            log(
-                LogLevel.INFO,
-                "Request #$hash /deregi :: Can't parse request"
-            )
-            statusCode = 400
+            timing("remove user")
         } catch (e: Exception) {
-            log(
-                LogLevel.ERROR,
-                "Request #$hash /deregi :: Unknown error: ${e.message}",
-                e
-            )
-            statusCode = 500
+            statusCode = when (e) {
+                is ParseRequestException -> {
+                    logInfo("Request #$hash :: Can't parse request")
+                    400
+                }
+                else -> {
+                    logError("Request #$hash :: Unknown error: ${e.message}", e)
+                    500
+                }
+            }
         }
 
-        log(
-            LogLevel.INFO,
-            "Request #$hash /deregi -> $ipAddress, api version=$reqApiVersion, status=$statusCode"
-        )
-        exchange.send(statusCode, "")
+        exchange.send(statusCode)
+        logInfo("Request #$hash -> status=$statusCode", timing = timing)
     }
 }

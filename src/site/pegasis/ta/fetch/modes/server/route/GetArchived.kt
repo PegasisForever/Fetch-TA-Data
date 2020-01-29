@@ -5,6 +5,7 @@ import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.*
 import site.pegasis.ta.fetch.exceptions.LoginException
 import site.pegasis.ta.fetch.exceptions.ParseRequestException
+import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.serializers.serialize
 import site.pegasis.ta.fetch.modes.server.storage.PCache
@@ -26,6 +27,7 @@ object GetArchived {
     }
 
     val route = out@{ exchange: HttpExchange ->
+        val timing = Timing()
         var statusCode = 200  //200:success  400:bad request  401:pwd incorrect  500:internal error
         var res = ""
 
@@ -33,10 +35,7 @@ object GetArchived {
         val reqString = exchange.getReqString()
         val ipAddress = exchange.getIP()
         val reqApiVersion = exchange.getApiVersion()
-        log(
-            LogLevel.INFO,
-            "Request #$hash /getarchived <- $ipAddress, api version=$reqApiVersion, data=$reqString"
-        )
+        logInfo("Request #$hash /getarchived <- $ipAddress, api version=$reqApiVersion, data=$reqString")
 
         if (exchange.returnIfApiVersionInsufficient()) {
             log(
@@ -46,34 +45,32 @@ object GetArchived {
             return@out
         }
 
+        timing("init")
+
         try {
             with(ReqData(reqString, reqApiVersion)) {
-                val validated = User.validate(number, password)
-                if (validated) {
+                if (User.validate(number, password)) {
                     res = PCache.readArchivedCourseList(number).serialize(reqApiVersion).toJSONString()
+                    timing("join")
                 } else {
                     throw LoginException(null)
                 }
             }
-        } catch (e: LoginException) {
-            log(
-                LogLevel.INFO,
-                "Request #$hash /getarchived :: student number or password incorrect"
-            )
-            statusCode = 401
         } catch (e: Exception) {
-            log(
-                LogLevel.ERROR,
-                "Request #$hash /getarchived :: Unknown error: ${e.message}",
-                e
-            )
-            statusCode = 500
+            statusCode = when (e) {
+                is LoginException -> {
+                    logInfo("Request #$hash :: Student number or password incorrect")
+                    401
+                }
+                else -> {
+                    logError("Request #$hash :: Unknown error: ${e.message}", e)
+                    500
+                }
+            }
         }
 
-        log(
-            LogLevel.INFO,
-            "Request #$hash /getarchived -> $ipAddress, status=$statusCode, data=$res"
-        )
         exchange.send(statusCode, res)
+        timing("send")
+        logInfo("Request #$hash -> status=$statusCode", timing = timing)
     }
 }

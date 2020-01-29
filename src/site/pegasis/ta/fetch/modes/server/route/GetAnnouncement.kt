@@ -1,17 +1,16 @@
 package site.pegasis.ta.fetch.modes.server.route
 
 import com.sun.net.httpserver.HttpExchange
-import site.pegasis.ta.fetch.*
+import site.pegasis.ta.fetch.getIP
+import site.pegasis.ta.fetch.logInfo
 import site.pegasis.ta.fetch.modes.server.storage.PCache
+import site.pegasis.ta.fetch.send
 
 object GetAnnouncement {
     val route = { exchange: HttpExchange ->
         val ipAddress = exchange.getIP()
         val hash = exchange.hashCode()
-        log(
-            LogLevel.INFO,
-            "Request #$hash /getannouncement <-> $ipAddress"
-        )
+        logInfo("Request #$hash /getannouncement <-> $ipAddress")
 
         exchange.send(
             200, try {
