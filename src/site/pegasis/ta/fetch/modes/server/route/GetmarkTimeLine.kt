@@ -48,7 +48,7 @@ object GetmarkTimeLine {
         logInfo("Request #$hash /getmark_timeline <- $ipAddress, api version=$reqApiVersion, data=${reqString.removeBlank()}")
 
         if (exchange.returnIfApiVersionInsufficient()) {
-            logInfo("Request #$hash -> api version insufficient")
+            logInfo("Request #$hash -> Api version insufficient")
             return@out
         }
 

@@ -38,7 +38,7 @@ object Feedback {
         logInfo("Request #$hash /feedback <- $ipAddress, api version=$reqApiVersion, data=$reqString")
 
         if (exchange.returnIfApiVersionInsufficient()) {
-            logInfo("Request #$hash -> api version insufficient")
+            logInfo("Request #$hash -> Api version insufficient")
             return@out
         }
 

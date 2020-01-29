@@ -32,7 +32,7 @@ object Deregi {
         logInfo("Request #$hash /deregi <- $ipAddress, api version=$reqApiVersion, data=$reqString")
 
         if (exchange.returnIfApiVersionInsufficient()) {
-            logInfo("Request #$hash /deregi -> api version insufficient")
+            logInfo("Request #$hash /deregi -> Api version insufficient")
             return@out
         }
 

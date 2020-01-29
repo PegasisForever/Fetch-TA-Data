@@ -38,10 +38,7 @@ object GetArchived {
         logInfo("Request #$hash /getarchived <- $ipAddress, api version=$reqApiVersion, data=$reqString")
 
         if (exchange.returnIfApiVersionInsufficient()) {
-            log(
-                LogLevel.INFO,
-                "Request #$hash /getarchived -> $ipAddress, api version insufficient"
-            )
+            logInfo("Request #$hash /getarchived -> $ipAddress, Api version insufficient")
             return@out
         }
 
