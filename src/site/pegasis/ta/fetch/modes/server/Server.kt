@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit
 
 const val minApiVersion = 4
 const val latestApiVersion = 10
+const val latestPublicApiVersion = 2
 
 fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publicPort: Int) {
     val timing = Timing()
@@ -70,7 +71,8 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
     //public server
     HttpServer.create(InetSocketAddress(publicPort), 0).run {
         executor = ThreadPoolExecutor(1, getCoreCount() * 100, 30L, TimeUnit.SECONDS, SynchronousQueue())
-        createContext("/getmark", PublicGetMark.route)
+        createContext("/getmark", PublicGetMark.route(1))
+        createContext("/getmark_v2", PublicGetMark.route(2))
         start()
     }
     logInfo("Public server started on port $publicPort")

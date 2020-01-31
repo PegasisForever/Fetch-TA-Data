@@ -26,7 +26,7 @@ object PublicGetMark {
         }
     }
 
-    val route = out@{ exchange: HttpExchange ->
+    fun route(publicApiVersion:Int) = out@{ exchange: HttpExchange ->
         if (exchange.makePublic()) {
             return@out
         }
@@ -52,7 +52,7 @@ object PublicGetMark {
                 runFollowUpUpdate(number, courses)
                 timing("update")
 
-                res = courses.serializePublic().toJSONString()
+                res = courses.serializePublic(publicApiVersion).toJSONString()
                 timing("join")
             }
         } catch (e: Exception) {

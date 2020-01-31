@@ -6,7 +6,7 @@ import site.pegasis.ta.fetch.models.*
 import java.time.format.DateTimeFormatter
 
 //Based on V5
-object CourseListPublicSerializer {
+object CourseListPublicSerializerV1 {
     private fun serializeSmallMarkGroup(smallMarkGroup: SmallMarkGroup): JSONObject {
         val obj = JSONObject()
         obj["available"] = smallMarkGroup.available
