@@ -9,10 +9,10 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
     <orderEntry type="library" name="commons-codec-1.10" level="project" />
-    <orderEntry type="library" name="com.googlecode.json-simple:json-simple:1.1.1" level="project" />
-    <orderEntry type="library" name="com.google.firebase:firebase-admin:6.10.0" level="project" />
     <orderEntry type="library" name="slf4j-nop-1.7.28" level="project" />
-    <orderEntry type="library" name="info.picocli:picocli:4.0.0-beta-1b" level="project" />
     <orderEntry type="library" name="info.picocli:picocli-codegen:4.1.4" level="project" />
+    <orderEntry type="library" name="com.google.firebase:firebase-admin:6.12.1" level="project" />
+    <orderEntry type="library" name="info.picocli:picocli:4.0.0-alpha-1" level="project" />
+    <orderEntry type="library" name="com.googlecode.json-simple:json-simple:1.1.1" level="project" />
   </component>
 </module>
