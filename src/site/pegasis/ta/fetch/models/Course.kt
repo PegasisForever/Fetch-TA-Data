@@ -305,9 +305,7 @@ class Course {
 
     //calculate more accurate course overall and avg marks
     fun calculate() {
-        if (weightTable == null) {
-            return
-        }
+        if (weightTable == null) return
 
         val otherAssignments = assignments!!.filter { it[O]!!.available }
         val otherSize = otherAssignments.size
