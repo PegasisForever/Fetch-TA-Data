@@ -1,0 +1,1315 @@
+openapi: 3.0.0
+info:
+  title: TA Get Mark
+  version: '2.0'
+  description: 'This is an unofficial API for fetching data from Official YRDSB Teach Assist and rearrange it to a machine-friendly JSON format. Github repo: https://github.com/PegasisForever/Fetch-TA-Data'
+  license:
+    name: MIT
+  contact:
+    email: admin@pegasis.site
+servers:
+  - url: 'https://api.pegasis.site/public/yrdsb_ta'
+paths:
+  /getmark_v2:
+    post:
+      summary: ''
+      operationId: post-getmark
+      responses:
+        '200':
+          description: Successfully got mark
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  title: Course
+                  type: object
+                  description: ''
+                  properties:
+                    start_time:
+                      type:
+                        - string
+                      description: The start time of this course.
+                      example: '2019-09-03'
+                      pattern: "^\\d{4}-\\d{2}-\\d{2}$"
+                      nullable: true
+                    end_time:
+                      type:
+                        - string
+                      description: The end time of this course.
+                      example: '2020-01-31'
+                      pattern: "^\\d{4}-\\d{2}-\\d{2}$"
+                      nullable: true
+                    code:
+                      type:
+                        - string
+                      example: AVI2O1-01
+                      description: The course code.
+                      nullable: true
+                    name:
+                      type:
+                        - string
+                      example: Visual Arts
+                      description: The name of the course.
+                      nullable: true
+                    block:
+                      type:
+                        - string
+                      example: '1'
+                      description: The period of the course.
+                      nullable: true
+                    room:
+                      type:
+                        - string
+                      example: '319'
+                      description: The room of the course.
+                      nullable: true
+                    overall_mark:
+                      type:
+                        - number
+                      example: 87.5664467885056
+                      minimum: 0
+                      maximum: 100
+                      description: The overall mark of the course.
+                      nullable: true
+                    assignments:
+                      type: array
+                      description: The list of assignments in this course.
+                      items:
+                        title: Assignment
+                        type: object
+                        description: ''
+                        properties:
+                          feedback:
+                            type:
+                              - string
+                            description: The feedback from the teacher for this assignment.
+                            example: Very good.
+                            nullable: true
+                          name:
+                            type: string
+                            description: The name of this assignment.
+                            example: FInal Project
+                          KU:
+                            type: array
+                            title: SmallMarkGroup
+                            description: A list of small mark in the same category.
+                            minItems: 1
+                            items:
+                              title: SmallMark
+                              type: object
+                              description: 'One category of the assignment, e.g. Communication, Thinking'
+                              properties:
+                                get:
+                                  type: number
+                                  description: The mark the student got in this category in the assignment.
+                                  example: 9
+                                  minimum: 0
+                                weight:
+                                  type: number
+                                  description: The weight of this category in the assignment.
+                                  example: 3
+                                  minimum: 0
+                                finished:
+                                  type: boolean
+                                  description: "False means this small mark is not handed in or the teacher didn't finish marking it."
+                                  example: true
+                                total:
+                                  type: number
+                                  description: The full mark of this category in the assignment.
+                                  example: 10
+                                  minimum: 0
+                              required:
+                                - get
+                                - weight
+                                - finished
+                                - total
+                          F:
+                            type: array
+                            title: SmallMarkGroup
+                            description: A list of small mark in the same category.
+                            minItems: 1
+                            items:
+                              title: SmallMark
+                              type: object
+                              description: 'One category of the assignment, e.g. Communication, Thinking'
+                              properties:
+                                get:
+                                  type: number
+                                  description: The mark the student got in this category in the assignment.
+                                  example: 9
+                                  minimum: 0
+                                weight:
+                                  type: number
+                                  description: The weight of this category in the assignment.
+                                  example: 3
+                                  minimum: 0
+                                finished:
+                                  type: boolean
+                                  description: "False means this small mark is not handed in or the teacher didn't finish marking it."
+                                  example: true
+                                total:
+                                  type: number
+                                  description: The full mark of this category in the assignment.
+                                  example: 10
+                                  minimum: 0
+                              required:
+                                - get
+                                - weight
+                                - finished
+                                - total
+                          O:
+                            type: array
+                            title: SmallMarkGroup
+                            description: A list of small mark in the same category.
+                            minItems: 1
+                            items:
+                              title: SmallMark
+                              type: object
+                              description: 'One category of the assignment, e.g. Communication, Thinking'
+                              properties:
+                                get:
+                                  type: number
+                                  description: The mark the student got in this category in the assignment.
+                                  example: 9
+                                  minimum: 0
+                                weight:
+                                  type: number
+                                  description: The weight of this category in the assignment.
+                                  example: 3
+                                  minimum: 0
+                                finished:
+                                  type: boolean
+                                  description: "False means this small mark is not handed in or the teacher didn't finish marking it."
+                                  example: true
+                                total:
+                                  type: number
+                                  description: The full mark of this category in the assignment.
+                                  example: 10
+                                  minimum: 0
+                              required:
+                                - get
+                                - weight
+                                - finished
+                                - total
+                          A:
+                            type: array
+                            title: SmallMarkGroup
+                            description: A list of small mark in the same category.
+                            minItems: 1
+                            items:
+                              title: SmallMark
+                              type: object
+                              description: 'One category of the assignment, e.g. Communication, Thinking'
+                              properties:
+                                get:
+                                  type: number
+                                  description: The mark the student got in this category in the assignment.
+                                  example: 9
+                                  minimum: 0
+                                weight:
+                                  type: number
+                                  description: The weight of this category in the assignment.
+                                  example: 3
+                                  minimum: 0
+                                finished:
+                                  type: boolean
+                                  description: "False means this small mark is not handed in or the teacher didn't finish marking it."
+                                  example: true
+                                total:
+                                  type: number
+                                  description: The full mark of this category in the assignment.
+                                  example: 10
+                                  minimum: 0
+                              required:
+                                - get
+                                - weight
+                                - finished
+                                - total
+                          C:
+                            type: array
+                            title: SmallMarkGroup
+                            description: A list of small mark in the same category.
+                            minItems: 1
+                            items:
+                              title: SmallMark
+                              type: object
+                              description: 'One category of the assignment, e.g. Communication, Thinking'
+                              properties:
+                                get:
+                                  type: number
+                                  description: The mark the student got in this category in the assignment.
+                                  example: 9
+                                  minimum: 0
+                                weight:
+                                  type: number
+                                  description: The weight of this category in the assignment.
+                                  example: 3
+                                  minimum: 0
+                                finished:
+                                  type: boolean
+                                  description: "False means this small mark is not handed in or the teacher didn't finish marking it."
+                                  example: true
+                                total:
+                                  type: number
+                                  description: The full mark of this category in the assignment.
+                                  example: 10
+                                  minimum: 0
+                              required:
+                                - get
+                                - weight
+                                - finished
+                                - total
+                          T:
+                            type: array
+                            title: SmallMarkGroup
+                            description: A list of small mark in the same category.
+                            minItems: 1
+                            items:
+                              title: SmallMark
+                              type: object
+                              description: 'One category of the assignment, e.g. Communication, Thinking'
+                              properties:
+                                get:
+                                  type: number
+                                  description: The mark the student got in this category in the assignment.
+                                  example: 9
+                                  minimum: 0
+                                weight:
+                                  type: number
+                                  description: The weight of this category in the assignment.
+                                  example: 3
+                                  minimum: 0
+                                finished:
+                                  type: boolean
+                                  description: "False means this small mark is not handed in or the teacher didn't finish marking it."
+                                  example: true
+                                total:
+                                  type: number
+                                  description: The full mark of this category in the assignment.
+                                  example: 10
+                                  minimum: 0
+                              required:
+                                - get
+                                - weight
+                                - finished
+                                - total
+                        required:
+                          - feedback
+                          - name
+                    weight_table:
+                      type: object
+                      description: The weight of different categories in this course.
+                      nullable: true
+                      required:
+                        - KU
+                        - F
+                        - O
+                        - A
+                        - C
+                        - T
+                      properties:
+                        KU:
+                          title: Weight
+                          type: object
+                          properties:
+                            CW:
+                              type: number
+                              description: Course Weight (percentage)
+                              example: 25
+                              minimum: 0
+                              maximum: 100
+                            W:
+                              type: number
+                              description: Weight (percentage)
+                              example: 30
+                              minimum: 0
+                              maximum: 100
+                            SA:
+                              type: number
+                              description: Student Achievement (percentage)
+                              example: 90.313442534
+                              minimum: 0
+                              maximum: 100
+                          required:
+                            - CW
+                            - W
+                            - SA
+                          description: The weight of one category in the course.
+                          x-examples:
+                            example-1: {}
+                        F:
+                          title: Weight
+                          type: object
+                          properties:
+                            CW:
+                              type: number
+                              description: Course Weight (percentage)
+                              example: 25
+                              minimum: 0
+                              maximum: 100
+                            W:
+                              type: number
+                              description: Weight (percentage)
+                              example: 30
+                              minimum: 0
+                              maximum: 100
+                            SA:
+                              type: number
+                              description: Student Achievement (percentage)
+                              example: 90.313442534
+                              minimum: 0
+                              maximum: 100
+                          required:
+                            - CW
+                            - W
+                            - SA
+                          description: The weight of one category in the course.
+                          x-examples:
+                            example-1: {}
+                        O:
+                          title: Weight
+                          type: object
+                          properties:
+                            CW:
+                              type: number
+                              description: Course Weight (percentage)
+                              example: 25
+                              minimum: 0
+                              maximum: 100
+                            W:
+                              type: number
+                              description: Weight (percentage)
+                              example: 30
+                              minimum: 0
+                              maximum: 100
+                            SA:
+                              type: number
+                              description: Student Achievement (percentage)
+                              example: 90.313442534
+                              minimum: 0
+                              maximum: 100
+                          required:
+                            - CW
+                            - W
+                            - SA
+                          description: The weight of one category in the course.
+                          x-examples:
+                            example-1: {}
+                        A:
+                          title: Weight
+                          type: object
+                          properties:
+                            CW:
+                              type: number
+                              description: Course Weight (percentage)
+                              example: 25
+                              minimum: 0
+                              maximum: 100
+                            W:
+                              type: number
+                              description: Weight (percentage)
+                              example: 30
+                              minimum: 0
+                              maximum: 100
+                            SA:
+                              type: number
+                              description: Student Achievement (percentage)
+                              example: 90.313442534
+                              minimum: 0
+                              maximum: 100
+                          required:
+                            - CW
+                            - W
+                            - SA
+                          description: The weight of one category in the course.
+                          x-examples:
+                            example-1: {}
+                        C:
+                          title: Weight
+                          type: object
+                          properties:
+                            CW:
+                              type: number
+                              description: Course Weight (percentage)
+                              example: 25
+                              minimum: 0
+                              maximum: 100
+                            W:
+                              type: number
+                              description: Weight (percentage)
+                              example: 30
+                              minimum: 0
+                              maximum: 100
+                            SA:
+                              type: number
+                              description: Student Achievement (percentage)
+                              example: 90.313442534
+                              minimum: 0
+                              maximum: 100
+                          required:
+                            - CW
+                            - W
+                            - SA
+                          description: The weight of one category in the course.
+                          x-examples:
+                            example-1: {}
+                        T:
+                          title: Weight
+                          type: object
+                          properties:
+                            CW:
+                              type: number
+                              description: Course Weight (percentage)
+                              example: 25
+                              minimum: 0
+                              maximum: 100
+                            W:
+                              type: number
+                              description: Weight (percentage)
+                              example: 30
+                              minimum: 0
+                              maximum: 100
+                            SA:
+                              type: number
+                              description: Student Achievement (percentage)
+                              example: 90.313442534
+                              minimum: 0
+                              maximum: 100
+                          required:
+                            - CW
+                            - W
+                            - SA
+                          description: The weight of one category in the course.
+                          x-examples:
+                            example-1: {}
+                  required:
+                    - start_time
+                    - end_time
+                    - code
+                    - name
+                    - block
+                    - room
+                    - overall_mark
+                    - assignments
+                    - weight_table
+        '400':
+          description: Bad Request
+        '401':
+          description: password incorrect
+        '500':
+          description: Internal Server Error
+        '503':
+          description: TA server down
+      description: Get mark of a student from TA.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                number:
+                  type: string
+                  example: '123456789'
+                password:
+                  type: string
+                  example: adksfb93
+              required:
+                - number
+                - password
+            examples:
+              example:
+                value:
+                  number: '123456789'
+                  password: adksfb93
+        description: ''
+    parameters: []
+components:
+  schemas:
+    Weight:
+      title: Weight
+      type: object
+      properties:
+        CW:
+          type: number
+          description: Course Weight (percentage)
+          example: 25
+          minimum: 0
+          maximum: 100
+        W:
+          type: number
+          description: Weight (percentage)
+          example: 30
+          minimum: 0
+          maximum: 100
+        SA:
+          type: number
+          description: Student Achievement (percentage)
+          example: 90.313442534
+          minimum: 0
+          maximum: 100
+      required:
+        - CW
+        - W
+        - SA
+      description: The weight of one category in the course.
+      x-examples:
+        example-1: {}
+    SmallMark:
+      title: SmallMark
+      type: object
+      description: 'One category of the assignment, e.g. Communication, Thinking'
+      properties:
+        get:
+          type: number
+          description: The mark the student got in this category in the assignment.
+          example: 9
+          minimum: 0
+        weight:
+          type: number
+          description: The weight of this category in the assignment.
+          example: 3
+          minimum: 0
+        finished:
+          type: boolean
+          description: "False means this small mark is not handed in or the teacher didn't finish marking it."
+          example: true
+        total:
+          type: number
+          description: The full mark of this category in the assignment.
+          example: 10
+          minimum: 0
+      required:
+        - get
+        - weight
+        - finished
+        - total
+    SmallMarkGroup:
+      type: array
+      title: SmallMarkGroup
+      description: A list of small mark in the same category.
+      minItems: 1
+      items:
+        title: SmallMark
+        type: object
+        description: 'One category of the assignment, e.g. Communication, Thinking'
+        properties:
+          get:
+            type: number
+            description: The mark the student got in this category in the assignment.
+            example: 9
+            minimum: 0
+          weight:
+            type: number
+            description: The weight of this category in the assignment.
+            example: 3
+            minimum: 0
+          finished:
+            type: boolean
+            description: "False means this small mark is not handed in or the teacher didn't finish marking it."
+            example: true
+          total:
+            type: number
+            description: The full mark of this category in the assignment.
+            example: 10
+            minimum: 0
+        required:
+          - get
+          - weight
+          - finished
+          - total
+    Assignment:
+      title: Assignment
+      type: object
+      description: ''
+      properties:
+        feedback:
+          type:
+            - string
+          description: The feedback from the teacher for this assignment.
+          example: Very good.
+          nullable: true
+        name:
+          type: string
+          description: The name of this assignment.
+          example: FInal Project
+        KU:
+          type: array
+          title: SmallMarkGroup
+          description: A list of small mark in the same category.
+          minItems: 1
+          items:
+            title: SmallMark
+            type: object
+            description: 'One category of the assignment, e.g. Communication, Thinking'
+            properties:
+              get:
+                type: number
+                description: The mark the student got in this category in the assignment.
+                example: 9
+                minimum: 0
+              weight:
+                type: number
+                description: The weight of this category in the assignment.
+                example: 3
+                minimum: 0
+              finished:
+                type: boolean
+                description: "False means this small mark is not handed in or the teacher didn't finish marking it."
+                example: true
+              total:
+                type: number
+                description: The full mark of this category in the assignment.
+                example: 10
+                minimum: 0
+            required:
+              - get
+              - weight
+              - finished
+              - total
+        F:
+          type: array
+          title: SmallMarkGroup
+          description: A list of small mark in the same category.
+          minItems: 1
+          items:
+            title: SmallMark
+            type: object
+            description: 'One category of the assignment, e.g. Communication, Thinking'
+            properties:
+              get:
+                type: number
+                description: The mark the student got in this category in the assignment.
+                example: 9
+                minimum: 0
+              weight:
+                type: number
+                description: The weight of this category in the assignment.
+                example: 3
+                minimum: 0
+              finished:
+                type: boolean
+                description: "False means this small mark is not handed in or the teacher didn't finish marking it."
+                example: true
+              total:
+                type: number
+                description: The full mark of this category in the assignment.
+                example: 10
+                minimum: 0
+            required:
+              - get
+              - weight
+              - finished
+              - total
+        O:
+          type: array
+          title: SmallMarkGroup
+          description: A list of small mark in the same category.
+          minItems: 1
+          items:
+            title: SmallMark
+            type: object
+            description: 'One category of the assignment, e.g. Communication, Thinking'
+            properties:
+              get:
+                type: number
+                description: The mark the student got in this category in the assignment.
+                example: 9
+                minimum: 0
+              weight:
+                type: number
+                description: The weight of this category in the assignment.
+                example: 3
+                minimum: 0
+              finished:
+                type: boolean
+                description: "False means this small mark is not handed in or the teacher didn't finish marking it."
+                example: true
+              total:
+                type: number
+                description: The full mark of this category in the assignment.
+                example: 10
+                minimum: 0
+            required:
+              - get
+              - weight
+              - finished
+              - total
+        A:
+          type: array
+          title: SmallMarkGroup
+          description: A list of small mark in the same category.
+          minItems: 1
+          items:
+            title: SmallMark
+            type: object
+            description: 'One category of the assignment, e.g. Communication, Thinking'
+            properties:
+              get:
+                type: number
+                description: The mark the student got in this category in the assignment.
+                example: 9
+                minimum: 0
+              weight:
+                type: number
+                description: The weight of this category in the assignment.
+                example: 3
+                minimum: 0
+              finished:
+                type: boolean
+                description: "False means this small mark is not handed in or the teacher didn't finish marking it."
+                example: true
+              total:
+                type: number
+                description: The full mark of this category in the assignment.
+                example: 10
+                minimum: 0
+            required:
+              - get
+              - weight
+              - finished
+              - total
+        C:
+          type: array
+          title: SmallMarkGroup
+          description: A list of small mark in the same category.
+          minItems: 1
+          items:
+            title: SmallMark
+            type: object
+            description: 'One category of the assignment, e.g. Communication, Thinking'
+            properties:
+              get:
+                type: number
+                description: The mark the student got in this category in the assignment.
+                example: 9
+                minimum: 0
+              weight:
+                type: number
+                description: The weight of this category in the assignment.
+                example: 3
+                minimum: 0
+              finished:
+                type: boolean
+                description: "False means this small mark is not handed in or the teacher didn't finish marking it."
+                example: true
+              total:
+                type: number
+                description: The full mark of this category in the assignment.
+                example: 10
+                minimum: 0
+            required:
+              - get
+              - weight
+              - finished
+              - total
+        T:
+          type: array
+          title: SmallMarkGroup
+          description: A list of small mark in the same category.
+          minItems: 1
+          items:
+            title: SmallMark
+            type: object
+            description: 'One category of the assignment, e.g. Communication, Thinking'
+            properties:
+              get:
+                type: number
+                description: The mark the student got in this category in the assignment.
+                example: 9
+                minimum: 0
+              weight:
+                type: number
+                description: The weight of this category in the assignment.
+                example: 3
+                minimum: 0
+              finished:
+                type: boolean
+                description: "False means this small mark is not handed in or the teacher didn't finish marking it."
+                example: true
+              total:
+                type: number
+                description: The full mark of this category in the assignment.
+                example: 10
+                minimum: 0
+            required:
+              - get
+              - weight
+              - finished
+              - total
+      required:
+        - feedback
+        - name
+    Course:
+      title: Course
+      type: object
+      description: ''
+      properties:
+        start_time:
+          type:
+            - string
+          description: The start time of this course.
+          example: '2019-09-03'
+          pattern: "^\\d{4}-\\d{2}-\\d{2}$"
+          nullable: true
+        end_time:
+          type:
+            - string
+          description: The end time of this course.
+          example: '2020-01-31'
+          pattern: "^\\d{4}-\\d{2}-\\d{2}$"
+          nullable: true
+        code:
+          type:
+            - string
+          example: AVI2O1-01
+          description: The course code.
+          nullable: true
+        name:
+          type:
+            - string
+          example: Visual Arts
+          description: The name of the course.
+          nullable: true
+        block:
+          type:
+            - string
+          example: '1'
+          description: The period of the course.
+          nullable: true
+        room:
+          type:
+            - string
+          example: '319'
+          description: The room of the course.
+          nullable: true
+        overall_mark:
+          type:
+            - number
+          example: 87.5664467885056
+          minimum: 0
+          maximum: 100
+          description: The overall mark of the course.
+          nullable: true
+        assignments:
+          type: array
+          description: The list of assignments in this course.
+          items:
+            title: Assignment
+            type: object
+            description: ''
+            properties:
+              feedback:
+                type:
+                  - string
+                description: The feedback from the teacher for this assignment.
+                example: Very good.
+                nullable: true
+              name:
+                type: string
+                description: The name of this assignment.
+                example: FInal Project
+              KU:
+                type: array
+                title: SmallMarkGroup
+                description: A list of small mark in the same category.
+                minItems: 1
+                items:
+                  title: SmallMark
+                  type: object
+                  description: 'One category of the assignment, e.g. Communication, Thinking'
+                  properties:
+                    get:
+                      type: number
+                      description: The mark the student got in this category in the assignment.
+                      example: 9
+                      minimum: 0
+                    weight:
+                      type: number
+                      description: The weight of this category in the assignment.
+                      example: 3
+                      minimum: 0
+                    finished:
+                      type: boolean
+                      description: "False means this small mark is not handed in or the teacher didn't finish marking it."
+                      example: true
+                    total:
+                      type: number
+                      description: The full mark of this category in the assignment.
+                      example: 10
+                      minimum: 0
+                  required:
+                    - get
+                    - weight
+                    - finished
+                    - total
+              F:
+                type: array
+                title: SmallMarkGroup
+                description: A list of small mark in the same category.
+                minItems: 1
+                items:
+                  title: SmallMark
+                  type: object
+                  description: 'One category of the assignment, e.g. Communication, Thinking'
+                  properties:
+                    get:
+                      type: number
+                      description: The mark the student got in this category in the assignment.
+                      example: 9
+                      minimum: 0
+                    weight:
+                      type: number
+                      description: The weight of this category in the assignment.
+                      example: 3
+                      minimum: 0
+                    finished:
+                      type: boolean
+                      description: "False means this small mark is not handed in or the teacher didn't finish marking it."
+                      example: true
+                    total:
+                      type: number
+                      description: The full mark of this category in the assignment.
+                      example: 10
+                      minimum: 0
+                  required:
+                    - get
+                    - weight
+                    - finished
+                    - total
+              O:
+                type: array
+                title: SmallMarkGroup
+                description: A list of small mark in the same category.
+                minItems: 1
+                items:
+                  title: SmallMark
+                  type: object
+                  description: 'One category of the assignment, e.g. Communication, Thinking'
+                  properties:
+                    get:
+                      type: number
+                      description: The mark the student got in this category in the assignment.
+                      example: 9
+                      minimum: 0
+                    weight:
+                      type: number
+                      description: The weight of this category in the assignment.
+                      example: 3
+                      minimum: 0
+                    finished:
+                      type: boolean
+                      description: "False means this small mark is not handed in or the teacher didn't finish marking it."
+                      example: true
+                    total:
+                      type: number
+                      description: The full mark of this category in the assignment.
+                      example: 10
+                      minimum: 0
+                  required:
+                    - get
+                    - weight
+                    - finished
+                    - total
+              A:
+                type: array
+                title: SmallMarkGroup
+                description: A list of small mark in the same category.
+                minItems: 1
+                items:
+                  title: SmallMark
+                  type: object
+                  description: 'One category of the assignment, e.g. Communication, Thinking'
+                  properties:
+                    get:
+                      type: number
+                      description: The mark the student got in this category in the assignment.
+                      example: 9
+                      minimum: 0
+                    weight:
+                      type: number
+                      description: The weight of this category in the assignment.
+                      example: 3
+                      minimum: 0
+                    finished:
+                      type: boolean
+                      description: "False means this small mark is not handed in or the teacher didn't finish marking it."
+                      example: true
+                    total:
+                      type: number
+                      description: The full mark of this category in the assignment.
+                      example: 10
+                      minimum: 0
+                  required:
+                    - get
+                    - weight
+                    - finished
+                    - total
+              C:
+                type: array
+                title: SmallMarkGroup
+                description: A list of small mark in the same category.
+                minItems: 1
+                items:
+                  title: SmallMark
+                  type: object
+                  description: 'One category of the assignment, e.g. Communication, Thinking'
+                  properties:
+                    get:
+                      type: number
+                      description: The mark the student got in this category in the assignment.
+                      example: 9
+                      minimum: 0
+                    weight:
+                      type: number
+                      description: The weight of this category in the assignment.
+                      example: 3
+                      minimum: 0
+                    finished:
+                      type: boolean
+                      description: "False means this small mark is not handed in or the teacher didn't finish marking it."
+                      example: true
+                    total:
+                      type: number
+                      description: The full mark of this category in the assignment.
+                      example: 10
+                      minimum: 0
+                  required:
+                    - get
+                    - weight
+                    - finished
+                    - total
+              T:
+                type: array
+                title: SmallMarkGroup
+                description: A list of small mark in the same category.
+                minItems: 1
+                items:
+                  title: SmallMark
+                  type: object
+                  description: 'One category of the assignment, e.g. Communication, Thinking'
+                  properties:
+                    get:
+                      type: number
+                      description: The mark the student got in this category in the assignment.
+                      example: 9
+                      minimum: 0
+                    weight:
+                      type: number
+                      description: The weight of this category in the assignment.
+                      example: 3
+                      minimum: 0
+                    finished:
+                      type: boolean
+                      description: "False means this small mark is not handed in or the teacher didn't finish marking it."
+                      example: true
+                    total:
+                      type: number
+                      description: The full mark of this category in the assignment.
+                      example: 10
+                      minimum: 0
+                  required:
+                    - get
+                    - weight
+                    - finished
+                    - total
+            required:
+              - feedback
+              - name
+        weight_table:
+          type: object
+          description: The weight of different categories in this course.
+          nullable: true
+          required:
+            - KU
+            - F
+            - O
+            - A
+            - C
+            - T
+          properties:
+            KU:
+              title: Weight
+              type: object
+              properties:
+                CW:
+                  type: number
+                  description: Course Weight (percentage)
+                  example: 25
+                  minimum: 0
+                  maximum: 100
+                W:
+                  type: number
+                  description: Weight (percentage)
+                  example: 30
+                  minimum: 0
+                  maximum: 100
+                SA:
+                  type: number
+                  description: Student Achievement (percentage)
+                  example: 90.313442534
+                  minimum: 0
+                  maximum: 100
+              required:
+                - CW
+                - W
+                - SA
+              description: The weight of one category in the course.
+              x-examples:
+                example-1: {}
+            F:
+              title: Weight
+              type: object
+              properties:
+                CW:
+                  type: number
+                  description: Course Weight (percentage)
+                  example: 25
+                  minimum: 0
+                  maximum: 100
+                W:
+                  type: number
+                  description: Weight (percentage)
+                  example: 30
+                  minimum: 0
+                  maximum: 100
+                SA:
+                  type: number
+                  description: Student Achievement (percentage)
+                  example: 90.313442534
+                  minimum: 0
+                  maximum: 100
+              required:
+                - CW
+                - W
+                - SA
+              description: The weight of one category in the course.
+              x-examples:
+                example-1: {}
+            O:
+              title: Weight
+              type: object
+              properties:
+                CW:
+                  type: number
+                  description: Course Weight (percentage)
+                  example: 25
+                  minimum: 0
+                  maximum: 100
+                W:
+                  type: number
+                  description: Weight (percentage)
+                  example: 30
+                  minimum: 0
+                  maximum: 100
+                SA:
+                  type: number
+                  description: Student Achievement (percentage)
+                  example: 90.313442534
+                  minimum: 0
+                  maximum: 100
+              required:
+                - CW
+                - W
+                - SA
+              description: The weight of one category in the course.
+              x-examples:
+                example-1: {}
+            A:
+              title: Weight
+              type: object
+              properties:
+                CW:
+                  type: number
+                  description: Course Weight (percentage)
+                  example: 25
+                  minimum: 0
+                  maximum: 100
+                W:
+                  type: number
+                  description: Weight (percentage)
+                  example: 30
+                  minimum: 0
+                  maximum: 100
+                SA:
+                  type: number
+                  description: Student Achievement (percentage)
+                  example: 90.313442534
+                  minimum: 0
+                  maximum: 100
+              required:
+                - CW
+                - W
+                - SA
+              description: The weight of one category in the course.
+              x-examples:
+                example-1: {}
+            C:
+              title: Weight
+              type: object
+              properties:
+                CW:
+                  type: number
+                  description: Course Weight (percentage)
+                  example: 25
+                  minimum: 0
+                  maximum: 100
+                W:
+                  type: number
+                  description: Weight (percentage)
+                  example: 30
+                  minimum: 0
+                  maximum: 100
+                SA:
+                  type: number
+                  description: Student Achievement (percentage)
+                  example: 90.313442534
+                  minimum: 0
+                  maximum: 100
+              required:
+                - CW
+                - W
+                - SA
+              description: The weight of one category in the course.
+              x-examples:
+                example-1: {}
+            T:
+              title: Weight
+              type: object
+              properties:
+                CW:
+                  type: number
+                  description: Course Weight (percentage)
+                  example: 25
+                  minimum: 0
+                  maximum: 100
+                W:
+                  type: number
+                  description: Weight (percentage)
+                  example: 30
+                  minimum: 0
+                  maximum: 100
+                SA:
+                  type: number
+                  description: Student Achievement (percentage)
+                  example: 90.313442534
+                  minimum: 0
+                  maximum: 100
+              required:
+                - CW
+                - W
+                - SA
+              description: The weight of one category in the course.
+              x-examples:
+                example-1: {}
+      required:
+        - start_time
+        - end_time
+        - code
+        - name
+        - block
+        - room
+        - overall_mark
+        - assignments
+        - weight_table
+  securitySchemes: {}
