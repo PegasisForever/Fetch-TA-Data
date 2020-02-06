@@ -155,7 +155,7 @@ fun HttpExchange.getApiVersion(): Int {
     return apiVersion
 }
 
-fun HttpExchange.makePublic():Boolean{
+fun HttpExchange.makePublic(): Boolean {
     responseHeaders.add("Access-Control-Allow-Origin", "*")
     if (requestMethod.toUpperCase() == "OPTIONS") {
         responseHeaders.add("Access-Control-Allow-Methods", "GET, OPTIONS")
@@ -378,6 +378,6 @@ fun getInput(s: String, password: Boolean = false): String {
     }
 }
 
-fun String.removeBlank():String{
-    return this.replace("\n","").replace(" ","")
+fun String.removeBlank(): String {
+    return this.replace("\n", "").replace(" ", "")
 }

@@ -1,5 +1,5 @@
 echo "Copying file....."
-rsync -z ./out/artifacts/fetch_ta_data_jar/fetch_ta_data.jar pegasis@i.pegasis.site:/home/pegasis/yrdsb_ta_server/fetch_ta_data.jar.temp || exit
+rsync -z ./target/fetch_ta_data.jar pegasis@i.pegasis.site:/home/pegasis/yrdsb_ta_server/fetch_ta_data.jar.temp || exit
 echo "File copied"
 
 ssh i.pegasis.site '

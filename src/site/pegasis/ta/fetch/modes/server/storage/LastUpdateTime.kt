@@ -7,7 +7,7 @@ import java.time.ZonedDateTime
 object LastUpdateTime {
     private val updateTimeMap = HashMap<String, ZonedDateTime>()
 
-    fun load(){
+    fun load() {
         updateTimeMap.clear()
         val jsonObject = jsonParser.parse(readFile("data/lastUpdateTime.json")) as JSONObject
         jsonObject.forEach { jsonNumber, jsonTime ->
@@ -16,7 +16,7 @@ object LastUpdateTime {
     }
 
     operator fun get(number: String): ZonedDateTime? {
-        return updateTimeMap.getOrDefault(number, null)
+        return if (updateTimeMap.containsKey(number)) updateTimeMap[number] else null
     }
 
     @Synchronized

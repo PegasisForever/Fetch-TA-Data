@@ -1,18 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" inherit-compiler-output="true">
-    <exclude-output />
-    <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
-    </content>
-    <orderEntry type="inheritedJdk" />
-    <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
-    <orderEntry type="library" name="commons-codec-1.10" level="project" />
-    <orderEntry type="library" name="slf4j-nop-1.7.28" level="project" />
-    <orderEntry type="library" name="info.picocli:picocli-codegen:4.1.4" level="project" />
-    <orderEntry type="library" name="com.google.firebase:firebase-admin:6.12.1" level="project" />
-    <orderEntry type="library" name="info.picocli:picocli:4.0.0-alpha-1" level="project" />
-    <orderEntry type="library" name="com.googlecode.json-simple:json-simple:1.1.1" level="project" />
+  <component name="AutoImportedSourceRoots">
+    <option name="directories">
+      <list>
+        <option value="C:\Users\Pegasis\Projects\IdeaProjects\maven-test/src" />
+      </list>
+    </option>
   </component>
 </module>
