@@ -29,7 +29,7 @@ private class ReqData(req: String) {
     }
 }
 
-private fun rawPoll(req:String):Pair<Int,String>{
+private fun rawPoll(req: String): Pair<Int, String> {
     var res = ""
     var statusCode = 200
 
@@ -37,7 +37,7 @@ private fun rawPoll(req:String):Pair<Int,String>{
 
     try {
         with(ReqData(req)) {
-            val timing=Timing()
+            val timing = Timing()
             res = LoginPage(timing)
                 .gotoSummaryPage(number, password)
                 .fillDetails(doCalculation = false)
@@ -60,7 +60,7 @@ private fun rawPoll(req:String):Pair<Int,String>{
     return statusCode to res
 }
 
-class RawPoll : HttpFunction {
+class RawPollCloudFunction : HttpFunction {
     override fun service(httpRequest: HttpRequest, httpResponse: HttpResponse) {
         val reqString = httpRequest.inputStream.readText()
         val (first, second) = rawPoll(reqString)

@@ -5,11 +5,11 @@ import site.pegasis.ta.fetch.isQuiet
 import site.pegasis.ta.fetch.modes.server.serializers.serialize
 import site.pegasis.ta.fetch.webpage.LoginPage
 
-fun getMark(studentNumber: String, password: String, apiLevel: Int, quiet: Boolean) {
+fun getMark(studentNumber: String, password: String, apiLevel: Int, quiet: Boolean,raw:Boolean) {
     try {
         isQuiet = quiet
         val summaryPage = LoginPage()
-            .gotoSummaryPage(studentNumber, password).fillDetails()
+            .gotoSummaryPage(studentNumber, password).fillDetails(doCalculation = !raw)
         println(summaryPage.courses.serialize(apiLevel).toJSONString())
     } catch (e: LoginException) {
         println("Student number or password error.")

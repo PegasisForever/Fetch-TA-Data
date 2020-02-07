@@ -39,7 +39,7 @@ class ApiVersionConverter : ITypeConverter<Int> {
 }
 
 @Command(
-    description = ["Fetch a student's mark from YRDSB Teach Assist"],
+    description = ["Fetch a student's mark from YRDSB Teach Assist."],
     name = "getmark",
     mixinStandardHelpOptions = true,
     version = ["BN$serverBuildNumber"]
@@ -65,6 +65,12 @@ class GetMark : Callable<Unit> {
     private var quiet = false
 
     @CommandLine.Option(
+        names = ["--raw", "-r"],
+        description = ["Don't do calculations."]
+    )
+    private var raw = false
+
+    @CommandLine.Option(
         names = ["--interactive", "-i"],
         description = ["Ask for student number and password"]
     )
@@ -81,12 +87,12 @@ class GetMark : Callable<Unit> {
             return
         }
 
-        getMark(studentNumber, password, apiLevel, quiet)
+        getMark(studentNumber, password, apiLevel, quiet, raw)
     }
 }
 
 @Command(
-    description = ["Run as a server of unofficial YRDSB Teach Assist"],
+    description = ["Run as a server of unofficial YRDSB Teach Assist."],
     name = "server",
     mixinStandardHelpOptions = true,
     version = ["BN$serverBuildNumber"]
@@ -116,7 +122,5 @@ class Server : Callable<Unit> {
     )
     private var publicPort = 5005
 
-    override fun call() {
-        startServer(enablePrivate, privatePort, controlPort, publicPort)
-    }
+    override fun call() = startServer(enablePrivate, privatePort, controlPort, publicPort)
 }
