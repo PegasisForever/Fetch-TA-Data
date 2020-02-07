@@ -2,16 +2,15 @@ package site.pegasis.ta.fetch
 
 import com.gargoylesoftware.htmlunit.WebClient
 import com.sun.net.httpserver.HttpExchange
+import org.apache.commons.codec.Charsets
+import org.apache.commons.io.IOUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.json.simple.parser.JSONParser
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.WeightedDouble
 import site.pegasis.ta.fetch.modes.server.latestApiVersion
 import site.pegasis.ta.fetch.modes.server.minApiVersion
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.PrintWriter
-import java.io.StringWriter
+import java.io.*
 import java.lang.Integer.max
 import java.math.RoundingMode
 import java.nio.charset.StandardCharsets.UTF_8
@@ -380,4 +379,10 @@ fun getInput(s: String, password: Boolean = false): String {
 
 fun String.removeBlank(): String {
     return this.replace("\n", "").replace(" ", "")
+}
+
+fun InputStream.readText():String{
+    val writer = StringWriter()
+    IOUtils.copy(this, writer, Charsets.UTF_8)
+    return writer.toString()
 }

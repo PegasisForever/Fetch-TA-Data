@@ -84,7 +84,7 @@ class SummaryPage(private val htmlPage: HtmlPage, private val timing: Timing = T
         return DetailPage(detailHTMLPage, course.code, time, timing)
     }
 
-    fun fillDetails(): SummaryPage {
+    fun fillDetails(doCalculation:Boolean=true): SummaryPage {
         val currentTime = ZonedDateTime.now(torontoZoneID)
         for (i in 0 until courses.size) {
             val course = courses[i]
@@ -93,7 +93,7 @@ class SummaryPage(private val htmlPage: HtmlPage, private val timing: Timing = T
                 detailPages.add(detailPage)
                 course.assignments = detailPage.assignments
                 course.weightTable = detailPage.weightTable
-                course.calculate()
+                if(doCalculation) course.calculate()
             }
         }
 
