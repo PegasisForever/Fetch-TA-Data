@@ -5,6 +5,7 @@ import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.*
 import site.pegasis.ta.fetch.exceptions.LoginException
 import site.pegasis.ta.fetch.exceptions.ParseRequestException
+import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.serializers.serialize
@@ -47,7 +48,11 @@ object GetArchived {
         try {
             with(ReqData(reqString, reqApiVersion)) {
                 if (User.validate(number, password)) {
-                    res = PCache.readArchivedCourseList(number).serialize(reqApiVersion).toJSONString()
+                    res = if (reqApiVersion == 6) {
+                        CourseList(PCache.readArchivedCourseList(number).filter { it.overallMark != null }).serialize(reqApiVersion).toJSONString()
+                    } else {
+                        PCache.readArchivedCourseList(number).serialize(reqApiVersion).toJSONString()
+                    }
                     timing("join")
                 } else {
                     throw LoginException(null)

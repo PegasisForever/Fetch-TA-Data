@@ -7,22 +7,22 @@ import site.pegasis.ta.fetch.toJSONString
 import java.time.format.DateTimeFormatter
 
 object CourseListSerializerV5 {
-    private fun serializeSmallMarkGroup(smallMarkGroup: SmallMarkGroup): JSONObject {
+    private fun serializeSmallMarkGroup(smallMarkGroup: SmallMarkGroup, forceHaveWeight: Boolean): JSONObject {
         val obj = JSONObject()
         obj["available"] = smallMarkGroup.available
         obj["finished"] = smallMarkGroup.hasFinished
         obj["total"] = smallMarkGroup.allTotal
         obj["get"] = smallMarkGroup.allGet
-        obj["weight"] = smallMarkGroup.allWeight
+        obj["weight"] = if (forceHaveWeight) 1.0 else smallMarkGroup.allWeight
 
         return obj
     }
 
-    fun serializeAssignment(assignment: Assignment): JSONObject {
+    fun serializeAssignment(assignment: Assignment, forceHaveWeight: Boolean): JSONObject {
         val obj = JSONObject()
         assignment.forEach { category, smallMarkGroup ->
             if (smallMarkGroup.available) {
-                obj[category.name] = serializeSmallMarkGroup(smallMarkGroup)
+                obj[category.name] = serializeSmallMarkGroup(smallMarkGroup, forceHaveWeight)
             }
         }
         obj["name"] = assignment.name
@@ -62,8 +62,17 @@ object CourseListSerializerV5 {
         obj["cached"] = course.cached
 
         obj["assignments"] = JSONArray()
+        var isAllNoWeight = true
+        run {
+            course.assignments?.forEach { assignment ->
+                if (!assignment.isNoWeight) {
+                    isAllNoWeight = false
+                    return@run
+                }
+            }
+        }
         course.assignments?.forEach { assignment ->
-            (obj["assignments"] as JSONArray).add(serializeAssignment(assignment))
+            (obj["assignments"] as JSONArray).add(serializeAssignment(assignment, isAllNoWeight))
         }
         obj["weight_table"] = course.weightTable?.let { serializeWeightTable(it) }
 

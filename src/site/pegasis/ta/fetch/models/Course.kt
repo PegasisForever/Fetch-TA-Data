@@ -449,7 +449,11 @@ class Course {
     }
 }
 
-class CourseList : ArrayList<Course>() {
+class CourseList() : ArrayList<Course>() {
+    constructor(list: List<Course>) : this() {
+        addAll(list)
+    }
+
     fun copy() = CourseList().apply {
         this@CourseList.forEach { course ->
             add(course.copy())
