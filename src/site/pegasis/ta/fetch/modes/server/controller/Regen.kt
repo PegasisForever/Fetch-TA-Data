@@ -8,6 +8,7 @@ import site.pegasis.ta.fetch.modes.server.parsers.toCourseList
 import site.pegasis.ta.fetch.modes.server.storage.PCache
 import site.pegasis.ta.fetch.modes.server.timeline.compareCourses
 import site.pegasis.ta.fetch.serverBuildNumber
+import site.pegasis.ta.fetch.toJSONString
 import site.pegasis.ta.fetch.torontoZoneID
 import java.io.File
 import java.io.PrintWriter
@@ -61,6 +62,10 @@ class Regen(private val printWriter: PrintWriter) : Callable<Unit> {
 
                 if (oldCourseList != null) {
                     archivedCourseList += compareResult.archivedCourseList
+                    if (compareResult.archivedCourseList.size != 0 && studentNumber != "all") {
+                        printWriter.println("Time: ${time.toJSONString()}(${time.toInstant().toEpochMilli()}) Add archive: ${compareResult.archivedCourseList.joinToString { it.displayName }}")
+                    }
+
                     timeLine += compareResult.updates
                     timeLine.removeUpdateContainsRemovedCourses()
                 }
