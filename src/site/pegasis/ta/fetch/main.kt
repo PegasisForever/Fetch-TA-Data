@@ -6,6 +6,8 @@ import site.pegasis.ta.fetch.modes.getMark
 import site.pegasis.ta.fetch.modes.server.latestApiVersion
 import site.pegasis.ta.fetch.modes.server.minApiVersion
 import site.pegasis.ta.fetch.modes.server.startServer
+import site.pegasis.ta.fetch.modes.server.storage.Config
+import site.pegasis.ta.fetch.modes.server.storage.initFiles
 import java.util.concurrent.Callable
 import java.util.logging.Level
 
@@ -24,6 +26,8 @@ fun main(args: Array<String>) {
 class FetchTa : Callable<Unit> {
     override fun call() {
         java.util.logging.Logger.getLogger("org.openqa.selenium").level = Level.OFF
+        initFiles()
+        Config.load()
     }
 }
 
@@ -77,6 +81,7 @@ class GetMark : Callable<Unit> {
     private var interactive = false
 
     override fun call() {
+        Config.load()
         if (interactive) {
             studentNumber = getInput("Student number: ")
             password = getInput("Password: ", password = true)

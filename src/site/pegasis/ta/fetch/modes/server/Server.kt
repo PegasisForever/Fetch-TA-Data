@@ -36,8 +36,6 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
         }
     })
 
-    initFiles()
-    Config.load()
     LastUpdateTime.load()
     User.load()
     updateAutoUpdateThread()
