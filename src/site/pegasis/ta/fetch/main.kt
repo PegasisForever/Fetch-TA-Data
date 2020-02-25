@@ -23,7 +23,6 @@ fun main(args: Array<String>) {
 )
 class FetchTa : Callable<Unit> {
     override fun call() {
-        java.util.logging.Logger.getLogger("com.gargoylesoftware").level = Level.OFF
         java.util.logging.Logger.getLogger("org.openqa.selenium").level = Level.OFF
     }
 }
