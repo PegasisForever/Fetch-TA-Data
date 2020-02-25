@@ -1,11 +1,13 @@
 package site.pegasis.ta.fetch
 
-import com.gargoylesoftware.htmlunit.WebClient
 import com.sun.net.httpserver.HttpExchange
-import org.apache.commons.codec.Charsets
-import org.apache.commons.io.IOUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.json.simple.parser.JSONParser
+import org.openqa.selenium.By
+import org.openqa.selenium.JavascriptExecutor
+import org.openqa.selenium.WebElement
+import org.openqa.selenium.chrome.ChromeDriver
+import org.openqa.selenium.chrome.ChromeOptions
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.WeightedDouble
 import site.pegasis.ta.fetch.modes.server.latestApiVersion
@@ -80,17 +82,20 @@ fun readFile(file: File): String {
     return file.readText()
 }
 
-fun getWebClient() = WebClient().apply {
-    options.isCssEnabled = false
-    options.isJavaScriptEnabled = false
-    options.isRedirectEnabled = true
-    options.isThrowExceptionOnScriptError = false
-    options.isThrowExceptionOnFailingStatusCode = false
-    options.isDownloadImages = false
-    options.isAppletEnabled = false
-    options.timeout = 10000
+fun getWebClient(): ChromeDriver {
+    System.setProperty("webdriver.chrome.driver", "C:\\Users\\Pegasis\\Downloads\\chromedriver_win32\\chromedriver.exe")
+    System.setProperty("webdriver.chrome.silentLogging", "true");
+    System.setProperty("webdriver.chrome.silentOutput", "true");
+    val options = ChromeOptions()
+    options.setExperimentalOption("prefs",
+        hashMapOf("profile.default_content_setting_values" to
+            hashMapOf("images" to 2,"stylesheet" to 2)))
+    options.addArguments("--silent")
+    options.addArguments("--headless", "--disable-gpu", "--window-size=300,200","--ignore-certificate-errors")
+    return ChromeDriver(options)
 }
 
+fun WebElement.getDirectChildren() = findElements(By.xpath("*"))
 
 val ANSI_RESET = "\u001B[0m"
 val ANSI_BLACK = "\u001B[30m"
@@ -381,8 +386,5 @@ fun String.removeBlank(): String {
     return this.replace("\n", "").replace(" ", "")
 }
 
-fun InputStream.readText():String{
-    val writer = StringWriter()
-    IOUtils.copy(this, writer, Charsets.UTF_8)
-    return writer.toString()
-}
+//todo remove
+fun InputStream.readText() = ""

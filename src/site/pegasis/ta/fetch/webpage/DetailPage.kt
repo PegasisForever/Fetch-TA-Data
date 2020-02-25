@@ -1,53 +1,57 @@
 package site.pegasis.ta.fetch.webpage
 
-import com.gargoylesoftware.htmlunit.html.HtmlPage
-import com.gargoylesoftware.htmlunit.html.HtmlTable
+import org.openqa.selenium.By
+import org.openqa.selenium.chrome.ChromeDriver
 import site.pegasis.ta.fetch.LogLevel
 import site.pegasis.ta.fetch.findFirst
+import site.pegasis.ta.fetch.getDirectChildren
 import site.pegasis.ta.fetch.log
 import site.pegasis.ta.fetch.models.*
 import site.pegasis.ta.fetch.models.Category.F
 import java.time.ZonedDateTime
 
-class DetailPage(htmlPage: HtmlPage, courseCode: String?, time: ZonedDateTime,timing: Timing = Timing()) {
+class DetailPage(webClient: ChromeDriver, courseCode: String?, time: ZonedDateTime, timing: Timing = Timing()) {
     val assignments = AssignmentList()
     val weightTable = WeightTable()
 
     init {
-        timing("parse detail page $courseCode"){
-            val detailTable =
-                htmlPage.getByXPath<HtmlTable>("//table[@border='1'][@cellpadding='3'][@cellspacing='0'][@width='100%']")[0]
+        timing("parse detail page $courseCode") {
+            val detailTable = webClient.findElementsByXPath("//table[@border='1'][@cellpadding='3'][@cellspacing='0'][@width='100%']")[0]
 
-            val infoRow = detailTable.getRow(0)
+            val rows = detailTable.getDirectChildren()[0].getDirectChildren()
+            val infoRow = rows[0]
+            val infoRowCells = infoRow.getDirectChildren()
             val categoryOfEachColumn = ArrayList<Category>()
-            for (i in 1 until infoRow.cells.size) {
+            for (i in 1 until infoRowCells.size) {
                 enumValues<Category>().forEach {
-                    if (it.displayName == infoRow.getCell(i).asText()) {
+                    if (it.displayName == infoRowCells[i].text) {
                         categoryOfEachColumn.add(it)
                     }
                 }
             }
 
-            for (rowI in 1 until detailTable.rowCount step 2) {
+            for (rowI in 1 until rows.size step 2) {
                 try {
-                    val row = detailTable.getRow(rowI)
-                    val assignment = Assignment()
+                    val row = rows[rowI]
+                    val feedbackRow = rows[rowI + 1]
+                    val cells = row.getDirectChildren()
 
-                    assignment.name = row.getCell(0).asText()
+                    val assignment = Assignment()
+                    assignment.name = cells[0].text
                     assignment.time = time
-                    val feedbackText = detailTable.getRow(rowI + 1).asText()
+                    val feedbackText = feedbackRow.text
                     if (!feedbackText.isBlank()) {
                         assignment.feedback = feedbackText.replace(Regex("(\\R|\\s)+"), " ").replace("Feedback:", "").trim()
                     }
 
-                    for (cellI in 1 until row.cells.size) {
-                        val cell = row.getCell(cellI)
+                    for (cellI in 1 until cells.size) {
+                        val cell = cells[cellI]
                         val category = categoryOfEachColumn[cellI - 1]
                         val smallMarkGroup = SmallMarkGroup()
 
-                        val smallMarkElems = cell.getElementsByTagName("tr")
+                        val smallMarkElems = cell.findElements(By.tagName("tr"))
                         smallMarkElems.forEach { smallMarkElem ->
-                            val smallMarkText = smallMarkElem.asText()
+                            val smallMarkText = smallMarkElem.text
                             val smallMark = SmallMark()
                             if (smallMarkText != "no mark") {
                                 val getText =
@@ -98,34 +102,35 @@ class DetailPage(htmlPage: HtmlPage, courseCode: String?, time: ZonedDateTime,ti
                 if (appearTimes > 1) it.name += " ($appearTimes)"
             }
 
-            val weightsTable =
-                htmlPage.getByXPath<HtmlTable>("//table[@border='1'][@cellpadding='3'][@cellspacing='0'][not(@width)]")
-                    .last()
+            val weightsTable = webClient.findElementsByXPath("//table[@border='1'][@cellpadding='3'][@cellspacing='0'][not(@width)]").last()
 
+            val weightRows = weightsTable.findElements(By.tagName("tr"))
             for (rowI in 1..5) {
-                val row = weightsTable.getRow(rowI)
-                val category = categoryFrom(row.getCell(0).asText())
+                val row = weightRows[rowI]
+                val cells = row.getDirectChildren()
+                val category = categoryFrom(cells[0].text)
 
                 val weight = Weight()
-                weight.W = findFirst(row.getCell(1).asText(), "^[\\.\\d]+(?=%)")!!.toDouble()
-                weight.CW = findFirst(row.getCell(2).asText(), "^[\\.\\d]+(?=%)")!!.toDouble()
-                val SAText = findFirst(row.getCell(3).asText(), "^[\\.\\d]+(?=%)")
+                weight.W = findFirst(cells[1].text, "^[\\.\\d]+(?=%)")!!.toDouble()
+                weight.CW = findFirst(cells[2].text, "^[\\.\\d]+(?=%)")!!.toDouble()
+                val SAText = findFirst(cells[3].text, "^[\\.\\d]+(?=%)")
                 weight.SA = try {
                     OverallMark(SAText!!.toDouble())
                 } catch (e: Throwable) {
-                    OverallMark(row.getCell(3).asText())
+                    OverallMark(cells[3].text)
                 }
 
                 weightTable[category] = weight
             }
-            val finalRow = weightsTable.getRow(6)
+            val finalRow = weightRows[6]
+            val finalCells = finalRow.getDirectChildren()
             val finalWeight = Weight()
-            finalWeight.CW = findFirst(finalRow.getCell(1).asText(), "^[\\.\\d]+(?=%)")!!.toDouble()
-            val SAText = findFirst(finalRow.getCell(2).asText(), "^[\\.\\d]+(?=%)")
+            finalWeight.CW = findFirst(finalCells[1].text, "^[\\.\\d]+(?=%)")!!.toDouble()
+            val SAText = findFirst(finalCells[2].text, "^[\\.\\d]+(?=%)")
             finalWeight.SA = try {
                 OverallMark(SAText!!.toDouble())
             } catch (e: Throwable) {
-                OverallMark(finalRow.getCell(2).asText())
+                OverallMark(finalCells[2].text)
             }
             weightTable[F] = finalWeight
         }

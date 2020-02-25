@@ -24,6 +24,7 @@ fun main(args: Array<String>) {
 class FetchTa : Callable<Unit> {
     override fun call() {
         java.util.logging.Logger.getLogger("com.gargoylesoftware").level = Level.OFF
+        java.util.logging.Logger.getLogger("org.openqa.selenium").level = Level.OFF
     }
 }
 
@@ -80,8 +81,6 @@ class GetMark : Callable<Unit> {
         if (interactive) {
             studentNumber = getInput("Student number: ")
             password = getInput("Password: ", password = true)
-            println(studentNumber)
-            println(password)
         } else if (studentNumber.isBlank() || password.isBlank()) {
             System.err.println("Please specify student number and password." + "")
             return
