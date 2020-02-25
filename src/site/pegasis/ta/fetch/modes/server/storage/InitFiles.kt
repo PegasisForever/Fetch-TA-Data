@@ -11,6 +11,7 @@ fun initFiles() {
       "notification": false,
       "auto_update": false,
       "auto_update_interval_minute": 40
+      "web_driver_path": "web/driver/path/here"
     }
     """.trimIndent().writeToFile("data/config.json")
     "[]".writeToFile("data/users.json")

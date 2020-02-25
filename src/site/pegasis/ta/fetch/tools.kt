@@ -12,6 +12,7 @@ import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.WeightedDouble
 import site.pegasis.ta.fetch.modes.server.latestApiVersion
 import site.pegasis.ta.fetch.modes.server.minApiVersion
+import site.pegasis.ta.fetch.modes.server.storage.Config
 import java.io.*
 import java.lang.Integer.max
 import java.math.RoundingMode
@@ -83,7 +84,7 @@ fun readFile(file: File): String {
 }
 
 fun getWebClient(): ChromeDriver {
-    System.setProperty("webdriver.chrome.driver", "C:\\Users\\Pegasis\\Downloads\\chromedriver_win32\\chromedriver.exe")
+    System.setProperty("webdriver.chrome.driver", Config.webDriverPath)
     System.setProperty("webdriver.chrome.silentLogging", "true");
     System.setProperty("webdriver.chrome.silentOutput", "true");
     val options = ChromeOptions()
