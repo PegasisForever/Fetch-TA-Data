@@ -4,9 +4,12 @@ import com.sun.net.httpserver.HttpExchange
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.json.simple.parser.JSONParser
 import org.openqa.selenium.By
+import org.openqa.selenium.UnexpectedAlertBehaviour
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.chrome.ChromeOptions
+import org.openqa.selenium.remote.CapabilityType
+import org.openqa.selenium.remote.DesiredCapabilities
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.WeightedDouble
 import site.pegasis.ta.fetch.modes.server.latestApiVersion
@@ -96,7 +99,10 @@ fun getWebClient(): ChromeDriver {
         "--disable-gpu",
         "--window-size=300,200",
         "--ignore-certificate-errors")
-
+    options.merge(DesiredCapabilities().apply {
+        isJavascriptEnabled = false
+        setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, UnexpectedAlertBehaviour.DISMISS)
+    })
     val client = ChromeDriver(options)
     allWebClients += client
     return client
@@ -188,7 +194,7 @@ enum class LogLevel {
 
 private val logDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
 val fileDateFormat = SimpleDateFormat("yyyy-MM-dd")
-const val serverBuildNumber = 40
+const val serverBuildNumber = 41
 var isQuiet = false
 fun log(level: LogLevel, msg: String, throwable: Throwable? = null, timing: Timing? = null) {
     if (isQuiet) {
