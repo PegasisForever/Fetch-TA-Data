@@ -1,7 +1,9 @@
 package site.pegasis.ta.fetch.modes.server.timeline
 
+import org.openqa.selenium.chrome.ChromeDriver
 import site.pegasis.ta.fetch.LogLevel
 import site.pegasis.ta.fetch.exceptions.LoginException
+import site.pegasis.ta.fetch.getWebClient
 import site.pegasis.ta.fetch.log
 import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.TimeLine
@@ -11,7 +13,7 @@ import site.pegasis.ta.fetch.webpage.LoginPage
 import java.time.ZonedDateTime
 import java.util.concurrent.atomic.AtomicBoolean
 
-fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
+fun performUpdate(user: User, newData: CourseList? = null, webClient: ChromeDriver? = null): TimeLine {
     val studentNumber = user.number
     val password = user.password
     var updates = TimeLine()
@@ -19,7 +21,10 @@ fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
     try {
         val compareResult = compareCourses(
             oldIn = PCache.readCourseList(studentNumber),
-            newIn = newData ?: LoginPage().gotoSummaryPage(studentNumber, password).fillDetails().courses
+            newIn = newData ?: LoginPage(webClient = webClient)
+                .gotoSummaryPage(studentNumber, password)
+                .fillDetails(closeAfterDone = webClient == null)
+                .courses
         )
         updates = compareResult.updates
         //When a user login for the first time, there will be 4 "course added" update,
@@ -95,9 +100,11 @@ fun updateAutoUpdateThread() {
 
 private var autoUpdateThread: Thread? = null
 private val autoUpdateThreadRunning = AtomicBoolean(false)
+private var autoUpdateWebDriver: ChromeDriver? = null
 
 fun startAutoUpdateThread() {
     if (autoUpdateThreadRunning.get()) return
+    autoUpdateWebDriver = getWebClient()
 
     val thread = Thread({
         autoUpdateThreadRunning.set(true)
@@ -108,7 +115,7 @@ fun startAutoUpdateThread() {
                 val startTime = System.currentTimeMillis()
                 User.allUsers.forEach { user ->
                     if (!autoUpdateThreadRunning.get()) throw InterruptedException()
-                    val updates = performUpdate(user)
+                    val updates = performUpdate(user, webClient = autoUpdateWebDriver)
                     log(LogLevel.INFO, "Auto performed update for user ${user.number}, ${updates.size} updates")
                 }
 
@@ -132,6 +139,8 @@ fun startAutoUpdateThread() {
 fun stopAutoUpdateThread() {
     if (!autoUpdateThreadRunning.get()) return
 
+    autoUpdateWebDriver?.close()
+    autoUpdateWebDriver = null
     autoUpdateThreadRunning.set(false)
     autoUpdateThread?.interrupt()
 }

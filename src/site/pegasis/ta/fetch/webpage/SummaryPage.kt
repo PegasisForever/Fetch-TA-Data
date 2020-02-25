@@ -28,7 +28,7 @@ class SummaryPage(private val webClient: ChromeDriver, private val timing: Timin
 
                     val classText = cells[0].text
                     course.code = findFirst(classText, "[A-Z\\d]{6}-[\\d]{2}")
-                    course.name = findFirst(classText, "(?<= : )[^\\n]+(?= )")
+                    course.name = findFirst(classText, "(?<= : )[^\\n]+")
                     course.block = findFirst(classText, "(?<=Block: )\\d")
                     course.room = findFirst(classText, "(?<=rm\\. )\\d+")
                     with(course) {
@@ -79,7 +79,7 @@ class SummaryPage(private val webClient: ChromeDriver, private val timing: Timin
         return detailPage
     }
 
-    fun fillDetails(doCalculation: Boolean = true): SummaryPage {
+    fun fillDetails(doCalculation: Boolean = true, closeAfterDone: Boolean = true): SummaryPage {
         val currentTime = ZonedDateTime.now(torontoZoneID)
         for (i in 0 until courses.size) {
             val course = courses[i]
@@ -92,7 +92,7 @@ class SummaryPage(private val webClient: ChromeDriver, private val timing: Timin
             }
         }
 
-        webClient.close()
+        if (closeAfterDone) webClient.close()
         return this
     }
 }
