@@ -82,6 +82,7 @@ fun readFile(file: File): String {
     return file.readText()
 }
 
+val allWebClients = ArrayList<ChromeDriver>()
 fun getWebClient(): ChromeDriver {
     System.setProperty("webdriver.chrome.driver", Config.webDriverPath)
     System.setProperty("webdriver.chrome.silentLogging", "true");
@@ -95,7 +96,10 @@ fun getWebClient(): ChromeDriver {
         "--disable-gpu",
         "--window-size=300,200",
         "--ignore-certificate-errors")
-    return ChromeDriver(options)
+
+    val client = ChromeDriver(options)
+    allWebClients += client
+    return client
 }
 
 fun WebElement.getDirectChildren() = findElements(By.xpath("*"))

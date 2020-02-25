@@ -1,9 +1,7 @@
 package site.pegasis.ta.fetch.modes.server
 
 import com.sun.net.httpserver.HttpServer
-import site.pegasis.ta.fetch.getCoreCount
-import site.pegasis.ta.fetch.logInfo
-import site.pegasis.ta.fetch.logUnhandled
+import site.pegasis.ta.fetch.*
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.controller.Controller
@@ -32,6 +30,11 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
     Runtime.getRuntime().addShutdownHook(object : Thread() {
         override fun run() {
             stopAutoUpdateThread()
+            allWebClients.forEach {
+                noThrow {
+                    it.close()
+                }
+            }
             logInfo("Server stopped")
         }
     })
