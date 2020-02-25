@@ -12,6 +12,9 @@ import java.util.concurrent.Callable
 import java.util.logging.Level
 
 fun main(args: Array<String>) {
+    java.util.logging.Logger.getLogger("org.openqa.selenium").level = Level.OFF
+    initFiles()
+    Config.load()
     CommandLine(FetchTa())
         .addSubcommand(GetMark())
         .addSubcommand(Server())
@@ -24,11 +27,7 @@ fun main(args: Array<String>) {
     version = ["BN$serverBuildNumber"]
 )
 class FetchTa : Callable<Unit> {
-    override fun call() {
-        java.util.logging.Logger.getLogger("org.openqa.selenium").level = Level.OFF
-        initFiles()
-        Config.load()
-    }
+    override fun call() {}
 }
 
 class ApiVersionConverter : ITypeConverter<Int> {
@@ -81,7 +80,6 @@ class GetMark : Callable<Unit> {
     private var interactive = false
 
     override fun call() {
-        Config.load()
         if (interactive) {
             studentNumber = getInput("Student number: ")
             password = getInput("Password: ", password = true)
