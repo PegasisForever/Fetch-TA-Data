@@ -51,7 +51,7 @@ class DetailPage(webClient: ChromeDriver, courseCode: String?, time: ZonedDateTi
 
                         val smallMarkElems = cell.findElements(By.tagName("tr"))
                         smallMarkElems.forEach { smallMarkElem ->
-                            val smallMarkText = smallMarkElem.text
+                            val smallMarkText = smallMarkElem.text.replace("\n"," \n")
                             val smallMark = SmallMark()
                             if (smallMarkText != "no mark") {
                                 val getText =

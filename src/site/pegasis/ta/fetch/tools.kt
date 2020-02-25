@@ -4,7 +4,6 @@ import com.sun.net.httpserver.HttpExchange
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.json.simple.parser.JSONParser
 import org.openqa.selenium.By
-import org.openqa.selenium.JavascriptExecutor
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.chrome.ChromeOptions
@@ -90,9 +89,12 @@ fun getWebClient(): ChromeDriver {
     val options = ChromeOptions()
     options.setExperimentalOption("prefs",
         hashMapOf("profile.default_content_setting_values" to
-            hashMapOf("images" to 2,"stylesheet" to 2)))
-    options.addArguments("--silent")
-    options.addArguments("--headless", "--disable-gpu", "--window-size=300,200","--ignore-certificate-errors")
+            hashMapOf("images" to 2, "stylesheet" to 2, "javascript" to 2)))
+    options.addArguments("--silent",
+        "--headless",
+        "--disable-gpu",
+        "--window-size=300,200",
+        "--ignore-certificate-errors")
     return ChromeDriver(options)
 }
 
