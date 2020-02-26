@@ -2,6 +2,8 @@ package site.pegasis.ta.fetch.chromepool
 
 import site.pegasis.ta.fetch.getChromeWebDriver
 import site.pegasis.ta.fetch.logInfo
+import site.pegasis.ta.fetch.logWarn
+import java.time.ZonedDateTime
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.round
@@ -35,6 +37,7 @@ object ChromePool {
     fun get(): ChromeDriverWrapper {
         return synchronized(this) {
             var driver = chromeDrivers.find { !it.inUse && it.getPageCount <= maxChromePageCount }
+            driver?.lastAssignTime = ZonedDateTime.now()
             if (driver == null) {
                 logInfo("No avaliable chrome drivers: $chromeDrivers, adding")
                 driver = getChromeWebDriver()
@@ -53,6 +56,14 @@ object ChromePool {
             chromeDrivers.removeAll(overUsedChromes)
             overUsedChromes.forEach { it.driver.close() }
             logInfo("Over used chrome drivers removed, chrome drivers list: $chromeDrivers")
+
+            //fixme
+            val currentTime = ZonedDateTime.now().toEpochSecond()
+            val timeoutChromes = chromeDrivers.filter { it.inUse && currentTime - it.lastAssignTime.toEpochSecond() > 10 * 60 }
+            logWarn("Timeout chrome drivers: $timeoutChromes")
+            chromeDrivers.removeAll(timeoutChromes)
+            timeoutChromes.forEach { it.driver.close() }
+            logInfo("Timeout chrome drivers removed, chrome drivers list: $chromeDrivers")
 
             val notInUseChromes = chromeDrivers.filter { !it.inUse }
             logInfo("Not in use chrome drivers: $overUsedChromes")
@@ -79,4 +90,10 @@ object ChromePool {
         }
 
     }
+}
+
+fun main() {
+    val time1 = ZonedDateTime.now()
+    Thread.sleep(3000)
+    println(time1.toEpochSecond() - ZonedDateTime.now().toEpochSecond())
 }
