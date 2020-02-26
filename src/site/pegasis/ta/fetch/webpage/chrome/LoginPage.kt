@@ -1,16 +1,16 @@
-package site.pegasis.ta.fetch.webpage
+package site.pegasis.ta.fetch.webpage.chrome
 
 import org.openqa.selenium.chrome.ChromeDriver
 import site.pegasis.ta.fetch.exceptions.LoginException
 import site.pegasis.ta.fetch.findFirst
-import site.pegasis.ta.fetch.getWebClient
+import site.pegasis.ta.fetch.getWebDriver
 import site.pegasis.ta.fetch.models.Timing
 
 class LoginPage(private val timing: Timing = Timing(),
                 private var webClient: ChromeDriver? = null) {
 
     init {
-        if (webClient == null) webClient = getWebClient()
+        if (webClient == null) webClient = getWebDriver()
         timing("load login page") {
             webClient!!.get("https://ta.yrdsb.ca/live/index.php")
         }

@@ -13,6 +13,7 @@ import java.util.logging.Level
 
 fun main(args: Array<String>) {
     java.util.logging.Logger.getLogger("org.openqa.selenium").level = Level.OFF
+    java.util.logging.Logger.getLogger("com.gargoylesoftware").level = Level.OFF
     initFiles()
     Config.load()
     CommandLine(FetchTa())

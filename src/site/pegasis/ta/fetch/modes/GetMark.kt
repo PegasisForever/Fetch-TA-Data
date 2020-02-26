@@ -3,7 +3,7 @@ package site.pegasis.ta.fetch.modes
 import site.pegasis.ta.fetch.exceptions.LoginException
 import site.pegasis.ta.fetch.isQuiet
 import site.pegasis.ta.fetch.modes.server.serializers.serialize
-import site.pegasis.ta.fetch.webpage.LoginPage
+import site.pegasis.ta.fetch.webpage.chrome.LoginPage
 
 fun getMark(studentNumber: String, password: String, apiLevel: Int, quiet: Boolean,raw:Boolean) {
     try {

@@ -10,7 +10,7 @@ import site.pegasis.ta.fetch.jsonParser
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.modes.server.serializers.serialize
 import site.pegasis.ta.fetch.readText
-import site.pegasis.ta.fetch.webpage.LoginPage
+import site.pegasis.ta.fetch.webpage.chrome.LoginPage
 
 private class ReqData(req: String) {
     val number: String

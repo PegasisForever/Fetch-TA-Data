@@ -1,4 +1,4 @@
-package site.pegasis.ta.fetch.webpage
+package site.pegasis.ta.fetch.webpage.chrome
 
 import org.openqa.selenium.By
 import org.openqa.selenium.chrome.ChromeDriver

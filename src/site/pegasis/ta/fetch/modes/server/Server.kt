@@ -6,9 +6,7 @@ import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.controller.Controller
 import site.pegasis.ta.fetch.modes.server.route.*
-import site.pegasis.ta.fetch.modes.server.storage.Config
 import site.pegasis.ta.fetch.modes.server.storage.LastUpdateTime
-import site.pegasis.ta.fetch.modes.server.storage.initFiles
 import site.pegasis.ta.fetch.modes.server.timeline.stopAutoUpdateThread
 import site.pegasis.ta.fetch.modes.server.timeline.updateAutoUpdateThread
 import java.lang.Thread.setDefaultUncaughtExceptionHandler
@@ -30,7 +28,7 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
     Runtime.getRuntime().addShutdownHook(object : Thread() {
         override fun run() {
             stopAutoUpdateThread()
-            allWebClients.forEach {
+            allWebDriver.forEach {
                 noThrow {
                     it.close()
                 }

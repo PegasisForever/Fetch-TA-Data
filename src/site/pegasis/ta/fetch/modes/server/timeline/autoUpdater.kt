@@ -3,13 +3,13 @@ package site.pegasis.ta.fetch.modes.server.timeline
 import org.openqa.selenium.chrome.ChromeDriver
 import site.pegasis.ta.fetch.LogLevel
 import site.pegasis.ta.fetch.exceptions.LoginException
-import site.pegasis.ta.fetch.getWebClient
+import site.pegasis.ta.fetch.getWebDriver
 import site.pegasis.ta.fetch.log
 import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.TimeLine
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.storage.*
-import site.pegasis.ta.fetch.webpage.LoginPage
+import site.pegasis.ta.fetch.webpage.chrome.LoginPage
 import java.time.ZonedDateTime
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -104,7 +104,7 @@ private var autoUpdateWebDriver: ChromeDriver? = null
 
 fun startAutoUpdateThread() {
     if (autoUpdateThreadRunning.get()) return
-    autoUpdateWebDriver = getWebClient()
+    autoUpdateWebDriver = getWebDriver()
 
     val thread = Thread({
         autoUpdateThreadRunning.set(true)

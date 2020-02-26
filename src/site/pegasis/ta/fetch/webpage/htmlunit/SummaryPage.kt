@@ -1,7 +1,7 @@
-package site.pegasis.ta.fetch.webpage
+package site.pegasis.ta.fetch.webpage.htmlunit
 
-import org.openqa.selenium.By
-import org.openqa.selenium.chrome.ChromeDriver
+import com.gargoylesoftware.htmlunit.html.HtmlPage
+import com.gargoylesoftware.htmlunit.html.HtmlTable
 import site.pegasis.ta.fetch.*
 import site.pegasis.ta.fetch.models.Course
 import site.pegasis.ta.fetch.models.CourseList
@@ -10,23 +10,20 @@ import site.pegasis.ta.fetch.models.Timing
 import java.time.LocalDate
 import java.time.ZonedDateTime
 
-
-class SummaryPage(private val webClient: ChromeDriver, private val timing: Timing = Timing()) {
+class SummaryPage(private val htmlPage: HtmlPage, private val timing: Timing = Timing()) {
     val courses = CourseList()
     private val detailPages = ArrayList<DetailPage>()
     private val detailHrefMap = HashMap<Course, String>()
 
     init {
         timing("parse summary page") {
-            val summaryTable = webClient.findElementsByTagName("table")[1]
-            val rows = summaryTable.findElements(By.tagName("tr"))
-            for (i in 1 until rows.size) {
+            val summaryTable = htmlPage.getElementsByTagName("table")[1] as HtmlTable
+            for (i in 1 until summaryTable.rowCount) {
                 try {
-                    val row = rows[i]
-                    val cells = row.findElements(By.tagName("td"))
+                    val row = summaryTable.getRow(i)
                     val course = Course()
 
-                    val classText = cells[0].text.replace("\n"," \n ")
+                    val classText = row.getCell(0).asText()
                     course.code = findFirst(classText, "[A-Z\\d]{6}-[\\d]{2}")
                     course.name = findFirst(classText, "(?<= : )[^\\n]+(?= )")
                     course.block = findFirst(classText, "(?<=Block: )\\d")
@@ -37,16 +34,19 @@ class SummaryPage(private val webClient: ChromeDriver, private val timing: Timin
                         }
                     }
 
-                    val timeText = cells[1].text
+                    val timeText = row.getCell(1).asText()
                     val times = find(timeText, "\\d+-\\d+-\\d+")
                     if (times?.size == 2) noThrow {
                         course.startTime = LocalDate.parse(times[0])
                         course.endTime = LocalDate.parse(times[1])
                     }
 
-                    if (cells.size == 3) {
-                        val markText = cells[2].text
-                        val currentMarkText = find(markText, "(?<=current mark = )[^%]+")?.get(0)
+                    if (row.cells.size == 3) {
+                        val markText = row.getCell(2).asText()
+                        val currentMarkText = find(
+                            markText,
+                            "(?<=current mark = )[^%]+"
+                        )?.get(0)
                         val levelMarkText = find(markText, "(?<=Level ).*")?.get(0)
                         if (currentMarkText != null) {
                             course.overallMark = OverallMark(currentMarkText.toDouble())
@@ -57,29 +57,34 @@ class SummaryPage(private val webClient: ChromeDriver, private val timing: Timin
 
                     courses.add(course)
                     if (course.overallMark != null) {
-                        detailHrefMap[course] = cells[2].findElement(By.tagName("a")).getAttribute("href")
+                        detailHrefMap[course] = row.getCell(2)
+                            .getElementsByTagName("a")[0]
+                            .getAttribute("href")!!
                     }
 
                 } catch (e: Exception) {
-                    log(LogLevel.ERROR, "Cannot parse summary row #$i", e)
+                    log(
+                        LogLevel.ERROR,
+                        "Cannot parse summary row #$i",
+                        e
+                    )
                 }
             }
         }
     }
 
     fun gotoDetailPage(course: Course, time: ZonedDateTime): DetailPage {
-        timing("get detail page ${course.code}") {
-            webClient.get(detailHrefMap[course]!!)
+        val detailHTMLPage = timing("get detail page ${course.code}") {
+            htmlPage.getAnchorByHref(detailHrefMap[course]).click<HtmlPage>()
         }
         noThrow {
-            course.id = findFirst(webClient.currentUrl, "(?<=subject_id=)\\d+")!!.toInt()
+            course.id = findFirst(detailHTMLPage.baseURL.toExternalForm(), "(?<=subject_id=)\\d+")!!.toInt()
         }
 
-        val detailPage = DetailPage(webClient, course.code, time, timing)
-        return detailPage
+        return DetailPage(detailHTMLPage, course.code, time, timing)
     }
 
-    fun fillDetails(doCalculation: Boolean = true, closeAfterDone: Boolean = true): SummaryPage {
+    fun fillDetails(doCalculation:Boolean=true): SummaryPage {
         val currentTime = ZonedDateTime.now(torontoZoneID)
         for (i in 0 until courses.size) {
             val course = courses[i]
@@ -88,11 +93,10 @@ class SummaryPage(private val webClient: ChromeDriver, private val timing: Timin
                 detailPages.add(detailPage)
                 course.assignments = detailPage.assignments
                 course.weightTable = detailPage.weightTable
-                if (doCalculation) course.calculate()
+                if(doCalculation) course.calculate()
             }
         }
 
-        if (closeAfterDone) webClient.close()
         return this
     }
 }

@@ -1,5 +1,6 @@
 package site.pegasis.ta.fetch
 
+import com.gargoylesoftware.htmlunit.WebClient
 import com.sun.net.httpserver.HttpExchange
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.json.simple.parser.JSONParser
@@ -85,8 +86,8 @@ fun readFile(file: File): String {
     return file.readText()
 }
 
-val allWebClients = ArrayList<ChromeDriver>()
-fun getWebClient(): ChromeDriver {
+val allWebDriver = ArrayList<ChromeDriver>()
+fun getWebDriver(): ChromeDriver {
     System.setProperty("webdriver.chrome.driver", Config.webDriverPath)
     System.setProperty("webdriver.chrome.silentLogging", "true");
     System.setProperty("webdriver.chrome.silentOutput", "true");
@@ -104,8 +105,19 @@ fun getWebClient(): ChromeDriver {
         setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, UnexpectedAlertBehaviour.DISMISS)
     })
     val client = ChromeDriver(options)
-    allWebClients += client
+    allWebDriver += client
     return client
+}
+
+fun getHtmlUnitWebClient() = WebClient().apply {
+    options.isCssEnabled = false
+    options.isJavaScriptEnabled = false
+    options.isRedirectEnabled = true
+    options.isThrowExceptionOnScriptError = false
+    options.isThrowExceptionOnFailingStatusCode = false
+    options.isDownloadImages = false
+    options.isAppletEnabled = false
+    options.timeout = 10000
 }
 
 fun WebElement.getDirectChildren() = findElements(By.xpath("*"))

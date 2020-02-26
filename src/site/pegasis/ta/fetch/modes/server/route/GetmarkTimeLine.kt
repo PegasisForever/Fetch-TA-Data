@@ -10,7 +10,7 @@ import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.serializers.serialize
 import site.pegasis.ta.fetch.modes.server.storage.PCache
 import site.pegasis.ta.fetch.modes.server.timeline.runFollowUpUpdate
-import site.pegasis.ta.fetch.webpage.LoginPage
+import site.pegasis.ta.fetch.webpage.chrome.LoginPage
 
 object GetmarkTimeLine {
     private class ReqData(req: String, version: Int) {
