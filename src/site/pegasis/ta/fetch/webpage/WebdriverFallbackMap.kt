@@ -6,7 +6,7 @@ import java.time.ZonedDateTime
 
 object WebdriverFallbackMap {
     private val fallbackMap = HashMap<String, ZonedDateTime>()
-    private const val timeoutDays = 5L
+    private const val timeoutDays = 2L
 
     fun load() {
         fallbackMap.clear()

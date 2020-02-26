@@ -48,9 +48,7 @@ fun fetchUserCourseList(studentNumber: String,
             }
         }
 
-        while (courseList == null && error == null) {
-            Thread.sleep(20)
-        }
+        while (courseList == null && error == null) Thread.sleep(20)
         if (error != null) throw error!!
         return courseList!!
     } else {
