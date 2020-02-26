@@ -17,7 +17,10 @@ import site.pegasis.ta.fetch.models.WeightedDouble
 import site.pegasis.ta.fetch.modes.server.latestApiVersion
 import site.pegasis.ta.fetch.modes.server.minApiVersion
 import site.pegasis.ta.fetch.modes.server.storage.Config
-import java.io.*
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.PrintWriter
+import java.io.StringWriter
 import java.lang.Integer.max
 import java.math.RoundingMode
 import java.nio.charset.StandardCharsets.UTF_8
@@ -408,6 +411,3 @@ fun getInput(s: String, password: Boolean = false): String {
 fun String.removeBlank(): String {
     return this.replace("\n", "").replace(" ", "")
 }
-
-//todo remove
-fun InputStream.readText() = ""

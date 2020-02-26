@@ -47,7 +47,9 @@ object Regi {
 
         try {
             with(ReqData(reqString, reqApiVersion).user) {
-                val courses = fetchUserCourseList(number, password, timing = timing)
+                val courses = fetchUserCourseList(number, password,
+                    timing = timing,
+                    parallel = User.get(number) == null)
 
                 User.add(this)
                 runFollowUpUpdate(number, courses)
