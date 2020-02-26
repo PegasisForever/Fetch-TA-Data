@@ -1,7 +1,6 @@
 package site.pegasis.ta.fetch.webpage.chrome
 
 import org.openqa.selenium.By
-import org.openqa.selenium.chrome.ChromeDriver
 import site.pegasis.ta.fetch.LogLevel
 import site.pegasis.ta.fetch.chromepool.ChromeDriverWrapper
 import site.pegasis.ta.fetch.findFirst

@@ -4,9 +4,9 @@ import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.TimeLine
+import site.pegasis.ta.fetch.modes.server.parsers.CourseListParserV10.parseCourseList as CourseListParserV10
 import site.pegasis.ta.fetch.modes.server.parsers.CourseListParserV4.parseCourseList as CourseListParserV4
 import site.pegasis.ta.fetch.modes.server.parsers.CourseListParserV8.parseCourseList as CourseListParserV8
-import site.pegasis.ta.fetch.modes.server.parsers.CourseListParserV10.parseCourseList as CourseListParserV10
 import site.pegasis.ta.fetch.modes.server.parsers.TimeLineParserV4.parseTimeLine as TimeLineParserV4
 import site.pegasis.ta.fetch.modes.server.parsers.TimeLineParserV6.parseTimeLine as TimeLineParserV6
 import site.pegasis.ta.fetch.modes.server.parsers.TimeLineParserV9.parseTimeLine as TimeLineParserV9

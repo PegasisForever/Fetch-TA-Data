@@ -1,6 +1,6 @@
 package site.pegasis.ta.fetch.modes.server.controller
 
-import picocli.CommandLine.*
+import picocli.CommandLine.Command
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.storage.Config
 import site.pegasis.ta.fetch.modes.server.storage.LastUpdateTime

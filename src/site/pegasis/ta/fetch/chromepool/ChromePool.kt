@@ -69,9 +69,9 @@ object ChromePool {
                 logInfo("Spare chrome drivers removed, chrome drivers list: $chromeDrivers")
             }
 
-            if(chromeDrivers.size< minChromeCount){
+            if (chromeDrivers.size < minChromeCount) {
                 logInfo("Chrome drivers count less than min, adding")
-                repeat(minChromeCount-chromeDrivers.size){
+                repeat(minChromeCount - chromeDrivers.size) {
                     chromeDrivers += getChromeWebDriver()
                 }
             }

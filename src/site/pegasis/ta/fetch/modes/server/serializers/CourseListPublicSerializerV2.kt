@@ -3,7 +3,6 @@ package site.pegasis.ta.fetch.modes.server.serializers
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.models.*
-import site.pegasis.ta.fetch.toJSONString
 import java.time.format.DateTimeFormatter
 
 //Based on V10, simplified

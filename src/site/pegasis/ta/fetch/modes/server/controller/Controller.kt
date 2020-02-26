@@ -3,7 +3,7 @@ package site.pegasis.ta.fetch.modes.server.controller
 import com.sun.net.httpserver.HttpExchange
 import org.json.simple.JSONArray
 import picocli.CommandLine
-import picocli.CommandLine.*
+import picocli.CommandLine.Command
 import site.pegasis.ta.fetch.*
 import java.io.PrintWriter
 import java.io.StringWriter
