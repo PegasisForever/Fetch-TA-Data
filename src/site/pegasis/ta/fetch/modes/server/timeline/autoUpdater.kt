@@ -1,8 +1,7 @@
 package site.pegasis.ta.fetch.modes.server.timeline
 
-import site.pegasis.ta.fetch.LogLevel
+import site.pegasis.ta.fetch.*
 import site.pegasis.ta.fetch.exceptions.LoginException
-import site.pegasis.ta.fetch.log
 import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.TimeLine
 import site.pegasis.ta.fetch.models.User
@@ -46,22 +45,12 @@ fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
 
         LastUpdateTime[studentNumber] = ZonedDateTime.now()
     } catch (e: LoginException) {
-        log(
-            LogLevel.INFO,
-            "Error while performing update for user ${studentNumber}: Login error"
-        )
+        logInfo("Error while performing update for user ${studentNumber}: Login error")
     } catch (e: Exception) {
         if (e.message?.indexOf("SocketTimeoutException") != -1) {
-            log(
-                LogLevel.WARN,
-                "Error while performing update for user ${studentNumber}: Connect timeout"
-            )
+            logWarn("Error while performing update for user ${studentNumber}: Connect timeout")
         } else {
-            log(
-                LogLevel.ERROR,
-                "Error while performing update for user ${studentNumber}",
-                e
-            )
+            logError("Error while performing update for user ${studentNumber}", e)
         }
     }
     return updates
@@ -109,20 +98,20 @@ fun startAutoUpdateThread() {
                 User.allUsers.forEach { user ->
                     if (!autoUpdateThreadRunning.get()) throw InterruptedException()
                     val updates = performUpdate(user)
-                    log(LogLevel.INFO, "Auto performed update for user ${user.number}, ${updates.size} updates")
+                    logInfo("Auto performed update for user ${user.number}, ${updates.size} updates")
                 }
 
                 val interval = Config.autoUpdateIntervalMinute * 60 * 1000
                 val remainTime = interval - (System.currentTimeMillis() - startTime)
-                log(LogLevel.INFO, "Auto update done, ${(System.currentTimeMillis() - startTime) / 1000 / 60} minutes.")
-                Thread.sleep(remainTime)
+                logInfo("Auto update done, ${(System.currentTimeMillis() - startTime) / 1000 / 60} minutes.")
+                if (remainTime > 0) Thread.sleep(remainTime)
             }
         } catch (e: InterruptedException) {
-            log(LogLevel.INFO, "Thread interrupted")
+            logInfo("Thread interrupted")
         }
 
         autoUpdateThreadRunning.set(false)
-        log(LogLevel.INFO, "Thread stopped")
+        logInfo("Thread stopped")
     }, "AutoUpdateThread")
     thread.start()
 
