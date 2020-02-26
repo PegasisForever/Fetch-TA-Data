@@ -23,7 +23,7 @@ class SummaryPage(private val htmlPage: HtmlPage, private val timing: Timing = T
                     val row = summaryTable.getRow(i)
                     val course = Course()
 
-                    val classText = row.getCell(0).asText()
+                    val classText = row.getCell(0).asText().replace("\r","")
                     course.code = findFirst(classText, "[A-Z\\d]{6}-[\\d]{2}")
                     course.name = findFirst(classText, "(?<= : )[^\\n]+(?= )")
                     course.block = findFirst(classText, "(?<=Block: )\\d")

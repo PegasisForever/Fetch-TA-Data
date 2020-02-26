@@ -26,7 +26,7 @@ class SummaryPage(private val webDriver: ChromeDriverWrapper, private val timing
                     val cells = row.findElements(By.tagName("td"))
                     val course = Course()
 
-                    val classText = cells[0].text.replace("\n"," \n ")
+                    val classText = cells[0].text.replace("\n"," \n ").replace("\r","")
                     course.code = findFirst(classText, "[A-Z\\d]{6}-[\\d]{2}")
                     course.name = findFirst(classText, "(?<= : )[^\\n]+(?= )")
                     course.block = findFirst(classText, "(?<=Block: )\\d")
