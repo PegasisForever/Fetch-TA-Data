@@ -1,5 +1,6 @@
 package site.pegasis.ta.fetch.webpage
 
+import site.pegasis.ta.fetch.isHtmlunitError
 import site.pegasis.ta.fetch.logInfo
 import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.Timing
@@ -26,21 +27,31 @@ fun fetchUserCourseList(studentNumber: String,
                         parallel: Boolean = false): CourseList {
     if (parallel && !forceChrome && !WebdriverFallbackMap.contains(studentNumber)) {
         var courseList: CourseList? = null
+        var error: Throwable? = null
         thread(start = true) {
             try {
                 courseList = htmlunitFetchCourseList(studentNumber, password, raw, timing)
             } catch (e: Throwable) {
-                logInfo("Fetch course list for ${studentNumber}: Fallback to web driver")
-                WebdriverFallbackMap += studentNumber
+                if (e.isHtmlunitError()) {
+                    logInfo("Fetch course list for ${studentNumber}: Fallback to web driver")
+                    WebdriverFallbackMap += studentNumber
+                } else {
+                    error = e
+                }
             }
         }
         thread(start = true) {
-            courseList = chromeFetchCourseList(studentNumber, password, raw, timing)
+            try {
+                courseList = chromeFetchCourseList(studentNumber, password, raw, timing)
+            } catch (e: Throwable) {
+                error = e
+            }
         }
 
-        while (courseList == null) {
+        while (courseList == null && error == null) {
             Thread.sleep(20)
         }
+        if (error != null) throw error!!
         return courseList!!
     } else {
         if (WebdriverFallbackMap.contains(studentNumber) || forceChrome) {
@@ -49,9 +60,13 @@ fun fetchUserCourseList(studentNumber: String,
         return try {
             htmlunitFetchCourseList(studentNumber, password, raw, timing)
         } catch (e: Throwable) {
-            logInfo("Fetch course list for ${studentNumber}: Fallback to web driver")
-            WebdriverFallbackMap += studentNumber
-            chromeFetchCourseList(studentNumber, password, raw, timing)
+            if (e.isHtmlunitError()) {
+                logInfo("Fetch course list for ${studentNumber}: Fallback to web driver")
+                WebdriverFallbackMap += studentNumber
+                chromeFetchCourseList(studentNumber, password, raw, timing)
+            } else {
+                throw e
+            }
         }
     }
 }

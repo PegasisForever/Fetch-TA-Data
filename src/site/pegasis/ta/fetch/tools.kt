@@ -411,3 +411,5 @@ fun getInput(s: String, password: Boolean = false): String {
 fun String.removeBlank(): String {
     return this.replace("\n", "").replace(" ", "")
 }
+
+fun Throwable.isHtmlunitError() = stackTrace.find { it.className.contains("net.sourceforge.htmlunit") } != null
