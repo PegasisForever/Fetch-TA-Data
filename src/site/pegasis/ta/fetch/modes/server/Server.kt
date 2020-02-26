@@ -24,6 +24,7 @@ const val latestPublicApiVersion = 2
 
 fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publicPort: Int) {
     val timing = Timing()
+    logInfo("Starting server")
 
     setDefaultUncaughtExceptionHandler { thread: Thread?, e: Throwable ->
         logUnhandled(thread, e)

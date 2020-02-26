@@ -56,7 +56,7 @@ object UpdateNoFetch {
                     throw LoginException(null)
                 }
             }
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             statusCode = when (e) {
                 is ParseRequestException -> {
                     logInfo("Request #$hash :: Can't parse request")

@@ -58,7 +58,7 @@ object GetArchived {
                     throw LoginException(null)
                 }
             }
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             statusCode = when (e) {
                 is LoginException -> {
                     logInfo("Request #$hash :: Student number or password incorrect")

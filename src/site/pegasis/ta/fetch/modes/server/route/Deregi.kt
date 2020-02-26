@@ -42,7 +42,7 @@ object Deregi {
             val user = ReqData(reqString, reqApiVersion).user
             User.remove(user)
             timing("remove user")
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             statusCode = when (e) {
                 is ParseRequestException -> {
                     logInfo("Request #$hash :: Can't parse request")

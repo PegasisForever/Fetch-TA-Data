@@ -47,7 +47,7 @@ fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
     } catch (e: LoginException) {
         logInfo("Error while performing update for user ${studentNumber}: Login error")
     } catch (e: Exception) {
-        if (e.message?.indexOf("SocketTimeoutException") != -1) {
+        if (e.isTimeoutException()) {
             logWarn("Error while performing update for user ${studentNumber}: Connect timeout")
         } else {
             logError("Error while performing update for user ${studentNumber}", e)

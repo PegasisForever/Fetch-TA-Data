@@ -413,3 +413,5 @@ fun String.removeBlank(): String {
 }
 
 fun Throwable.isHtmlunitError() = stackTrace.find { it.className.contains("net.sourceforge.htmlunit") } != null
+
+fun Throwable.isTimeoutException() = (message?:"").indexOf("SocketTimeoutException") != -1

@@ -59,7 +59,7 @@ object Feedback {
                     .appendToFile("data/feedback.txt")
                 timing("write file")
             }
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             statusCode = when (e) {
                 is ParseRequestException -> {
                     logInfo("Request #$hash :: Can't parse request")

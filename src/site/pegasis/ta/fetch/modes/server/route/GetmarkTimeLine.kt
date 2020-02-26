@@ -68,7 +68,7 @@ object GetmarkTimeLine {
                 }.toJSONString()
                 timing("join")
             }
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             statusCode = when {
                 e is LoginException -> {
                     logInfo("Request #$hash :: Login error")
@@ -78,7 +78,7 @@ object GetmarkTimeLine {
                     logInfo("Request #$hash :: Can't parse request")
                     400
                 }
-                e.message?.indexOf("SocketTimeoutException") != -1 -> {
+                e.isTimeoutException() -> {
                     logWarn("Request #$hash :: Connect timeout", e)
                     503
                 }
