@@ -8,7 +8,7 @@ import kotlin.math.round
 
 object ChromePool {
     private val chromeDrivers = ArrayList<ChromeDriverWrapper>()
-    private const val minChromeCount = 2
+    private const val minChromeCount = 3
     private const val maxChromePageCount = 100
     private const val timerIntervalMinutes = 10
     private var timer: Timer? = null
