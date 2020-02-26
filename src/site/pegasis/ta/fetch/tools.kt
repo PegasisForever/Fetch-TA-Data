@@ -11,6 +11,7 @@ import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.chrome.ChromeOptions
 import org.openqa.selenium.remote.CapabilityType
 import org.openqa.selenium.remote.DesiredCapabilities
+import site.pegasis.ta.fetch.chromepool.ChromeDriverWrapper
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.WeightedDouble
 import site.pegasis.ta.fetch.modes.server.latestApiVersion
@@ -86,8 +87,7 @@ fun readFile(file: File): String {
     return file.readText()
 }
 
-val allWebDriver = ArrayList<ChromeDriver>()
-fun getWebDriver(): ChromeDriver {
+fun getChromeWebDriver(): ChromeDriverWrapper {
     System.setProperty("webdriver.chrome.driver", Config.webDriverPath)
     System.setProperty("webdriver.chrome.silentLogging", "true");
     System.setProperty("webdriver.chrome.silentOutput", "true");
@@ -104,9 +104,7 @@ fun getWebDriver(): ChromeDriver {
         isJavascriptEnabled = false
         setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, UnexpectedAlertBehaviour.DISMISS)
     })
-    val client = ChromeDriver(options)
-    allWebDriver += client
-    return client
+    return ChromeDriverWrapper(ChromeDriver(options))
 }
 
 fun getHtmlUnitWebClient() = WebClient().apply {

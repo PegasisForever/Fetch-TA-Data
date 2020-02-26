@@ -1,8 +1,8 @@
 package site.pegasis.ta.fetch.webpage.chrome
 
 import org.openqa.selenium.By
-import org.openqa.selenium.chrome.ChromeDriver
 import site.pegasis.ta.fetch.*
+import site.pegasis.ta.fetch.chromepool.ChromeDriverWrapper
 import site.pegasis.ta.fetch.models.Course
 import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.OverallMark
@@ -11,14 +11,14 @@ import java.time.LocalDate
 import java.time.ZonedDateTime
 
 
-class SummaryPage(private val webClient: ChromeDriver, private val timing: Timing = Timing()) {
+class SummaryPage(private val webDriver: ChromeDriverWrapper, private val timing: Timing = Timing()) {
     val courses = CourseList()
     private val detailPages = ArrayList<DetailPage>()
     private val detailHrefMap = HashMap<Course, String>()
 
     init {
         timing("parse summary page") {
-            val summaryTable = webClient.findElementsByTagName("table")[1]
+            val summaryTable = webDriver.driver.findElementsByTagName("table")[1]
             val rows = summaryTable.findElements(By.tagName("tr"))
             for (i in 1 until rows.size) {
                 try {
@@ -69,17 +69,17 @@ class SummaryPage(private val webClient: ChromeDriver, private val timing: Timin
 
     fun gotoDetailPage(course: Course, time: ZonedDateTime): DetailPage {
         timing("get detail page ${course.code}") {
-            webClient.get(detailHrefMap[course]!!)
+            webDriver.get(detailHrefMap[course]!!)
         }
         noThrow {
-            course.id = findFirst(webClient.currentUrl, "(?<=subject_id=)\\d+")!!.toInt()
+            course.id = findFirst(webDriver.driver.currentUrl, "(?<=subject_id=)\\d+")!!.toInt()
         }
 
-        val detailPage = DetailPage(webClient, course.code, time, timing)
+        val detailPage = DetailPage(webDriver, course.code, time, timing)
         return detailPage
     }
 
-    fun fillDetails(doCalculation: Boolean = true, closeAfterDone: Boolean = true): SummaryPage {
+    fun fillDetails(doCalculation: Boolean = true): SummaryPage {
         val currentTime = ZonedDateTime.now(torontoZoneID)
         for (i in 0 until courses.size) {
             val course = courses[i]
@@ -92,7 +92,7 @@ class SummaryPage(private val webClient: ChromeDriver, private val timing: Timin
             }
         }
 
-        if (closeAfterDone) webClient.close()
+        webDriver.finished()
         return this
     }
 }

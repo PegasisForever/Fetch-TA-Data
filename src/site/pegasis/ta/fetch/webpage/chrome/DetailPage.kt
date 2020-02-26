@@ -3,6 +3,7 @@ package site.pegasis.ta.fetch.webpage.chrome
 import org.openqa.selenium.By
 import org.openqa.selenium.chrome.ChromeDriver
 import site.pegasis.ta.fetch.LogLevel
+import site.pegasis.ta.fetch.chromepool.ChromeDriverWrapper
 import site.pegasis.ta.fetch.findFirst
 import site.pegasis.ta.fetch.getDirectChildren
 import site.pegasis.ta.fetch.log
@@ -10,13 +11,13 @@ import site.pegasis.ta.fetch.models.*
 import site.pegasis.ta.fetch.models.Category.F
 import java.time.ZonedDateTime
 
-class DetailPage(webClient: ChromeDriver, courseCode: String?, time: ZonedDateTime, timing: Timing = Timing()) {
+class DetailPage(webClient: ChromeDriverWrapper, courseCode: String?, time: ZonedDateTime, timing: Timing = Timing()) {
     val assignments = AssignmentList()
     val weightTable = WeightTable()
 
     init {
         timing("parse detail page $courseCode") {
-            val detailTable = webClient.findElementsByXPath("//table[@border='1'][@cellpadding='3'][@cellspacing='0'][@width='100%']")[0]
+            val detailTable = webClient.driver.findElementsByXPath("//table[@border='1'][@cellpadding='3'][@cellspacing='0'][@width='100%']")[0]
 
             val rows = detailTable.getDirectChildren()[0].getDirectChildren()
             val infoRow = rows[0]
@@ -102,7 +103,7 @@ class DetailPage(webClient: ChromeDriver, courseCode: String?, time: ZonedDateTi
                 if (appearTimes > 1) it.name += " ($appearTimes)"
             }
 
-            val weightsTable = webClient.findElementsByXPath("//table[@border='1'][@cellpadding='3'][@cellspacing='0'][not(@width)]").last()
+            val weightsTable = webClient.driver.findElementsByXPath("//table[@border='1'][@cellpadding='3'][@cellspacing='0'][not(@width)]").last()
 
             val weightRows = weightsTable.findElements(By.tagName("tr"))
             for (rowI in 1..5) {

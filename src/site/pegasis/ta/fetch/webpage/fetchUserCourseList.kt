@@ -5,11 +5,11 @@ import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.webpage.chrome.LoginPage
 
-fun fetchUserCourseList(studentNumber: String, password: String, raw: Boolean = false, timing: Timing = Timing(), closeAfterDone: Boolean = true): CourseList {
-    if (WebdriverFallbackMap.contains(studentNumber)) {
+fun fetchUserCourseList(studentNumber: String, password: String, raw: Boolean = false, timing: Timing = Timing(), forceChrome: Boolean = false): CourseList {
+    if (WebdriverFallbackMap.contains(studentNumber) || forceChrome) {
         return LoginPage(timing)
             .gotoSummaryPage(studentNumber, password)
-            .fillDetails(doCalculation = !raw, closeAfterDone = closeAfterDone)
+            .fillDetails(doCalculation = !raw)
             .courses
     }
     return try {
@@ -22,7 +22,7 @@ fun fetchUserCourseList(studentNumber: String, password: String, raw: Boolean = 
         WebdriverFallbackMap += studentNumber
         LoginPage(timing)
             .gotoSummaryPage(studentNumber, password)
-            .fillDetails(doCalculation = !raw, closeAfterDone = closeAfterDone)
+            .fillDetails(doCalculation = !raw)
             .courses
     }
 }

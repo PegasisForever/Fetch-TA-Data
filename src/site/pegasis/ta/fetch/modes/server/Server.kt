@@ -2,6 +2,7 @@ package site.pegasis.ta.fetch.modes.server
 
 import com.sun.net.httpserver.HttpServer
 import site.pegasis.ta.fetch.*
+import site.pegasis.ta.fetch.chromepool.ChromePool
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.controller.Controller
@@ -28,17 +29,14 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
     Runtime.getRuntime().addShutdownHook(object : Thread() {
         override fun run() {
             stopAutoUpdateThread()
-            allWebDriver.forEach {
-                noThrow {
-                    it.close()
-                }
-            }
+            ChromePool.close()
             logInfo("Server stopped")
         }
     })
 
     LastUpdateTime.load()
     User.load()
+    ChromePool.init()
     updateAutoUpdateThread()
     timing("load data")
 
