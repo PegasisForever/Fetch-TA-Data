@@ -9,7 +9,8 @@ import kotlin.math.round
 object ChromePool {
     private val chromeDrivers = ArrayList<ChromeDriverWrapper>()
     private const val minChromeCount = 2
-    private const val maxChromePageCount = 50
+    private const val maxChromePageCount = 100
+    private const val timerIntervalMinutes = 10
     private var timer: Timer? = null
 
     fun init() {
@@ -21,7 +22,7 @@ object ChromePool {
             override fun run() {
                 clean()
             }
-        }, 1 * 60 * 1000, 1 * 60 * 1000)
+        }, timerIntervalMinutes * 60 * 1000L, timerIntervalMinutes * 60 * 1000L)
     }
 
     fun close() {
@@ -35,6 +36,7 @@ object ChromePool {
         return synchronized(this) {
             var driver = chromeDrivers.find { !it.inUse && it.getPageCount <= maxChromePageCount }
             if (driver == null) {
+                logInfo("No avaliable chrome drivers: $chromeDrivers, adding")
                 driver = getChromeWebDriver()
                 chromeDrivers += driver
             }

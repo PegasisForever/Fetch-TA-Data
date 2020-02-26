@@ -15,5 +15,5 @@ class ChromeDriverWrapper(val driver: ChromeDriver) {
         inUse = false
     }
 
-    override fun toString() = "CDW inUse:$inUse getPageCount:$getPageCount"
+    override fun toString() = "CDW inUse: $inUse getPageCount: $getPageCount"
 }
