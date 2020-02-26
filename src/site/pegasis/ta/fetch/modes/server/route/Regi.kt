@@ -11,7 +11,7 @@ import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.serializers.serialize
 import site.pegasis.ta.fetch.modes.server.storage.PCache
 import site.pegasis.ta.fetch.modes.server.timeline.runFollowUpUpdate
-import site.pegasis.ta.fetch.webpage.chrome.LoginPage
+import site.pegasis.ta.fetch.webpage.fetchUserCourseList
 
 object Regi {
     private class ReqData(req: String, version: Int) {
@@ -47,10 +47,7 @@ object Regi {
 
         try {
             with(ReqData(reqString, reqApiVersion).user) {
-                val courses = LoginPage(timing)
-                    .gotoSummaryPage(number, password)
-                    .fillDetails()
-                    .courses
+                val courses = fetchUserCourseList(number, password, timing = timing)
 
                 User.add(this)
                 runFollowUpUpdate(number, courses)

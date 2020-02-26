@@ -16,5 +16,6 @@ fun initFiles() {
     """.trimIndent().writeToFile("data/config.json")
     "[]".writeToFile("data/users.json")
     "{}".writeToFile("data/lastUpdateTime.json")
+    "{}".writeToFile("data/webdriverFallbackMap.json")
     "".writeToFile("data/announcement.txt")
 }

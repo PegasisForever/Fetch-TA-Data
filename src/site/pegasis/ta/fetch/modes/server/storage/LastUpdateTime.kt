@@ -24,8 +24,8 @@ object LastUpdateTime {
         updateTimeMap[number] = updateTime
 
         val obj = JSONObject()
-        updateTimeMap.forEach { n, t ->
-            obj[n] = t.toJSONString()
+        updateTimeMap.forEach { (number, time) ->
+            obj[number] = time.toJSONString()
         }
         obj.toJSONString().writeToFile("data/lastUpdateTime.json")
     }

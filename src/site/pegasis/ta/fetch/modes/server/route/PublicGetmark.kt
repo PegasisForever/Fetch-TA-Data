@@ -8,7 +8,7 @@ import site.pegasis.ta.fetch.exceptions.ParseRequestException
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.modes.server.serializers.serializePublic
 import site.pegasis.ta.fetch.modes.server.timeline.runFollowUpUpdate
-import site.pegasis.ta.fetch.webpage.chrome.LoginPage
+import site.pegasis.ta.fetch.webpage.fetchUserCourseList
 
 object PublicGetMark {
     private class ReqData(req: String) {
@@ -44,10 +44,7 @@ object PublicGetMark {
 
         try {
             with(ReqData(reqString)) {
-                val courses = LoginPage(timing)
-                    .gotoSummaryPage(number, password)
-                    .fillDetails()
-                    .courses
+                val courses = fetchUserCourseList(number, password, timing = timing)
 
                 runFollowUpUpdate(number, courses)
                 timing("update")

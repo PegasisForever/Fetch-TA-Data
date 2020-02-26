@@ -9,7 +9,7 @@ import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.TimeLine
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.storage.*
-import site.pegasis.ta.fetch.webpage.chrome.LoginPage
+import site.pegasis.ta.fetch.webpage.fetchUserCourseList
 import java.time.ZonedDateTime
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -21,10 +21,7 @@ fun performUpdate(user: User, newData: CourseList? = null, webClient: ChromeDriv
     try {
         val compareResult = compareCourses(
             oldIn = PCache.readCourseList(studentNumber),
-            newIn = newData ?: LoginPage(webClient = webClient)
-                .gotoSummaryPage(studentNumber, password)
-                .fillDetails(closeAfterDone = webClient == null)
-                .courses
+            newIn = newData ?: fetchUserCourseList(studentNumber, password, closeAfterDone = webClient == null)
         )
         updates = compareResult.updates
         //When a user login for the first time, there will be 4 "course added" update,
