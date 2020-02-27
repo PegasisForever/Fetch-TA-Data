@@ -8,6 +8,6 @@ screen -S ta-server -p 0 -X stuff "^C"
 sleep 5
 rm ./fetch_ta_data.jar
 cp ./fetch_ta_data.jar.temp ./fetch_ta_data.jar
-screen -S ta-server -d -m java -jar fetch_ta_data.jar server -p --control-port 5007
+screen -S ta-server -d -m java -XX:-OmitStackTraceInFastThrow -jar fetch_ta_data.jar server -p --control-port 5007
 '
 echo "Server restarted"
