@@ -35,6 +35,7 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.logging.Level
+import java.util.logging.Logger
 import java.util.regex.Pattern
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
@@ -92,7 +93,7 @@ fun readFile(file: File): String {
 }
 
 fun getChromeWebDriver(): ChromeDriverWrapper {
-    java.util.logging.Logger.getLogger("org.openqa.selenium").level = Level.OFF
+    Logger.getLogger("org.openqa.selenium").level = Level.OFF
     System.setProperty("webdriver.chrome.driver", Config.webDriverPath)
     System.setProperty("webdriver.chrome.silentLogging", "true")
     System.setProperty("webdriver.chrome.silentOutput", "true")
@@ -113,6 +114,7 @@ fun getChromeWebDriver(): ChromeDriverWrapper {
 }
 
 fun getHtmlUnitWebClient() = WebClient().apply {
+    Logger.getLogger("com.gargoylesoftware").level = Level.OFF
     options.isCssEnabled = false
     options.isJavaScriptEnabled = false
     options.isRedirectEnabled = true
