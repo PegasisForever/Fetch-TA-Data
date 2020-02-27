@@ -13,10 +13,8 @@ object ChromePool {
     private val chromeDrivers = ArrayList<ChromeDriverWrapper>()
     private var timer: Timer? = null
 
-    fun init() {
-        repeat(Config.chromePoolMinChromeCount) {
-            chromeDrivers += getChromeWebDriver()
-        }
+    private fun startTimer() {
+        timer?.cancel()
         timer = Timer("ChromePoolCleanTimer")
         timer!!.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
@@ -25,6 +23,22 @@ object ChromePool {
         },
             Config.chromePoolCleanIntervalMinute * 60 * 1000L,
             Config.chromePoolCleanIntervalMinute * 60 * 1000L)
+    }
+
+    fun init() {
+        repeat(Config.chromePoolMinChromeCount) {
+            chromeDrivers += getChromeWebDriver()
+        }
+        startTimer()
+    }
+
+    fun reload() {
+        //So cleaner can clean existing chromes and create new ones
+        chromeDrivers.forEach {
+            it.getPageCount = Config.chromePoolMaxChromePageCount + 1
+        }
+        clean()
+        startTimer()
     }
 
     fun close() {
@@ -39,7 +53,7 @@ object ChromePool {
             var driver = chromeDrivers.find { !it.inUse && it.getPageCount <= Config.chromePoolMaxChromePageCount }
             driver?.lastAssignTime = ZonedDateTime.now()
             if (driver == null) {
-                logInfo("No avaliable chrome drivers: $chromeDrivers, adding")
+                logInfo("No available chrome drivers: $chromeDrivers, adding")
                 driver = getChromeWebDriver()
                 chromeDrivers += driver
             }

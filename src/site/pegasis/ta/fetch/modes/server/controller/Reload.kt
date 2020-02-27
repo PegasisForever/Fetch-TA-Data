@@ -2,6 +2,7 @@ package site.pegasis.ta.fetch.modes.server.controller
 
 import picocli.CommandLine.Command
 import site.pegasis.ta.fetch.fetchdata.WebdriverFallbackMap
+import site.pegasis.ta.fetch.fetchdata.chromepool.ChromePool
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.storage.Config
 import site.pegasis.ta.fetch.modes.server.storage.LastUpdateTime
@@ -24,6 +25,7 @@ class Reload(private val printWriter: PrintWriter): Callable<Unit> {
         LastUpdateTime.load()
         WebdriverFallbackMap.load()
         PCache.clearCache()
+        ChromePool.reload()
         updateAutoUpdateThread()
 
         printWriter.println("Server config and cached file reloaded.")
