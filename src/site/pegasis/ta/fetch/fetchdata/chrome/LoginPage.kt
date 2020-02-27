@@ -1,6 +1,6 @@
-package site.pegasis.ta.fetch.webpage.chrome
+package site.pegasis.ta.fetch.fetchdata.chrome
 
-import site.pegasis.ta.fetch.chromepool.ChromePool
+import site.pegasis.ta.fetch.fetchdata.chromepool.ChromePool
 import site.pegasis.ta.fetch.exceptions.LoginException
 import site.pegasis.ta.fetch.findFirst
 import site.pegasis.ta.fetch.models.Timing

@@ -1,7 +1,7 @@
 package site.pegasis.ta.fetch.modes.server
 
 import com.sun.net.httpserver.HttpServer
-import site.pegasis.ta.fetch.chromepool.ChromePool
+import site.pegasis.ta.fetch.fetchdata.chromepool.ChromePool
 import site.pegasis.ta.fetch.getCoreCount
 import site.pegasis.ta.fetch.logInfo
 import site.pegasis.ta.fetch.logUnhandled

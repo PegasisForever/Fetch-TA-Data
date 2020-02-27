@@ -1,4 +1,4 @@
-package site.pegasis.ta.fetch.webpage
+package site.pegasis.ta.fetch.fetchdata
 
 import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.*

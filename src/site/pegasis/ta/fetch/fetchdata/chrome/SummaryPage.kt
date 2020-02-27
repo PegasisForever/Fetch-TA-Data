@@ -1,8 +1,8 @@
-package site.pegasis.ta.fetch.webpage.chrome
+package site.pegasis.ta.fetch.fetchdata.chrome
 
 import org.openqa.selenium.By
 import site.pegasis.ta.fetch.*
-import site.pegasis.ta.fetch.chromepool.ChromeDriverWrapper
+import site.pegasis.ta.fetch.fetchdata.chromepool.ChromeDriverWrapper
 import site.pegasis.ta.fetch.models.Course
 import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.OverallMark

@@ -7,7 +7,7 @@ import site.pegasis.ta.fetch.modes.server.storage.LastUpdateTime
 import site.pegasis.ta.fetch.modes.server.storage.PCache
 import site.pegasis.ta.fetch.modes.server.timeline.updateAutoUpdateThread
 import site.pegasis.ta.fetch.serverBuildNumber
-import site.pegasis.ta.fetch.webpage.WebdriverFallbackMap
+import site.pegasis.ta.fetch.fetchdata.WebdriverFallbackMap
 import java.io.PrintWriter
 import java.util.concurrent.Callable
 

@@ -11,7 +11,7 @@ import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.chrome.ChromeOptions
 import org.openqa.selenium.remote.CapabilityType
 import org.openqa.selenium.remote.DesiredCapabilities
-import site.pegasis.ta.fetch.chromepool.ChromeDriverWrapper
+import site.pegasis.ta.fetch.fetchdata.chromepool.ChromeDriverWrapper
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.WeightedDouble
 import site.pegasis.ta.fetch.modes.server.latestApiVersion
@@ -34,6 +34,7 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
+import java.util.logging.Level
 import java.util.regex.Pattern
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
@@ -91,9 +92,10 @@ fun readFile(file: File): String {
 }
 
 fun getChromeWebDriver(): ChromeDriverWrapper {
+    java.util.logging.Logger.getLogger("org.openqa.selenium").level = Level.OFF
     System.setProperty("webdriver.chrome.driver", Config.webDriverPath)
-    System.setProperty("webdriver.chrome.silentLogging", "true");
-    System.setProperty("webdriver.chrome.silentOutput", "true");
+    System.setProperty("webdriver.chrome.silentLogging", "true")
+    System.setProperty("webdriver.chrome.silentOutput", "true")
     val options = ChromeOptions()
     options.setExperimentalOption("prefs",
         hashMapOf("profile.default_content_setting_values" to

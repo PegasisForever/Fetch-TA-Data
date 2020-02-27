@@ -6,7 +6,7 @@ import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.TimeLine
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.storage.*
-import site.pegasis.ta.fetch.webpage.fetchUserCourseList
+import site.pegasis.ta.fetch.fetchdata.fetchUserCourseList
 import java.time.ZonedDateTime
 import java.util.concurrent.atomic.AtomicBoolean
 

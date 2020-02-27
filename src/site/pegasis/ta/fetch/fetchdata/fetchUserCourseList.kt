@@ -1,14 +1,14 @@
-package site.pegasis.ta.fetch.webpage
+package site.pegasis.ta.fetch.fetchdata
 
 import site.pegasis.ta.fetch.isHtmlunitError
 import site.pegasis.ta.fetch.logInfo
 import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.Timing
-import site.pegasis.ta.fetch.webpage.chrome.LoginPage
+import site.pegasis.ta.fetch.fetchdata.chrome.LoginPage
 import kotlin.concurrent.thread
 
 private fun htmlunitFetchCourseList(studentNumber: String, password: String, raw: Boolean, timing: Timing) =
-    site.pegasis.ta.fetch.webpage.htmlunit.LoginPage(timing)
+    site.pegasis.ta.fetch.fetchdata.htmlunit.LoginPage(timing)
         .gotoSummaryPage(studentNumber, password)
         .fillDetails(doCalculation = !raw)
         .courses

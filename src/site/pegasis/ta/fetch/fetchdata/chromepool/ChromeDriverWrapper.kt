@@ -1,4 +1,4 @@
-package site.pegasis.ta.fetch.chromepool
+package site.pegasis.ta.fetch.fetchdata.chromepool
 
 import org.openqa.selenium.chrome.ChromeDriver
 import java.time.ZonedDateTime

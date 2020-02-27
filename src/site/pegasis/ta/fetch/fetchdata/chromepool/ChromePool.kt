@@ -1,4 +1,4 @@
-package site.pegasis.ta.fetch.chromepool
+package site.pegasis.ta.fetch.fetchdata.chromepool
 
 import site.pegasis.ta.fetch.getChromeWebDriver
 import site.pegasis.ta.fetch.logInfo

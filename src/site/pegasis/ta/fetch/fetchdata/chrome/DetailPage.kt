@@ -1,8 +1,8 @@
-package site.pegasis.ta.fetch.webpage.chrome
+package site.pegasis.ta.fetch.fetchdata.chrome
 
 import org.openqa.selenium.By
 import site.pegasis.ta.fetch.LogLevel
-import site.pegasis.ta.fetch.chromepool.ChromeDriverWrapper
+import site.pegasis.ta.fetch.fetchdata.chromepool.ChromeDriverWrapper
 import site.pegasis.ta.fetch.findFirst
 import site.pegasis.ta.fetch.getDirectChildren
 import site.pegasis.ta.fetch.log

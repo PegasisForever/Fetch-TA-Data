@@ -1,4 +1,4 @@
-package site.pegasis.ta.fetch.webpage.htmlunit
+package site.pegasis.ta.fetch.fetchdata.htmlunit
 
 import com.gargoylesoftware.htmlunit.html.HtmlPage
 import com.gargoylesoftware.htmlunit.html.HtmlTable

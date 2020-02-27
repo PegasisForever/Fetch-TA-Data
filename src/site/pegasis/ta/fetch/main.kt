@@ -8,7 +8,7 @@ import site.pegasis.ta.fetch.modes.server.minApiVersion
 import site.pegasis.ta.fetch.modes.server.startServer
 import site.pegasis.ta.fetch.modes.server.storage.Config
 import site.pegasis.ta.fetch.modes.server.storage.initFiles
-import site.pegasis.ta.fetch.webpage.WebdriverFallbackMap
+import site.pegasis.ta.fetch.fetchdata.WebdriverFallbackMap
 import java.util.concurrent.Callable
 import java.util.logging.Level
 
