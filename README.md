@@ -16,13 +16,17 @@ My YRDSB Teach Assist Web <-┘
 
 ## To Get JSON-Formatted Data From TA
 
-`java -jar fetch_ta_data.jar getmark [student_number] [password]`
+```
+java -jar fetch_ta_data.jar getmark [student_number] [password]
+```
 
 add `-h` to get help
 
 ## To Run as a Server
 
-`java -jar fetch_ta_data.jar server`
+```
+java -XX:-OmitStackTraceInFastThrow -jar fetch_ta_data.jar server
+```
 
 add `-h` to get help
 
