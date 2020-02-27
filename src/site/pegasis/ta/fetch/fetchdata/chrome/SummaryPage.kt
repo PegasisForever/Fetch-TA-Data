@@ -47,10 +47,13 @@ class SummaryPage(private val webDriver: ChromeDriverWrapper, private val timing
                         val markText = cells[2].text
                         val currentMarkText = find(markText, "(?<=current mark = )[^%]+")?.get(0)
                         val levelMarkText = find(markText, "(?<=Level ).*")?.get(0)
+                        val isClickHere = markText == "Click Here"
                         if (currentMarkText != null) {
                             course.overallMark = OverallMark(currentMarkText.toDouble())
                         } else if (levelMarkText != null) {
                             course.overallMark = OverallMark(levelMarkText)
+                        }else if (isClickHere) {
+                            course.overallMark = OverallMark()
                         }
                     }
 

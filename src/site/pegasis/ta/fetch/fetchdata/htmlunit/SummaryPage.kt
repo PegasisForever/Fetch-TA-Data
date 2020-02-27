@@ -23,7 +23,7 @@ class SummaryPage(private val htmlPage: HtmlPage, private val timing: Timing = T
                     val row = summaryTable.getRow(i)
                     val course = Course()
 
-                    val classText = row.getCell(0).asText().replace("\r","")
+                    val classText = row.getCell(0).asText().replace("\r", "")
                     course.code = findFirst(classText, "[A-Z\\d]{6}-[\\d]{2}")
                     course.name = findFirst(classText, "(?<= : )[^\\n]+(?= )")
                     course.block = findFirst(classText, "(?<=Block: )\\d")
@@ -48,10 +48,13 @@ class SummaryPage(private val htmlPage: HtmlPage, private val timing: Timing = T
                             "(?<=current mark = )[^%]+"
                         )?.get(0)
                         val levelMarkText = find(markText, "(?<=Level ).*")?.get(0)
+                        val isClickHere = markText == "Click Here"
                         if (currentMarkText != null) {
                             course.overallMark = OverallMark(currentMarkText.toDouble())
                         } else if (levelMarkText != null) {
                             course.overallMark = OverallMark(levelMarkText)
+                        } else if (isClickHere) {
+                            course.overallMark = OverallMark()
                         }
                     }
 
@@ -84,7 +87,7 @@ class SummaryPage(private val htmlPage: HtmlPage, private val timing: Timing = T
         return DetailPage(detailHTMLPage, course.code, time, timing)
     }
 
-    fun fillDetails(doCalculation:Boolean=true): SummaryPage {
+    fun fillDetails(doCalculation: Boolean = true): SummaryPage {
         val currentTime = ZonedDateTime.now(torontoZoneID)
         for (i in 0 until courses.size) {
             val course = courses[i]
@@ -93,7 +96,7 @@ class SummaryPage(private val htmlPage: HtmlPage, private val timing: Timing = T
                 detailPages.add(detailPage)
                 course.assignments = detailPage.assignments
                 course.weightTable = detailPage.weightTable
-                if(doCalculation) course.calculate()
+                if (doCalculation) course.calculate()
             }
         }
 

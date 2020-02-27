@@ -12,7 +12,7 @@ import java.time.ZonedDateTime
 
 class DetailPage(webClient: ChromeDriverWrapper, courseCode: String?, time: ZonedDateTime, timing: Timing = Timing()) {
     val assignments = AssignmentList()
-    val weightTable = WeightTable()
+    var weightTable: WeightTable? = null
 
     init {
         timing("parse detail page $courseCode") {
@@ -51,7 +51,7 @@ class DetailPage(webClient: ChromeDriverWrapper, courseCode: String?, time: Zone
 
                         val smallMarkElems = cell.findElements(By.tagName("tr"))
                         smallMarkElems.forEach { smallMarkElem ->
-                            val smallMarkText = smallMarkElem.text.replace("\n"," \n")
+                            val smallMarkText = smallMarkElem.text.replace("\n", " \n")
                             val smallMark = SmallMark()
                             if (smallMarkText != "no mark") {
                                 val getText =
@@ -102,37 +102,46 @@ class DetailPage(webClient: ChromeDriverWrapper, courseCode: String?, time: Zone
                 if (appearTimes > 1) it.name += " ($appearTimes)"
             }
 
-            val weightsTable = webClient.driver.findElementsByXPath("//table[@border='1'][@cellpadding='3'][@cellspacing='0'][not(@width)]").last()
+            val weightsTable = try {
+                webClient
+                    .driver
+                    .findElementsByXPath("//table[@border='1'][@cellpadding='3'][@cellspacing='0'][not(@width)]").last()
+            } catch (e: NoSuchElementException) {
+                null
+            }
 
-            val weightRows = weightsTable.findElements(By.tagName("tr"))
-            for (rowI in 1..5) {
-                val row = weightRows[rowI]
-                val cells = row.getDirectChildren()
-                val category = categoryFrom(cells[0].text)
+            if (weightsTable != null) {
+                weightTable = WeightTable()
+                val weightRows = weightsTable.findElements(By.tagName("tr"))
+                for (rowI in 1..5) {
+                    val row = weightRows[rowI]
+                    val cells = row.getDirectChildren()
+                    val category = categoryFrom(cells[0].text)
 
-                val weight = Weight()
-                weight.W = findFirst(cells[1].text, "^[\\.\\d]+(?=%)")!!.toDouble()
-                weight.CW = findFirst(cells[2].text, "^[\\.\\d]+(?=%)")!!.toDouble()
-                val SAText = findFirst(cells[3].text, "^[\\.\\d]+(?=%)")
-                weight.SA = try {
+                    val weight = Weight()
+                    weight.W = findFirst(cells[1].text, "^[\\.\\d]+(?=%)")!!.toDouble()
+                    weight.CW = findFirst(cells[2].text, "^[\\.\\d]+(?=%)")!!.toDouble()
+                    val SAText = findFirst(cells[3].text, "^[\\.\\d]+(?=%)")
+                    weight.SA = try {
+                        OverallMark(SAText!!.toDouble())
+                    } catch (e: Throwable) {
+                        OverallMark(cells[3].text)
+                    }
+
+                    weightTable!![category] = weight
+                }
+                val finalRow = weightRows[6]
+                val finalCells = finalRow.getDirectChildren()
+                val finalWeight = Weight()
+                finalWeight.CW = findFirst(finalCells[1].text, "^[\\.\\d]+(?=%)")!!.toDouble()
+                val SAText = findFirst(finalCells[2].text, "^[\\.\\d]+(?=%)")
+                finalWeight.SA = try {
                     OverallMark(SAText!!.toDouble())
                 } catch (e: Throwable) {
-                    OverallMark(cells[3].text)
+                    OverallMark(finalCells[2].text)
                 }
-
-                weightTable[category] = weight
+                weightTable!![F] = finalWeight
             }
-            val finalRow = weightRows[6]
-            val finalCells = finalRow.getDirectChildren()
-            val finalWeight = Weight()
-            finalWeight.CW = findFirst(finalCells[1].text, "^[\\.\\d]+(?=%)")!!.toDouble()
-            val SAText = findFirst(finalCells[2].text, "^[\\.\\d]+(?=%)")
-            finalWeight.SA = try {
-                OverallMark(SAText!!.toDouble())
-            } catch (e: Throwable) {
-                OverallMark(finalCells[2].text)
-            }
-            weightTable[F] = finalWeight
         }
     }
 

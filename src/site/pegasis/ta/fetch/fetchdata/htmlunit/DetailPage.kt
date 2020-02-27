@@ -9,12 +9,12 @@ import site.pegasis.ta.fetch.tools.findFirst
 import site.pegasis.ta.fetch.tools.log
 import java.time.ZonedDateTime
 
-class DetailPage(htmlPage: HtmlPage, courseCode: String?, time: ZonedDateTime,timing: Timing = Timing()) {
+class DetailPage(htmlPage: HtmlPage, courseCode: String?, time: ZonedDateTime, timing: Timing = Timing()) {
     val assignments = AssignmentList()
-    val weightTable = WeightTable()
+    var weightTable: WeightTable? = null
 
     init {
-        timing("parse detail page $courseCode"){
+        timing("parse detail page $courseCode") {
             val detailTable =
                 htmlPage.getByXPath<HtmlTable>("//table[@border='1'][@cellpadding='3'][@cellspacing='0'][@width='100%']")[0]
 
@@ -98,36 +98,43 @@ class DetailPage(htmlPage: HtmlPage, courseCode: String?, time: ZonedDateTime,ti
                 if (appearTimes > 1) it.name += " ($appearTimes)"
             }
 
-            val weightsTable =
-                htmlPage.getByXPath<HtmlTable>("//table[@border='1'][@cellpadding='3'][@cellspacing='0'][not(@width)]")
+            val weightsTable: HtmlTable? = try {
+                htmlPage
+                    .getByXPath<HtmlTable>("//table[@border='1'][@cellpadding='3'][@cellspacing='0'][not(@width)]")
                     .last()
+            } catch (e: NoSuchElementException) {
+                null
+            }
 
-            for (rowI in 1..5) {
-                val row = weightsTable.getRow(rowI)
-                val category = categoryFrom(row.getCell(0).asText())
+            if (weightsTable != null) {
+                weightTable = WeightTable()
+                for (rowI in 1..5) {
+                    val row = weightsTable.getRow(rowI)
+                    val category = categoryFrom(row.getCell(0).asText())
 
-                val weight = Weight()
-                weight.W = findFirst(row.getCell(1).asText(), "^[\\.\\d]+(?=%)")!!.toDouble()
-                weight.CW = findFirst(row.getCell(2).asText(), "^[\\.\\d]+(?=%)")!!.toDouble()
-                val SAText = findFirst(row.getCell(3).asText(), "^[\\.\\d]+(?=%)")
-                weight.SA = try {
+                    val weight = Weight()
+                    weight.W = findFirst(row.getCell(1).asText(), "^[\\.\\d]+(?=%)")!!.toDouble()
+                    weight.CW = findFirst(row.getCell(2).asText(), "^[\\.\\d]+(?=%)")!!.toDouble()
+                    val SAText = findFirst(row.getCell(3).asText(), "^[\\.\\d]+(?=%)")
+                    weight.SA = try {
+                        OverallMark(SAText!!.toDouble())
+                    } catch (e: Throwable) {
+                        OverallMark(row.getCell(3).asText())
+                    }
+
+                    weightTable!![category] = weight
+                }
+                val finalRow = weightsTable.getRow(6)
+                val finalWeight = Weight()
+                finalWeight.CW = findFirst(finalRow.getCell(1).asText(), "^[\\.\\d]+(?=%)")!!.toDouble()
+                val SAText = findFirst(finalRow.getCell(2).asText(), "^[\\.\\d]+(?=%)")
+                finalWeight.SA = try {
                     OverallMark(SAText!!.toDouble())
                 } catch (e: Throwable) {
-                    OverallMark(row.getCell(3).asText())
+                    OverallMark(finalRow.getCell(2).asText())
                 }
-
-                weightTable[category] = weight
+                weightTable!![F] = finalWeight
             }
-            val finalRow = weightsTable.getRow(6)
-            val finalWeight = Weight()
-            finalWeight.CW = findFirst(finalRow.getCell(1).asText(), "^[\\.\\d]+(?=%)")!!.toDouble()
-            val SAText = findFirst(finalRow.getCell(2).asText(), "^[\\.\\d]+(?=%)")
-            finalWeight.SA = try {
-                OverallMark(SAText!!.toDouble())
-            } catch (e: Throwable) {
-                OverallMark(finalRow.getCell(2).asText())
-            }
-            weightTable[F] = finalWeight
         }
     }
 

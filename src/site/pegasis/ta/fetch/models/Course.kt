@@ -209,7 +209,7 @@ class OverallMark {
     var mark: Double? = null //scale: 0-100
         get() = if (field != null) {
             field
-        } else {
+        } else if (level != null) {
             when (level!!.toLowerCase()) {
                 "4+" -> 95.0
                 "4" -> 90.0
@@ -227,8 +227,11 @@ class OverallMark {
                 "" -> 0.0
                 else -> 0.0
             }
+        } else {
+            0.0
         }
     var level: String? = null
+    var unCertain = false
 
     constructor(m: Double) {
         mark = m
@@ -238,10 +241,14 @@ class OverallMark {
         level = l
     }
 
+    constructor() {
+        unCertain = true
+    }
+
     fun isInRange(m: Double) =
         if (level == null) {
             mark!! near m threshold 0.1
-        } else {
+        } else if (level != null) {
             when (level!!.toLowerCase()) {
                 "4+" -> m in 90..100
                 "4" -> m in 80..100
@@ -259,9 +266,11 @@ class OverallMark {
                 "" -> m == 0.0
                 else -> false
             }
+        } else {
+            true
         }
 
-    override fun toString() = "mark: $mark level: $level"
+    override fun toString() = "mark: $mark level: $level unCertain: $unCertain"
 
     fun copy() =
         if (this.level != null) {
@@ -391,10 +400,7 @@ class Course {
         val overallAvg = overallGet / overallTotal
         if (overallTotal > 0.0) {
             if (!overallMark!!.isInRange(overallAvg * 100)) {
-                log(
-                    LogLevel.WARN,
-                    "Calculated overall value is not same as displayed. Calculated:${overallAvg * 100} Displayed:${overallMark} course code: $code"
-                )
+                logWarn("Calculated overall value is not same as displayed. Calculated:${overallAvg * 100} Displayed:${overallMark} course code: $code")
             } else {
                 overallMark = OverallMark(overallAvg * 100)
             }
