@@ -1,8 +1,8 @@
 package site.pegasis.ta.fetch.models
 
-import site.pegasis.ta.fetch.isCloseTo
-import site.pegasis.ta.fetch.near
-import site.pegasis.ta.fetch.threshold
+import site.pegasis.ta.fetch.tools.isCloseTo
+import site.pegasis.ta.fetch.tools.near
+import site.pegasis.ta.fetch.tools.threshold
 import java.time.ZonedDateTime
 
 open class TAUpdate {

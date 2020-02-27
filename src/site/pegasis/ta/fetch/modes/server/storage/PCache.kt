@@ -1,12 +1,12 @@
 package site.pegasis.ta.fetch.modes.server.storage
 
 import org.json.simple.JSONObject
-import site.pegasis.ta.fetch.*
 import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.TimeLine
 import site.pegasis.ta.fetch.modes.server.parsers.toCourseList
 import site.pegasis.ta.fetch.modes.server.parsers.toTimeLine
 import site.pegasis.ta.fetch.modes.server.serializers.serialize
+import site.pegasis.ta.fetch.tools.*
 import java.util.*
 import kotlin.collections.HashMap
 

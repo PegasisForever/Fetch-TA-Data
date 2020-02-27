@@ -1,7 +1,7 @@
 package site.pegasis.ta.fetch.models
 
-import site.pegasis.ta.fetch.*
 import site.pegasis.ta.fetch.models.Category.*
+import site.pegasis.ta.fetch.tools.*
 import java.time.LocalDate
 import java.time.ZonedDateTime
 

@@ -1,6 +1,6 @@
 package site.pegasis.ta.fetch.models
 
-import site.pegasis.ta.fetch.safeDiv
+import site.pegasis.ta.fetch.tools.safeDiv
 
 data class WeightedDouble(val value: Double = 0.0, val weight: Double = 0.0) {
     val percent: Double

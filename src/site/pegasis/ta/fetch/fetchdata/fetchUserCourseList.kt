@@ -1,10 +1,10 @@
 package site.pegasis.ta.fetch.fetchdata
 
-import site.pegasis.ta.fetch.isHtmlunitError
-import site.pegasis.ta.fetch.logInfo
+
+import site.pegasis.ta.fetch.fetchdata.chrome.LoginPage
 import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.Timing
-import site.pegasis.ta.fetch.fetchdata.chrome.LoginPage
+import site.pegasis.ta.fetch.tools.logInfo
 import kotlin.concurrent.thread
 
 private fun htmlunitFetchCourseList(studentNumber: String, password: String, raw: Boolean, timing: Timing) =

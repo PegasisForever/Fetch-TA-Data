@@ -4,7 +4,10 @@ import com.sun.net.httpserver.HttpExchange
 import org.json.simple.JSONArray
 import picocli.CommandLine
 import picocli.CommandLine.Command
-import site.pegasis.ta.fetch.*
+import site.pegasis.ta.fetch.modes.server.route.getIP
+import site.pegasis.ta.fetch.modes.server.route.getReqString
+import site.pegasis.ta.fetch.modes.server.route.send
+import site.pegasis.ta.fetch.tools.*
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.util.concurrent.Callable

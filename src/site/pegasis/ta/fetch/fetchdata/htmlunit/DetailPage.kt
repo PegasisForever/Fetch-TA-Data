@@ -2,11 +2,11 @@ package site.pegasis.ta.fetch.fetchdata.htmlunit
 
 import com.gargoylesoftware.htmlunit.html.HtmlPage
 import com.gargoylesoftware.htmlunit.html.HtmlTable
-import site.pegasis.ta.fetch.LogLevel
-import site.pegasis.ta.fetch.findFirst
-import site.pegasis.ta.fetch.log
 import site.pegasis.ta.fetch.models.*
 import site.pegasis.ta.fetch.models.Category.F
+import site.pegasis.ta.fetch.tools.LogLevel
+import site.pegasis.ta.fetch.tools.findFirst
+import site.pegasis.ta.fetch.tools.log
 import java.time.ZonedDateTime
 
 class DetailPage(htmlPage: HtmlPage, courseCode: String?, time: ZonedDateTime,timing: Timing = Timing()) {

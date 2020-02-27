@@ -1,13 +1,13 @@
 package site.pegasis.ta.fetch.fetchdata.chrome
 
 import org.openqa.selenium.By
-import site.pegasis.ta.fetch.LogLevel
 import site.pegasis.ta.fetch.fetchdata.chromepool.ChromeDriverWrapper
-import site.pegasis.ta.fetch.findFirst
-import site.pegasis.ta.fetch.getDirectChildren
-import site.pegasis.ta.fetch.log
+import site.pegasis.ta.fetch.fetchdata.getDirectChildren
 import site.pegasis.ta.fetch.models.*
 import site.pegasis.ta.fetch.models.Category.F
+import site.pegasis.ta.fetch.tools.LogLevel
+import site.pegasis.ta.fetch.tools.findFirst
+import site.pegasis.ta.fetch.tools.log
 import java.time.ZonedDateTime
 
 class DetailPage(webClient: ChromeDriverWrapper, courseCode: String?, time: ZonedDateTime, timing: Timing = Timing()) {

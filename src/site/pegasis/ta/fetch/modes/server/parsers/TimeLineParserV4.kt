@@ -4,7 +4,7 @@ import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.models.*
 import site.pegasis.ta.fetch.modes.server.parsers.CourseListParserV4.parseAssignment
-import site.pegasis.ta.fetch.toZonedDateTime
+import site.pegasis.ta.fetch.tools.toZonedDateTime
 
 object TimeLineParserV4 {
     private fun parseAssignmentAdded(json: JSONObject) = AssignmentAdded().apply {

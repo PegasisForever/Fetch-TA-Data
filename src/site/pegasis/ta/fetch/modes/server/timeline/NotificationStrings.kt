@@ -1,7 +1,7 @@
 package site.pegasis.ta.fetch.modes.server.timeline
 
 import site.pegasis.ta.fetch.models.*
-import site.pegasis.ta.fetch.toRoundString
+import site.pegasis.ta.fetch.tools.toRoundString
 import kotlin.math.abs
 
 class Notification(var title: String, var body: String) {

@@ -3,9 +3,9 @@ package site.pegasis.ta.fetch.models
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.exceptions.UserParseException
-import site.pegasis.ta.fetch.jsonParser
-import site.pegasis.ta.fetch.readFile
-import site.pegasis.ta.fetch.writeToFile
+import site.pegasis.ta.fetch.tools.jsonParser
+import site.pegasis.ta.fetch.tools.readFile
+import site.pegasis.ta.fetch.tools.writeToFile
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.collections.HashSet

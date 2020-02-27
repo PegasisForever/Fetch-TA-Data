@@ -1,12 +1,13 @@
 package site.pegasis.ta.fetch.modes.server.timeline
 
-import site.pegasis.ta.fetch.*
 import site.pegasis.ta.fetch.exceptions.LoginException
+import site.pegasis.ta.fetch.fetchdata.fetchUserCourseList
+import site.pegasis.ta.fetch.fetchdata.isTimeoutException
 import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.TimeLine
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.storage.*
-import site.pegasis.ta.fetch.fetchdata.fetchUserCourseList
+import site.pegasis.ta.fetch.tools.*
 import java.time.ZonedDateTime
 import java.util.concurrent.atomic.AtomicBoolean
 

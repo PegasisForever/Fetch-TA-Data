@@ -1,15 +1,15 @@
 package site.pegasis.ta.fetch.modes.server.controller
 
 import picocli.CommandLine
-import site.pegasis.ta.fetch.jsonParser
 import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.TimeLine
 import site.pegasis.ta.fetch.modes.server.parsers.toCourseList
 import site.pegasis.ta.fetch.modes.server.storage.PCache
 import site.pegasis.ta.fetch.modes.server.timeline.compareCourses
-import site.pegasis.ta.fetch.serverBuildNumber
-import site.pegasis.ta.fetch.toJSONString
-import site.pegasis.ta.fetch.torontoZoneID
+import site.pegasis.ta.fetch.tools.jsonParser
+import site.pegasis.ta.fetch.tools.serverBuildNumber
+import site.pegasis.ta.fetch.tools.toJSONString
+import site.pegasis.ta.fetch.tools.torontoZoneID
 import java.io.File
 import java.io.PrintWriter
 import java.time.Instant

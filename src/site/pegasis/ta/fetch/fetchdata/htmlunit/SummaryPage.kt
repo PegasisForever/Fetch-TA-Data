@@ -2,11 +2,11 @@ package site.pegasis.ta.fetch.fetchdata.htmlunit
 
 import com.gargoylesoftware.htmlunit.html.HtmlPage
 import com.gargoylesoftware.htmlunit.html.HtmlTable
-import site.pegasis.ta.fetch.*
 import site.pegasis.ta.fetch.models.Course
 import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.OverallMark
 import site.pegasis.ta.fetch.models.Timing
+import site.pegasis.ta.fetch.tools.*
 import java.time.LocalDate
 import java.time.ZonedDateTime
 

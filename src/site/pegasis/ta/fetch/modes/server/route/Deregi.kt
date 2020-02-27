@@ -2,10 +2,12 @@ package site.pegasis.ta.fetch.modes.server.route
 
 import com.sun.net.httpserver.HttpExchange
 import org.json.simple.JSONObject
-import site.pegasis.ta.fetch.*
 import site.pegasis.ta.fetch.exceptions.ParseRequestException
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.User
+import site.pegasis.ta.fetch.tools.jsonParser
+import site.pegasis.ta.fetch.tools.logError
+import site.pegasis.ta.fetch.tools.logInfo
 
 object Deregi {
     private class ReqData(req: String, version: Int) {

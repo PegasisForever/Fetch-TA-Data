@@ -4,8 +4,8 @@ import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.models.*
 import site.pegasis.ta.fetch.modes.server.serializers.CourseListSerializerV4.serializeAssignment
-import site.pegasis.ta.fetch.round
-import site.pegasis.ta.fetch.toJSONString
+import site.pegasis.ta.fetch.tools.round
+import site.pegasis.ta.fetch.tools.toJSONString
 
 object TimeLineSerializerV4 {
     private fun serializeAssignmentAdded(assignmentAdded: AssignmentAdded): JSONObject {

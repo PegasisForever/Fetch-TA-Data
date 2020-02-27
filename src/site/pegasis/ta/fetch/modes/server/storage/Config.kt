@@ -1,8 +1,8 @@
 package site.pegasis.ta.fetch.modes.server.storage
 
 import org.json.simple.JSONObject
-import site.pegasis.ta.fetch.jsonParser
-import site.pegasis.ta.fetch.readFile
+import site.pegasis.ta.fetch.tools.jsonParser
+import site.pegasis.ta.fetch.tools.readFile
 
 object Config {
     var notificationEnabled = false

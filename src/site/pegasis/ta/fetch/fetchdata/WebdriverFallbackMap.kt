@@ -1,7 +1,7 @@
 package site.pegasis.ta.fetch.fetchdata
 
 import org.json.simple.JSONObject
-import site.pegasis.ta.fetch.*
+import site.pegasis.ta.fetch.tools.*
 import java.time.ZonedDateTime
 
 object WebdriverFallbackMap {

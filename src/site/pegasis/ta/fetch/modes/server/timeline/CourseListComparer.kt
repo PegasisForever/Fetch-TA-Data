@@ -1,7 +1,7 @@
 package site.pegasis.ta.fetch.modes.server.timeline
 
 import site.pegasis.ta.fetch.models.*
-import site.pegasis.ta.fetch.torontoZoneID
+import site.pegasis.ta.fetch.tools.torontoZoneID
 import java.time.ZonedDateTime
 
 fun compareAssignments(

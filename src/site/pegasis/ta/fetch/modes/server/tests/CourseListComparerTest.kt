@@ -1,13 +1,13 @@
 package site.pegasis.ta.fetch.modes.server.tests
 
 import org.junit.Test
-import site.pegasis.ta.fetch.jsonParser
 import site.pegasis.ta.fetch.models.CourseAdded
 import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.CourseRemoved
 import site.pegasis.ta.fetch.modes.server.parsers.toCourseList
 import site.pegasis.ta.fetch.modes.server.serializers.serialize
 import site.pegasis.ta.fetch.modes.server.timeline.compareCourses
+import site.pegasis.ta.fetch.tools.jsonParser
 import kotlin.test.assertEquals
 
 class CourseListComparerTest {

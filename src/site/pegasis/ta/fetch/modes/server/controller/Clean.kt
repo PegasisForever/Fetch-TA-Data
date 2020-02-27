@@ -1,7 +1,7 @@
 package site.pegasis.ta.fetch.modes.server.controller
 
 import picocli.CommandLine.Command
-import site.pegasis.ta.fetch.serverBuildNumber
+import site.pegasis.ta.fetch.tools.serverBuildNumber
 import java.io.File
 import java.io.PrintWriter
 import java.util.concurrent.Callable

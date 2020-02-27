@@ -1,15 +1,14 @@
 package site.pegasis.ta.fetch.fetchdata.chrome
 
 import org.openqa.selenium.By
-import site.pegasis.ta.fetch.*
 import site.pegasis.ta.fetch.fetchdata.chromepool.ChromeDriverWrapper
 import site.pegasis.ta.fetch.models.Course
 import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.OverallMark
 import site.pegasis.ta.fetch.models.Timing
+import site.pegasis.ta.fetch.tools.*
 import java.time.LocalDate
 import java.time.ZonedDateTime
-
 
 class SummaryPage(private val webDriver: ChromeDriverWrapper, private val timing: Timing = Timing()) {
     val courses = CourseList()

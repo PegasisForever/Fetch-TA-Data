@@ -1,13 +1,13 @@
 package site.pegasis.ta.fetch.modes.server.controller
 
 import picocli.CommandLine.Command
+import site.pegasis.ta.fetch.fetchdata.WebdriverFallbackMap
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.storage.Config
 import site.pegasis.ta.fetch.modes.server.storage.LastUpdateTime
 import site.pegasis.ta.fetch.modes.server.storage.PCache
 import site.pegasis.ta.fetch.modes.server.timeline.updateAutoUpdateThread
-import site.pegasis.ta.fetch.serverBuildNumber
-import site.pegasis.ta.fetch.fetchdata.WebdriverFallbackMap
+import site.pegasis.ta.fetch.tools.serverBuildNumber
 import java.io.PrintWriter
 import java.util.concurrent.Callable
 

@@ -1,8 +1,8 @@
 package site.pegasis.ta.fetch.fetchdata.chromepool
 
-import site.pegasis.ta.fetch.getChromeWebDriver
-import site.pegasis.ta.fetch.logInfo
-import site.pegasis.ta.fetch.logWarn
+import site.pegasis.ta.fetch.fetchdata.getChromeWebDriver
+import site.pegasis.ta.fetch.tools.logInfo
+import site.pegasis.ta.fetch.tools.logWarn
 import java.time.ZonedDateTime
 import java.util.*
 import kotlin.collections.ArrayList

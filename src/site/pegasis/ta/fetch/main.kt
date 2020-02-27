@@ -2,15 +2,16 @@ package site.pegasis.ta.fetch
 
 import picocli.CommandLine
 import picocli.CommandLine.*
+import site.pegasis.ta.fetch.fetchdata.WebdriverFallbackMap
 import site.pegasis.ta.fetch.modes.getMark
 import site.pegasis.ta.fetch.modes.server.latestApiVersion
 import site.pegasis.ta.fetch.modes.server.minApiVersion
 import site.pegasis.ta.fetch.modes.server.startServer
 import site.pegasis.ta.fetch.modes.server.storage.Config
 import site.pegasis.ta.fetch.modes.server.storage.initFiles
-import site.pegasis.ta.fetch.fetchdata.WebdriverFallbackMap
+import site.pegasis.ta.fetch.tools.getInput
+import site.pegasis.ta.fetch.tools.serverBuildNumber
 import java.util.concurrent.Callable
-import java.util.logging.Level
 
 fun main(args: Array<String>) {
     initFiles()

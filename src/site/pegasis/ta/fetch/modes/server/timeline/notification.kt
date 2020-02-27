@@ -7,10 +7,10 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingException
 import com.google.firebase.messaging.Message
 import com.google.firebase.messaging.Notification
-import site.pegasis.ta.fetch.LogLevel
-import site.pegasis.ta.fetch.fileExists
-import site.pegasis.ta.fetch.log
 import site.pegasis.ta.fetch.modes.server.storage.Config
+import site.pegasis.ta.fetch.tools.LogLevel
+import site.pegasis.ta.fetch.tools.fileExists
+import site.pegasis.ta.fetch.tools.log
 import java.io.FileInputStream
 
 private var initialized = false

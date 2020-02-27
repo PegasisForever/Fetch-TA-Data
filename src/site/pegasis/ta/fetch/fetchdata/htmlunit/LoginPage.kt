@@ -5,9 +5,9 @@ import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput
 import site.pegasis.ta.fetch.exceptions.LoginException
-import site.pegasis.ta.fetch.findFirst
-import site.pegasis.ta.fetch.getHtmlUnitWebClient
+import site.pegasis.ta.fetch.fetchdata.getHtmlUnitWebClient
 import site.pegasis.ta.fetch.models.Timing
+import site.pegasis.ta.fetch.tools.findFirst
 
 class LoginPage(private val timing: Timing = Timing()) {
     private val htmlPage: HtmlPage = timing("load login page") {
