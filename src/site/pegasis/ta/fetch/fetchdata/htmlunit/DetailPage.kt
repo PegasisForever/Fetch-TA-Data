@@ -11,7 +11,7 @@ import java.time.ZonedDateTime
 
 class DetailPage(htmlPage: HtmlPage, courseCode: String?, time: ZonedDateTime, timing: Timing = Timing()) {
     val assignments = AssignmentList()
-    var weightTable: WeightTable? = null
+    var weightTable = WeightTable()
 
     init {
         timing("parse detail page $courseCode") {
@@ -107,7 +107,6 @@ class DetailPage(htmlPage: HtmlPage, courseCode: String?, time: ZonedDateTime, t
             }
 
             if (weightsTable != null) {
-                weightTable = WeightTable()
                 for (rowI in 1..5) {
                     val row = weightsTable.getRow(rowI)
                     val category = categoryFrom(row.getCell(0).asText())
@@ -122,7 +121,7 @@ class DetailPage(htmlPage: HtmlPage, courseCode: String?, time: ZonedDateTime, t
                         OverallMark(row.getCell(3).asText())
                     }
 
-                    weightTable!![category] = weight
+                    weightTable[category] = weight
                 }
                 val finalRow = weightsTable.getRow(6)
                 val finalWeight = Weight()
@@ -133,7 +132,9 @@ class DetailPage(htmlPage: HtmlPage, courseCode: String?, time: ZonedDateTime, t
                 } catch (e: Throwable) {
                     OverallMark(finalRow.getCell(2).asText())
                 }
-                weightTable!![F] = finalWeight
+                weightTable[F] = finalWeight
+            } else {
+                weightTable.fillFakeData()
             }
         }
     }

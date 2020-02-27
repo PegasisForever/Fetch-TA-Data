@@ -43,7 +43,7 @@ object CourseListPublicSerializerV2 {
         val obj = JSONObject()
         obj["W"] = weight.W
         obj["CW"] = weight.CW
-        obj["SA"] = weight.SA.mark
+        obj["SA"] = weight.SA.getMarkValue()
 
         return obj
     }
@@ -65,7 +65,7 @@ object CourseListPublicSerializerV2 {
         obj["code"] = course.code
         obj["block"] = course.block
         obj["room"] = course.room
-        obj["overall_mark"] = course.overallMark?.mark
+        obj["overall_mark"] = course.overallMark?.getMarkValue()
         obj["id"] = course.id
 
         obj["assignments"] = JSONArray()

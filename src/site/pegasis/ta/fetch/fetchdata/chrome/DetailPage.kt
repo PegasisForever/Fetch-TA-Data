@@ -12,7 +12,7 @@ import java.time.ZonedDateTime
 
 class DetailPage(webClient: ChromeDriverWrapper, courseCode: String?, time: ZonedDateTime, timing: Timing = Timing()) {
     val assignments = AssignmentList()
-    var weightTable: WeightTable? = null
+    val weightTable = WeightTable()
 
     init {
         timing("parse detail page $courseCode") {
@@ -111,7 +111,6 @@ class DetailPage(webClient: ChromeDriverWrapper, courseCode: String?, time: Zone
             }
 
             if (weightsTable != null) {
-                weightTable = WeightTable()
                 val weightRows = weightsTable.findElements(By.tagName("tr"))
                 for (rowI in 1..5) {
                     val row = weightRows[rowI]
@@ -128,7 +127,7 @@ class DetailPage(webClient: ChromeDriverWrapper, courseCode: String?, time: Zone
                         OverallMark(cells[3].text)
                     }
 
-                    weightTable!![category] = weight
+                    weightTable[category] = weight
                 }
                 val finalRow = weightRows[6]
                 val finalCells = finalRow.getDirectChildren()
@@ -140,7 +139,9 @@ class DetailPage(webClient: ChromeDriverWrapper, courseCode: String?, time: Zone
                 } catch (e: Throwable) {
                     OverallMark(finalCells[2].text)
                 }
-                weightTable!![F] = finalWeight
+                weightTable[F] = finalWeight
+            }else{
+                weightTable.fillFakeData()
             }
         }
     }

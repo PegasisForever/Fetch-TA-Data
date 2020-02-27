@@ -198,6 +198,38 @@ class Weight {
 }
 
 class WeightTable : HashMap<Category, Weight>() {
+    fun fillFakeData() {
+        this[KU] = Weight().apply {
+            W = 35.7
+            CW = 25.0
+            SA = OverallMark()
+        }
+        this[T] = Weight().apply {
+            W = 35.7
+            CW = 25.0
+            SA = OverallMark()
+        }
+        this[C] = Weight().apply {
+            W = 14.3
+            CW = 10.0
+            SA = OverallMark()
+        }
+        this[A] = Weight().apply {
+            W = 14.3
+            CW = 10.0
+            SA = OverallMark()
+        }
+        this[O] = Weight().apply {
+            W = 0.0
+            CW = 0.0
+            SA = OverallMark()
+        }
+        this[F] = Weight().apply {
+            CW = 30.0
+            SA = OverallMark()
+        }
+    }
+
     fun copy() = WeightTable().apply {
         this@WeightTable.forEach { category, weight ->
             put(category, weight.copy())
@@ -206,9 +238,25 @@ class WeightTable : HashMap<Category, Weight>() {
 }
 
 class OverallMark {
-    var mark: Double? = null //scale: 0-100
-        get() = if (field != null) {
-            field
+    private var mark: Double? = null //scale: 0-100
+    private var level: String? = null
+    private var unCertain = false
+
+    constructor(m: Double) {
+        mark = m
+    }
+
+    constructor(l: String) {
+        level = l
+    }
+
+    constructor() {
+        unCertain = true
+    }
+
+    fun getMarkValue(): Double {
+        return if (mark != null) {
+            mark!!
         } else if (level != null) {
             when (level!!.toLowerCase()) {
                 "4+" -> 95.0
@@ -230,23 +278,10 @@ class OverallMark {
         } else {
             0.0
         }
-    var level: String? = null
-    var unCertain = false
-
-    constructor(m: Double) {
-        mark = m
-    }
-
-    constructor(l: String) {
-        level = l
-    }
-
-    constructor() {
-        unCertain = true
     }
 
     fun isInRange(m: Double) =
-        if (level == null) {
+        if (mark != null) {
             mark!! near m threshold 0.1
         } else if (level != null) {
             when (level!!.toLowerCase()) {
@@ -272,12 +307,11 @@ class OverallMark {
 
     override fun toString() = "mark: $mark level: $level unCertain: $unCertain"
 
-    fun copy() =
-        if (this.level != null) {
-            OverallMark(level!!)
-        } else {
-            OverallMark(mark!!)
-        }
+    fun copy() = when {
+        mark != null -> OverallMark(mark!!)
+        level != null -> OverallMark(level!!)
+        else -> OverallMark()
+    }
 
     override operator fun equals(other: Any?): Boolean {
         return other is OverallMark &&
@@ -380,19 +414,16 @@ class Course {
             val weight = weightTable!![category]!!
             if (total > 0.0) {
                 if (!weight.SA.isInRange(avg * 100)) {
-                    log(
-                        LogLevel.WARN,
-                        "Calculated SA value of $category is not same as displayed. Calculated:${avg * 100} Displayed:${weight.SA} course code: $code"
-                    )
-                    overallGet += weight.SA.mark!! / 100 * weight.CW
+                    logWarn("Calculated SA value of $category is not same as displayed. Calculated:${avg * 100} Displayed:${weight.SA} course code: $code")
+                    overallGet += weight.SA.getMarkValue() / 100 * weight.CW
                     overallTotal += weight.CW
                 } else {
                     weight.SA = OverallMark(avg * 100)
                     overallGet += avg * weight.CW
                     overallTotal += weight.CW
                 }
-            } else if (weight.SA.mark!! > 0) {
-                overallGet += weight.SA.mark!! / 100 * weight.CW
+            } else if (weight.SA.getMarkValue() > 0) {
+                overallGet += weight.SA.getMarkValue() / 100 * weight.CW
                 overallTotal += weight.CW
             }
         }
