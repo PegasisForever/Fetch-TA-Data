@@ -120,7 +120,7 @@ fun getHtmlUnitWebClient() = WebClient().apply {
     options.isThrowExceptionOnFailingStatusCode = false
     options.isDownloadImages = false
     options.isAppletEnabled = false
-    options.timeout = 10000
+    options.timeout = 100000
 }
 
 fun WebElement.getDirectChildren() = findElements(By.xpath("*"))
