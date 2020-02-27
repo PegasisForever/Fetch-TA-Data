@@ -105,7 +105,7 @@ class DetailPage(webClient: ChromeDriverWrapper, courseCode: String?, time: Zone
             val weightsTable = try {
                 webClient
                     .driver
-                    .findElementsByXPath("//table[@border='1'][@cellpadding='3'][@cellspacing='0'][not(@width)]").last()
+                    .findElementsByXPath("//table[@border='0'][@cellpadding='5']//table[@border='1'][@cellpadding='3'][@cellspacing='0'][not(@width)]").last()
             } catch (e: NoSuchElementException) {
                 null
             }

@@ -100,7 +100,7 @@ class DetailPage(htmlPage: HtmlPage, courseCode: String?, time: ZonedDateTime, t
 
             val weightsTable: HtmlTable? = try {
                 htmlPage
-                    .getByXPath<HtmlTable>("//table[@border='1'][@cellpadding='3'][@cellspacing='0'][not(@width)]")
+                    .getByXPath<HtmlTable>("//table[@border='0'][@cellpadding='5']//table[@border='1'][@cellpadding='3'][@cellspacing='0'][not(@width)]")
                     .last()
             } catch (e: NoSuchElementException) {
                 null
