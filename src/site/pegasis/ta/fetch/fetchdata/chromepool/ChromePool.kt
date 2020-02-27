@@ -1,6 +1,7 @@
 package site.pegasis.ta.fetch.fetchdata.chromepool
 
 import site.pegasis.ta.fetch.fetchdata.getChromeWebDriver
+import site.pegasis.ta.fetch.modes.server.storage.Config
 import site.pegasis.ta.fetch.tools.logInfo
 import site.pegasis.ta.fetch.tools.logWarn
 import java.time.ZonedDateTime
@@ -10,13 +11,10 @@ import kotlin.math.round
 
 object ChromePool {
     private val chromeDrivers = ArrayList<ChromeDriverWrapper>()
-    private const val minChromeCount = 3
-    private const val maxChromePageCount = 100
-    private const val timerIntervalMinutes = 10
     private var timer: Timer? = null
 
     fun init() {
-        repeat(minChromeCount) {
+        repeat(Config.chromePoolMinChromeCount) {
             chromeDrivers += getChromeWebDriver()
         }
         timer = Timer("ChromePoolCleanTimer")
@@ -24,7 +22,9 @@ object ChromePool {
             override fun run() {
                 clean()
             }
-        }, timerIntervalMinutes * 60 * 1000L, timerIntervalMinutes * 60 * 1000L)
+        },
+            Config.chromePoolCleanIntervalMinute * 60 * 1000L,
+            Config.chromePoolCleanIntervalMinute * 60 * 1000L)
     }
 
     fun close() {
@@ -36,7 +36,7 @@ object ChromePool {
 
     fun get(): ChromeDriverWrapper {
         return synchronized(this) {
-            var driver = chromeDrivers.find { !it.inUse && it.getPageCount <= maxChromePageCount }
+            var driver = chromeDrivers.find { !it.inUse && it.getPageCount <= Config.chromePoolMaxChromePageCount }
             driver?.lastAssignTime = ZonedDateTime.now()
             if (driver == null) {
                 logInfo("No avaliable chrome drivers: $chromeDrivers, adding")
@@ -51,7 +51,7 @@ object ChromePool {
     fun clean() {
         synchronized(this) {
             logInfo("Chrome Pool clean started, chrome drivers list: $chromeDrivers")
-            val overUsedChromes = chromeDrivers.filter { !it.inUse && it.getPageCount > maxChromePageCount }
+            val overUsedChromes = chromeDrivers.filter { !it.inUse && it.getPageCount > Config.chromePoolMaxChromePageCount }
             logInfo("Over used chrome drivers: $overUsedChromes")
             chromeDrivers.removeAll(overUsedChromes)
             overUsedChromes.forEach { it.driver.close() }
@@ -68,7 +68,7 @@ object ChromePool {
             val notInUseChromes = chromeDrivers.filter { !it.inUse }
             logInfo("Not in use chrome drivers: $overUsedChromes")
             var maxNotInUseChromeCount = round((chromeDrivers.size - notInUseChromes.size) * 0.4).toInt()
-            maxNotInUseChromeCount = maxOf(maxNotInUseChromeCount, minChromeCount)
+            maxNotInUseChromeCount = maxOf(maxNotInUseChromeCount, Config.chromePoolMinChromeCount)
             logInfo("Calculated max not in use chrome count: $maxNotInUseChromeCount, notInUseChromes.size: ${notInUseChromes.size}")
             if (maxNotInUseChromeCount < notInUseChromes.size) {
                 val spareChromes = notInUseChromes
@@ -80,9 +80,9 @@ object ChromePool {
                 logInfo("Spare chrome drivers removed, chrome drivers list: $chromeDrivers")
             }
 
-            if (chromeDrivers.size < minChromeCount) {
+            if (chromeDrivers.size < Config.chromePoolMinChromeCount) {
                 logInfo("Chrome drivers count less than min, adding")
-                repeat(minChromeCount - chromeDrivers.size) {
+                repeat(Config.chromePoolMinChromeCount - chromeDrivers.size) {
                     chromeDrivers += getChromeWebDriver()
                 }
             }

@@ -34,7 +34,7 @@ fun getChromeWebDriver(): ChromeDriverWrapper {
         })
     }
     val driver = ChromeDriver(options).apply {
-        this.manage().timeouts().pageLoadTimeout(40, TimeUnit.SECONDS)
+        this.manage().timeouts().pageLoadTimeout(Config.fetchTimeoutSecond.toLong(), TimeUnit.SECONDS)
     }
     return ChromeDriverWrapper(driver)
 }
@@ -44,14 +44,16 @@ fun WebElement.getDirectChildren() = findElements(By.xpath("*"))
 
 fun getHtmlUnitWebClient() = WebClient().apply {
     Logger.getLogger("com.gargoylesoftware").level = Level.OFF
-    options.isCssEnabled = false
-    options.isJavaScriptEnabled = false
-    options.isRedirectEnabled = true
-    options.isThrowExceptionOnScriptError = false
-    options.isThrowExceptionOnFailingStatusCode = false
-    options.isDownloadImages = false
-    options.isAppletEnabled = false
-    options.timeout = 100000
+    with(options){
+        isCssEnabled = false
+        isJavaScriptEnabled = false
+        isRedirectEnabled = true
+        isThrowExceptionOnScriptError = false
+        isThrowExceptionOnFailingStatusCode = false
+        isDownloadImages = false
+        isAppletEnabled = false
+        timeout = Config.fetchTimeoutSecond * 1000
+    }
 }
 
 fun Throwable.isHtmlunitError() = stackTrace.find { it.className.contains("net.sourceforge.htmlunit") } != null
