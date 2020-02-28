@@ -440,7 +440,8 @@ class Course {
 
     //only things like name need to be the same
     fun isSameName(other: Course): Boolean {
-        return name == other.name && code == other.code && block == other.block && room == other.room
+        if (this.id nne other.id) return true
+        return (name noe other.name) && (code noe other.code) && (block noe other.block) && (room noe other.room)
     }
 
     fun copy() = Course().apply {
@@ -494,6 +495,12 @@ class CourseList() : ArrayList<Course>() {
     fun copy() = CourseList().apply {
         this@CourseList.forEach { course ->
             add(course.copy())
+        }
+    }
+
+    fun shadowCopy() = CourseList().apply {
+        this@CourseList.forEach { course ->
+            add(course)
         }
     }
 }

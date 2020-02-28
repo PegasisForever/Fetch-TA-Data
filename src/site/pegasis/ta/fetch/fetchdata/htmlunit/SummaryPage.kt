@@ -24,10 +24,10 @@ class SummaryPage(private val htmlPage: HtmlPage, private val timing: Timing = T
                     val course = Course()
 
                     val classText = row.getCell(0).asText().replace("\r", "")
-                    course.code = findFirst(classText, "[A-Z\\d]{6}-[\\d]{2}")
+                    course.code = findFirst(classText, "[A-Z\\d\\.]{6}-[\\d]{2}")
                     course.name = findFirst(classText, "(?<= : )[^\\n]+(?= )")
-                    course.block = findFirst(classText, "(?<=Block: )\\d")
-                    course.room = findFirst(classText, "(?<=rm\\. )\\d+")
+                    course.block = findFirst(classText, "(?<=Block: )[^ ]+")
+                    course.room = findFirst(classText, "(?<=rm\\. ).+$")
                     with(course) {
                         if (code == null && name == null && block == null && room == null && classText.isNotBlank()) {
                             course.name = classText

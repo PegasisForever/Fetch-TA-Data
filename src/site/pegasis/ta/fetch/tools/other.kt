@@ -32,3 +32,12 @@ fun getInput(s: String, password: Boolean = false): String {
     }
 }
 
+//null or equal
+infix fun Any?.noe(b: Any?): Boolean {
+    return this == null || b == null || this == b
+}
+
+//not null equal
+infix fun Any?.nne(b: Any?): Boolean {
+    return this != null && b != null && this == b
+}

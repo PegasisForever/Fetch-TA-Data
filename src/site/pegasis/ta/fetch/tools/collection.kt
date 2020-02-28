@@ -37,3 +37,9 @@ inline fun <T, U> forEach(list1: Iterable<T>, list2: Iterable<U>, action: (T, U)
         }
     }
 }
+
+inline fun <T> ArrayList<T>.findAndRemove(predicate: (T) -> Boolean): T? {
+    val item = this.find(predicate)
+    item?.let { remove(it) }
+    return item
+}
