@@ -1,9 +1,12 @@
 package site.pegasis.ta.fetch.modes.server.controller
 
 import picocli.CommandLine
+import site.pegasis.ta.fetch.models.CourseAdded
 import site.pegasis.ta.fetch.models.CourseList
+import site.pegasis.ta.fetch.models.CourseRemoved
 import site.pegasis.ta.fetch.models.TimeLine
 import site.pegasis.ta.fetch.modes.server.parsers.toCourseList
+import site.pegasis.ta.fetch.modes.server.storage.Config
 import site.pegasis.ta.fetch.modes.server.storage.PCache
 import site.pegasis.ta.fetch.modes.server.timeline.compareCourses
 import site.pegasis.ta.fetch.tools.jsonParser
@@ -61,12 +64,17 @@ class Regen(private val printWriter: PrintWriter) : Callable<Unit> {
                     oldCourseList ?: CourseList(), newCourseList, time)
 
                 if (oldCourseList != null) {
-                    archivedCourseList += compareResult.archivedCourseList
-                    if (compareResult.archivedCourseList.size != 0 && studentNumber != "all") {
-                        printWriter.println("Time: ${time.toJSONString()}(${time.toInstant().toEpochMilli()}) Add archive: ${compareResult.archivedCourseList.joinToString { it.displayName }}")
+                    if (Config.isEnableCourseActions(time)){
+                        archivedCourseList += compareResult.archivedCourseList
+                        if (compareResult.archivedCourseList.size != 0 && studentNumber != "all") {
+                            printWriter.println("Time: ${time.toJSONString()}(${time.toInstant().toEpochMilli()}) Add archive: ${compareResult.archivedCourseList.joinToString { it.displayName }}")
+                        }
+
+                        timeLine += compareResult.updates
+                    }else{
+                        timeLine += compareResult.updates.filter { !(it is CourseAdded || it is CourseRemoved) }
                     }
 
-                    timeLine += compareResult.updates
                     timeLine.removeUpdateContainsRemovedCourses()
                 }
                 oldCourseList = compareResult.courseList

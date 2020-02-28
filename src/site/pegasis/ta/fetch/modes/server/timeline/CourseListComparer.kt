@@ -1,6 +1,7 @@
 package site.pegasis.ta.fetch.modes.server.timeline
 
 import site.pegasis.ta.fetch.models.*
+import site.pegasis.ta.fetch.modes.server.storage.Config
 import site.pegasis.ta.fetch.tools.findAndRemove
 import site.pegasis.ta.fetch.tools.torontoZoneID
 import java.time.ZonedDateTime
@@ -69,7 +70,7 @@ fun compareCourses(
     new.forEach { newCourse ->
         val oldCourse = old.findAndRemove { newCourse.isSameName(it) }
         courseListResult += if (oldCourse == null) { //this course is only in the new course list
-            updateList += CourseAdded().apply {
+            if (Config.isEnableCourseActions(compareTime)) updateList += CourseAdded().apply {
                 courseName = newCourse.displayName
                 courseBlock = newCourse.block
                 time = compareTime
@@ -86,7 +87,7 @@ fun compareCourses(
     }
 
     //find removed courses
-    old2.forEach { oldCourse ->
+    if (Config.isEnableCourseActions(compareTime)) old2.forEach { oldCourse ->
         val isRemoved = new.find { oldCourse.isSameName(it) } == null
         if (isRemoved) {
             updateList += CourseRemoved().apply {
