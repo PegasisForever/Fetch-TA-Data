@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>site.pegasis</groupId>
     <artifactId>fetch-ta-data</artifactId>
-    <version>BN46</version>
+    <version>BN47</version>
 
     <packaging>jar</packaging>
     <properties>
