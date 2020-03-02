@@ -8,6 +8,7 @@ import site.pegasis.ta.fetch.models.TimeLine
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.storage.*
 import site.pegasis.ta.fetch.tools.*
+import java.time.LocalTime
 import java.time.ZonedDateTime
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -86,6 +87,13 @@ fun updateAutoUpdateThread() {
 private var autoUpdateThread: Thread? = null
 private val autoUpdateThreadRunning = AtomicBoolean(false)
 
+private fun getUpdateInterval(time: LocalTime = LocalTime.now()): Int {
+    Config.autoUpdateIntervalExceptions.forEach { (range, interval) ->
+        if (time in range) return interval
+    }
+    return Config.autoUpdateIntervalMinute
+}
+
 fun startAutoUpdateThread() {
     if (autoUpdateThreadRunning.get()) return
 
@@ -102,10 +110,15 @@ fun startAutoUpdateThread() {
                     logInfo("Auto performed update for user ${user.number}, ${updates.size} updates")
                 }
 
-                val interval = Config.autoUpdateIntervalMinute * 60 * 1000
+                val interval = getUpdateInterval() * 60 * 1000
                 val remainTime = interval - (System.currentTimeMillis() - startTime)
                 logInfo("Auto update done, ${(System.currentTimeMillis() - startTime) / 1000 / 60} minutes.")
-                if (remainTime > 0) Thread.sleep(remainTime)
+                if (remainTime > 0) {
+                    logInfo("Next auto update will be ${ZonedDateTime.now().plusSeconds(remainTime / 1000).toJSONString()}.")
+                    Thread.sleep(remainTime)
+                } else {
+                    logInfo("Next auto update starts now.")
+                }
             }
         } catch (e: InterruptedException) {
             logInfo("Thread interrupted")

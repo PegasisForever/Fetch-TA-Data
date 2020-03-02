@@ -5,12 +5,14 @@ import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.tools.jsonParser
 import site.pegasis.ta.fetch.tools.readFile
 import site.pegasis.ta.fetch.tools.toZonedDateTime
+import java.time.LocalTime
 import java.time.ZonedDateTime
 
 object Config {
     var notificationEnabled = false
     var autoUpdateEnabled = false
     var autoUpdateIntervalMinute = 40
+    var autoUpdateIntervalExceptions = HashMap<ClosedRange<LocalTime>, Int>()
     var webDriverPath = ""
     var fetchTimeoutSecond = 100
     var chromePoolMinChromeCount = 3
@@ -31,6 +33,12 @@ object Config {
         (configJSON["disable_course_related_actions"] as JSONArray).forEach { obj ->
             if (obj is JSONObject) {
                 disableCourseRelatedActions.add(obj["start"].toString().toZonedDateTime()..obj["end"].toString().toZonedDateTime())
+            }
+        }
+        (configJSON["auto_update_interval_exceptions"] as JSONArray).forEach { obj ->
+            if (obj is JSONObject) {
+                autoUpdateIntervalExceptions[LocalTime.parse(obj["start"].toString())..LocalTime.parse(obj["end"].toString())] =
+                    (obj["interval"] as Long).toInt()
             }
         }
     }
