@@ -11,6 +11,19 @@ fun initFiles() {
       "notification": false,
       "auto_update": false,
       "auto_update_interval_minute": 40,
+      "auto_update_interval_exceptions": [
+          {
+            "start": "00:00:00",
+            "end": "06:00:00",
+            "interval": 120
+          },
+          {
+            "start": "18:00:00",
+            "end": "23:59:59",
+            "interval": 120
+          }
+        ],
+      "ignore_last_update_done": false,
       "web_driver_path": "web/driver/path/here",
       "fetch_timeout_second": 100,
       "cp_min_chrome_count": 3,
@@ -25,7 +38,8 @@ fun initFiles() {
     }
     """.trimIndent().writeToFile("data/config.json")
     "[]".writeToFile("data/users.json")
-    "{}".writeToFile("data/lastUpdateTime.json")
+    "{}".writeToFile("data/lastUserUpdateTime.json")
     "{}".writeToFile("data/webdriverFallbackMap.json")
     "".writeToFile("data/announcement.txt")
+    "".writeToFile("data/lastUpdateDoneTime.time")
 }
