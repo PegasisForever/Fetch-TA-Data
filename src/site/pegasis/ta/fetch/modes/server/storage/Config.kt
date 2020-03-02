@@ -19,6 +19,7 @@ object Config {
     var chromePoolMaxChromePageCount = 100
     var chromePoolCleanIntervalMinute = 10
     var disableCourseRelatedActions = ArrayList<ClosedRange<ZonedDateTime>>()
+    var ignoreLastUpdateDone = false
 
     fun load() {
         val configJSON = jsonParser.parse(readFile("data/config.json")) as JSONObject
@@ -26,6 +27,7 @@ object Config {
         notificationEnabled = configJSON["notification"] as Boolean
         autoUpdateEnabled = configJSON["auto_update"] as Boolean
         autoUpdateIntervalMinute = (configJSON["auto_update_interval_minute"] as Long).toInt()
+        ignoreLastUpdateDone = configJSON["ignore_last_update_done"] as Boolean
         fetchTimeoutSecond = (configJSON["fetch_timeout_second"] as Long).toInt()
         chromePoolMinChromeCount = (configJSON["cp_min_chrome_count"] as Long).toInt()
         chromePoolMaxChromePageCount = (configJSON["cp_max_chrome_page_count"] as Long).toInt()
@@ -48,5 +50,12 @@ object Config {
             if (time in timeRange) return false
         }
         return true
+    }
+
+    fun getUpdateInterval(time: LocalTime = LocalTime.now()): Int {
+        autoUpdateIntervalExceptions.forEach { (range, interval) ->
+            if (time in range) return interval
+        }
+        return autoUpdateIntervalMinute
     }
 }

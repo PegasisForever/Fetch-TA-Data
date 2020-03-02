@@ -87,14 +87,6 @@ fun updateAutoUpdateThread() {
 private var autoUpdateThread: Thread? = null
 private val autoUpdateThreadRunning = AtomicBoolean(false)
 
-private fun getUpdateInterval(time: LocalTime = LocalTime.now()): Int {
-
-    Config.autoUpdateIntervalExceptions.forEach { (range, interval) ->
-        if (time in range) return interval
-    }
-    return Config.autoUpdateIntervalMinute
-}
-
 fun startAutoUpdateThread() {
     if (autoUpdateThreadRunning.get()) return
 
@@ -103,12 +95,11 @@ fun startAutoUpdateThread() {
         log(LogLevel.INFO, "Auto update thread started")
 
         try {
-            val timeBeforeStart = (LastUpdateDoneTime.getMillis() + getUpdateInterval() * 60 * 1000) - System.currentTimeMillis()
-            if (timeBeforeStart > 0) {
+            val timeBeforeStart = (LastUpdateDoneTime.getMillis() + Config.getUpdateInterval() * 60 * 1000) - System.currentTimeMillis()
+            if (timeBeforeStart > 0 && !Config.ignoreLastUpdateDone) {
                 logInfo("Auto update will be started at ${ZonedDateTime.now().plusSeconds(timeBeforeStart / 1000).toJSONString()}.")
                 Thread.sleep(timeBeforeStart)
             }
-
 
             while (autoUpdateThreadRunning.get()) {
                 val startTime = System.currentTimeMillis()
@@ -118,7 +109,7 @@ fun startAutoUpdateThread() {
                     logInfo("Auto performed update for user ${user.number}, ${updates.size} updates")
                 }
 
-                val interval = getUpdateInterval() * 60 * 1000
+                val interval = Config.getUpdateInterval() * 60 * 1000
                 val remainTime = interval - (System.currentTimeMillis() - startTime)
                 LastUpdateDoneTime.set()
                 logInfo("Auto update done, ${(System.currentTimeMillis() - startTime) / 1000 / 60} minutes.")
