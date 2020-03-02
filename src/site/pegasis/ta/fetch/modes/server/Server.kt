@@ -6,7 +6,8 @@ import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.controller.Controller
 import site.pegasis.ta.fetch.modes.server.route.*
-import site.pegasis.ta.fetch.modes.server.storage.LastUpdateTime
+import site.pegasis.ta.fetch.modes.server.storage.LastUpdateDoneTime
+import site.pegasis.ta.fetch.modes.server.storage.LastUserUpdateTime
 import site.pegasis.ta.fetch.modes.server.timeline.stopAutoUpdateThread
 import site.pegasis.ta.fetch.modes.server.timeline.updateAutoUpdateThread
 import site.pegasis.ta.fetch.tools.getCoreCount
@@ -37,7 +38,8 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
         }
     })
 
-    LastUpdateTime.load()
+    LastUserUpdateTime.load()
+    LastUpdateDoneTime.load()
     User.load()
     ChromePool.init()
     updateAutoUpdateThread()

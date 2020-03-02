@@ -45,7 +45,7 @@ fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
             sendNotifications(user, updates)
         }
 
-        LastUpdateTime[studentNumber] = ZonedDateTime.now()
+        LastUserUpdateTime[studentNumber] = ZonedDateTime.now()
     } catch (e: LoginException) {
         logInfo("Error while performing update for user ${studentNumber}: Login error")
     } catch (e: Exception) {
@@ -88,6 +88,7 @@ private var autoUpdateThread: Thread? = null
 private val autoUpdateThreadRunning = AtomicBoolean(false)
 
 private fun getUpdateInterval(time: LocalTime = LocalTime.now()): Int {
+
     Config.autoUpdateIntervalExceptions.forEach { (range, interval) ->
         if (time in range) return interval
     }
@@ -102,6 +103,13 @@ fun startAutoUpdateThread() {
         log(LogLevel.INFO, "Auto update thread started")
 
         try {
+            val timeBeforeStart = (LastUpdateDoneTime.getMillis() + getUpdateInterval() * 60 * 1000) - System.currentTimeMillis()
+            if (timeBeforeStart > 0) {
+                logInfo("Auto update will be started at ${ZonedDateTime.now().plusSeconds(timeBeforeStart / 1000).toJSONString()}.")
+                Thread.sleep(timeBeforeStart)
+            }
+
+
             while (autoUpdateThreadRunning.get()) {
                 val startTime = System.currentTimeMillis()
                 User.allUsers.forEach { user ->
@@ -112,6 +120,7 @@ fun startAutoUpdateThread() {
 
                 val interval = getUpdateInterval() * 60 * 1000
                 val remainTime = interval - (System.currentTimeMillis() - startTime)
+                LastUpdateDoneTime.set()
                 logInfo("Auto update done, ${(System.currentTimeMillis() - startTime) / 1000 / 60} minutes.")
                 if (remainTime > 0) {
                     logInfo("Next auto update will be ${ZonedDateTime.now().plusSeconds(remainTime / 1000).toJSONString()}.")

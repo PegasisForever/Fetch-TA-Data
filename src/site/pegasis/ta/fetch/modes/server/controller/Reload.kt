@@ -5,7 +5,8 @@ import site.pegasis.ta.fetch.fetchdata.WebdriverFallbackMap
 import site.pegasis.ta.fetch.fetchdata.chromepool.ChromePool
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.storage.Config
-import site.pegasis.ta.fetch.modes.server.storage.LastUpdateTime
+import site.pegasis.ta.fetch.modes.server.storage.LastUpdateDoneTime
+import site.pegasis.ta.fetch.modes.server.storage.LastUserUpdateTime
 import site.pegasis.ta.fetch.modes.server.storage.PCache
 import site.pegasis.ta.fetch.modes.server.timeline.updateAutoUpdateThread
 import site.pegasis.ta.fetch.tools.serverBuildNumber
@@ -22,7 +23,8 @@ class Reload(private val printWriter: PrintWriter): Callable<Unit> {
     override fun call() {
         Config.load()
         User.load()
-        LastUpdateTime.load()
+        LastUserUpdateTime.load()
+        LastUpdateDoneTime.load()
         WebdriverFallbackMap.load()
         PCache.clearCache()
         ChromePool.reload()

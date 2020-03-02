@@ -7,7 +7,7 @@ import site.pegasis.ta.fetch.exceptions.ParseRequestException
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.serializers.serialize
-import site.pegasis.ta.fetch.modes.server.storage.LastUpdateTime
+import site.pegasis.ta.fetch.modes.server.storage.LastUserUpdateTime
 import site.pegasis.ta.fetch.modes.server.storage.PCache
 import site.pegasis.ta.fetch.tools.jsonParser
 import site.pegasis.ta.fetch.tools.logError
@@ -52,7 +52,7 @@ object UpdateNoFetch {
                     res = JSONObject().apply {
                         this["time_line"] = PCache.readTimeLine(number).serialize(reqApiVersion)
                         this["course_list"] = PCache.readCourseList(number).serialize(reqApiVersion)
-                        this["update_time"] = LastUpdateTime[number]?.toJSONString()
+                        this["update_time"] = LastUserUpdateTime[number]?.toJSONString()
                     }.toJSONString()
                     timing("join")
                 } else {
