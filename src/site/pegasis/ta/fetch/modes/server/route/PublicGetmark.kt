@@ -5,7 +5,7 @@ import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.exceptions.LoginException
 import site.pegasis.ta.fetch.exceptions.ParseRequestException
 import site.pegasis.ta.fetch.fetchdata.fetchUserCourseList
-import site.pegasis.ta.fetch.fetchdata.isTimeoutException
+import site.pegasis.ta.fetch.fetchdata.isConnectionException
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.modes.server.serializers.serializePublic
 import site.pegasis.ta.fetch.modes.server.timeline.runFollowUpUpdate
@@ -66,7 +66,7 @@ object PublicGetMark {
                     logInfo("Request #$hash :: Can't parse request")
                     400
                 }
-                e.isTimeoutException() -> {
+                e.isConnectionException() -> {
                     logWarn("Request #$hash :: Connect timeout", e)
                     503
                 }
