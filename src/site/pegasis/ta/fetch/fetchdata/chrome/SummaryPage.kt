@@ -94,7 +94,6 @@ class SummaryPage(private val webDriver: ChromeDriverWrapper, private val timing
             }
         }
 
-        webDriver.finished()
         return this
     }
 }

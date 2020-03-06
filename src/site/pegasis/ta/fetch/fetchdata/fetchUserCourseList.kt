@@ -2,6 +2,7 @@ package site.pegasis.ta.fetch.fetchdata
 
 
 import site.pegasis.ta.fetch.fetchdata.chrome.LoginPage
+import site.pegasis.ta.fetch.fetchdata.chromepool.ChromePool
 import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.tools.logInfo
@@ -13,11 +14,20 @@ private fun htmlunitFetchCourseList(studentNumber: String, password: String, raw
         .fillDetails(doCalculation = !raw)
         .courses
 
-private fun chromeFetchCourseList(studentNumber: String, password: String, raw: Boolean, timing: Timing) =
-    LoginPage(timing)
-        .gotoSummaryPage(studentNumber, password)
-        .fillDetails(doCalculation = !raw)
-        .courses
+private fun chromeFetchCourseList(studentNumber: String, password: String, raw: Boolean, timing: Timing): CourseList {
+    val webDriver = ChromePool.get(studentNumber)
+    try {
+        val courses = LoginPage(webDriver, timing)
+            .gotoSummaryPage(studentNumber, password)
+            .fillDetails(doCalculation = !raw)
+            .courses
+        webDriver.finished()
+        return courses
+    } catch (e: Throwable) {
+        webDriver.finished()
+        throw e
+    }
+}
 
 fun fetchUserCourseList(studentNumber: String,
                         password: String,

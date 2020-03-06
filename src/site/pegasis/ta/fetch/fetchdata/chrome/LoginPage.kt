@@ -1,13 +1,11 @@
 package site.pegasis.ta.fetch.fetchdata.chrome
 
 import site.pegasis.ta.fetch.exceptions.LoginException
-import site.pegasis.ta.fetch.fetchdata.chromepool.ChromePool
+import site.pegasis.ta.fetch.fetchdata.chromepool.ChromeDriverWrapper
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.tools.findFirst
 
-class LoginPage(private val timing: Timing = Timing()) {
-    val webDriver = ChromePool.get(this)
-
+class LoginPage(private val webDriver: ChromeDriverWrapper, private val timing: Timing = Timing()) {
     init {
         timing("load login page") {
             webDriver.get("https://ta.yrdsb.ca/live/index.php")
