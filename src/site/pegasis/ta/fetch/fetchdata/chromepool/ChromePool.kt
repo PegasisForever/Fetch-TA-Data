@@ -45,7 +45,7 @@ object ChromePool {
         timer?.cancel()
         timer = null
 
-        chromeDrivers.forEach { it.driver.close() }
+        chromeDrivers.forEach { it.driver.quit() }
     }
 
     fun get(): ChromeDriverWrapper {
@@ -68,7 +68,7 @@ object ChromePool {
             val overUsedChromes = chromeDrivers.filter { !it.inUse && it.getPageCount > Config.chromePoolMaxChromePageCount }
             logInfo("Over used chrome drivers: $overUsedChromes")
             chromeDrivers.removeAll(overUsedChromes)
-            overUsedChromes.forEach { it.driver.close() }
+            overUsedChromes.forEach { it.driver.quit() }
             logInfo("Over used chrome drivers removed, chrome drivers list: $chromeDrivers")
 
             //fixme
@@ -76,7 +76,7 @@ object ChromePool {
             val timeoutChromes = chromeDrivers.filter { it.inUse && currentTime - it.lastAssignTime.toEpochSecond() > 10 * 60 }
             logWarn("Timeout chrome drivers: $timeoutChromes")
             chromeDrivers.removeAll(timeoutChromes)
-            timeoutChromes.forEach { it.driver.close() }
+            timeoutChromes.forEach { it.driver.quit() }
             logInfo("Timeout chrome drivers removed, chrome drivers list: $chromeDrivers")
 
             val notInUseChromes = chromeDrivers.filter { !it.inUse }
@@ -90,7 +90,7 @@ object ChromePool {
                     .takeLast(notInUseChromes.size - maxNotInUseChromeCount)
                 logInfo("Spare chrome drivers: $spareChromes")
                 chromeDrivers.removeAll(spareChromes)
-                spareChromes.forEach { it.driver.close() }
+                spareChromes.forEach { it.driver.quit() }
                 logInfo("Spare chrome drivers removed, chrome drivers list: $chromeDrivers")
             }
 
