@@ -6,7 +6,7 @@ import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.tools.findFirst
 
 class LoginPage(private val timing: Timing = Timing()) {
-    val webDriver = ChromePool.get()
+    val webDriver = ChromePool.get(this)
 
     init {
         timing("load login page") {
@@ -30,5 +30,4 @@ class LoginPage(private val timing: Timing = Timing()) {
         }
         return SummaryPage(webDriver, timing)
     }
-
 }

@@ -48,16 +48,16 @@ object ChromePool {
         chromeDrivers.forEach { it.driver.quit() }
     }
 
-    fun get(): ChromeDriverWrapper {
+    fun get(user: Any): ChromeDriverWrapper {
         return synchronized(this) {
-            var driver = chromeDrivers.find { !it.inUse && it.getPageCount <= Config.chromePoolMaxChromePageCount }
+            var driver = chromeDrivers.find { it.user == null && it.getPageCount <= Config.chromePoolMaxChromePageCount }
             driver?.lastAssignTime = ZonedDateTime.now()
             if (driver == null) {
                 logInfo("No available chrome drivers: $chromeDrivers, adding")
                 driver = getChromeWebDriver()
                 chromeDrivers += driver
             }
-            driver.inUse = true
+            driver.user = user
             driver
         }
     }
@@ -65,7 +65,7 @@ object ChromePool {
     fun clean() {
         synchronized(this) {
             logInfo("Chrome Pool clean started, chrome drivers list: $chromeDrivers")
-            val overUsedChromes = chromeDrivers.filter { !it.inUse && it.getPageCount > Config.chromePoolMaxChromePageCount }
+            val overUsedChromes = chromeDrivers.filter { it.user == null && it.getPageCount > Config.chromePoolMaxChromePageCount }
             logInfo("Over used chrome drivers: $overUsedChromes")
             chromeDrivers.removeAll(overUsedChromes)
             overUsedChromes.forEach { it.driver.quit() }
@@ -73,13 +73,13 @@ object ChromePool {
 
             //fixme
             val currentTime = ZonedDateTime.now().toEpochSecond()
-            val timeoutChromes = chromeDrivers.filter { it.inUse && currentTime - it.lastAssignTime.toEpochSecond() > 10 * 60 }
+            val timeoutChromes = chromeDrivers.filter { it.user != null && currentTime - it.lastAssignTime.toEpochSecond() > 10 * 60 }
             logWarn("Timeout chrome drivers: $timeoutChromes")
             chromeDrivers.removeAll(timeoutChromes)
             timeoutChromes.forEach { it.driver.quit() }
             logInfo("Timeout chrome drivers removed, chrome drivers list: $chromeDrivers")
 
-            val notInUseChromes = chromeDrivers.filter { !it.inUse }
+            val notInUseChromes = chromeDrivers.filter { it.user == null }
             logInfo("Not in use chrome drivers: $overUsedChromes")
             var maxNotInUseChromeCount = round((chromeDrivers.size - notInUseChromes.size) * 0.4).toInt()
             maxNotInUseChromeCount = maxOf(maxNotInUseChromeCount, Config.chromePoolMinChromeCount)
