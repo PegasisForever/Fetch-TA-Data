@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 import java.util.logging.Logger
 
-fun getChromeWebDriver(): ChromeDriverWrapper {
+fun getChromeWebDriver(showGui: Boolean = false): ChromeDriverWrapper {
     Logger.getLogger("org.openqa.selenium").level = Level.OFF
     System.setProperty("webdriver.chrome.driver", Config.webDriverPath)
     System.setProperty("webdriver.chrome.silentLogging", "true")
@@ -23,11 +23,9 @@ fun getChromeWebDriver(): ChromeDriverWrapper {
         setExperimentalOption("prefs",
             hashMapOf("profile.default_content_setting_values" to
                 hashMapOf("images" to 2, "stylesheet" to 2, "javascript" to 2)))
-        addArguments("--silent",
-            "--headless",
-            "--disable-gpu",
-            "--window-size=300,200",
-            "--ignore-certificate-errors")
+        addArguments("--silent", "--ignore-certificate-errors")
+        if (!showGui) addArguments("--headless", "--disable-gpu")
+
         merge(DesiredCapabilities().apply {
             isJavascriptEnabled = false
             setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, UnexpectedAlertBehaviour.DISMISS)
@@ -44,7 +42,7 @@ fun WebElement.getDirectChildren() = findElements(By.xpath("*"))
 
 fun getHtmlUnitWebClient() = WebClient().apply {
     Logger.getLogger("com.gargoylesoftware").level = Level.OFF
-    with(options){
+    with(options) {
         isCssEnabled = false
         isJavaScriptEnabled = false
         isRedirectEnabled = true
