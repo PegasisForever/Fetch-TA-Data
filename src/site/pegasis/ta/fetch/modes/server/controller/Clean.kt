@@ -1,6 +1,7 @@
 package site.pegasis.ta.fetch.modes.server.controller
 
 import picocli.CommandLine.Command
+import site.pegasis.ta.fetch.modes.server.storage.LastCleanDoneTime
 import site.pegasis.ta.fetch.tools.serverBuildNumber
 import java.io.File
 import java.io.PrintWriter
@@ -14,12 +15,14 @@ import java.util.concurrent.Callable
 )
 class Clean(private val printWriter: PrintWriter) : Callable<Unit> {
     override fun call() {
+        val lastCleanDoneMillis = LastCleanDoneTime.getMillis()
         File("data/courselists-history")
             .listFiles { file, _ -> file.isDirectory }!!
             .forEach { directory ->
                 var lastFileText: String? = null
                 directory
                     .listFiles()!!
+                    .filter { it.nameWithoutExtension.toLong() > lastCleanDoneMillis }
                     .sorted()
                     .map { file ->
                         val fileText = file.readText()
@@ -37,6 +40,7 @@ class Clean(private val printWriter: PrintWriter) : Callable<Unit> {
                     }
             }
 
+        LastCleanDoneTime.set()
         printWriter.println("Duplicate files in course list history removed.")
     }
 }

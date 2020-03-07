@@ -42,4 +42,5 @@ fun initFiles() {
     "{}".writeToFile("data/webdriverFallbackMap.json")
     "".writeToFile("data/announcement.txt")
     "".writeToFile("data/lastUpdateDoneTime.time")
+    "".writeToFile("data/lastCleanDoneTime.time")
 }
