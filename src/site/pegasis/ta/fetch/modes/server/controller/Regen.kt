@@ -12,7 +12,7 @@ import site.pegasis.ta.fetch.modes.server.timeline.compareCourses
 import site.pegasis.ta.fetch.tools.jsonParser
 import site.pegasis.ta.fetch.tools.serverBuildNumber
 import site.pegasis.ta.fetch.tools.toJSONString
-import site.pegasis.ta.fetch.tools.torontoZoneID
+import site.pegasis.ta.fetch.tools.defaultZoneID
 import java.io.File
 import java.io.PrintWriter
 import java.time.Instant
@@ -57,7 +57,7 @@ class Regen(private val printWriter: PrintWriter) : Callable<Unit> {
             .sorted()
             .map { file ->
                 jsonParser.parse(file.readText()).toCourseList() to
-                    ZonedDateTime.ofInstant(Instant.ofEpochMilli(file.nameWithoutExtension.toLong()), torontoZoneID)
+                    ZonedDateTime.ofInstant(Instant.ofEpochMilli(file.nameWithoutExtension.toLong()), defaultZoneID)
             }
             .forEach { (newCourseList, time) ->
                 val compareResult = compareCourses(

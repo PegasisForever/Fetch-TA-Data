@@ -88,7 +88,7 @@ class SummaryPage(private val htmlPage: HtmlPage, private val timing: Timing = T
     }
 
     fun fillDetails(doCalculation: Boolean = true): SummaryPage {
-        val currentTime = ZonedDateTime.now(torontoZoneID)
+        val currentTime = ZonedDateTime.now(defaultZoneID)
         for (i in 0 until courses.size) {
             val course = courses[i]
             if (course.overallMark != null) {

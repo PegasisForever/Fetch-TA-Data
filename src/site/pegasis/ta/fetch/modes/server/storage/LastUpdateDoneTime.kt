@@ -1,10 +1,11 @@
 package site.pegasis.ta.fetch.modes.server.storage
 
 import site.pegasis.ta.fetch.tools.*
+import java.time.Instant
 import java.time.ZonedDateTime
 
 object LastUpdateDoneTime {
-    private var time = ZonedDateTime.now()
+    private var time = ZonedDateTimeEpoch()
 
     fun load() {
         noThrow {

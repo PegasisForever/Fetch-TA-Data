@@ -3,13 +3,13 @@ package site.pegasis.ta.fetch.modes.server.timeline
 import site.pegasis.ta.fetch.models.*
 import site.pegasis.ta.fetch.modes.server.storage.Config
 import site.pegasis.ta.fetch.tools.findAndRemove
-import site.pegasis.ta.fetch.tools.torontoZoneID
+import site.pegasis.ta.fetch.tools.defaultZoneID
 import java.time.ZonedDateTime
 
 fun compareAssignments(
     oldCourse: Course,
     newCourse: Course,
-    compareTime: ZonedDateTime = ZonedDateTime.now(torontoZoneID)
+    compareTime: ZonedDateTime = ZonedDateTime.now(defaultZoneID)
 ): ArrayList<TAUpdate> {
     val updateList = ArrayList<TAUpdate>()
     val old = oldCourse.assignments ?: AssignmentList()
@@ -57,7 +57,7 @@ class CourseCompareResult(
 fun compareCourses(
     oldIn: CourseList,
     newIn: CourseList,
-    compareTime: ZonedDateTime = ZonedDateTime.now(torontoZoneID)
+    compareTime: ZonedDateTime = ZonedDateTime.now(defaultZoneID)
 ): CourseCompareResult {
     val old = oldIn.copy()
     val old2 = old.shadowCopy()

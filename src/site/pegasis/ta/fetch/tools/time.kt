@@ -7,13 +7,13 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 
-val torontoZoneID = ZoneId.of("America/Toronto")
+val defaultZoneID = ZoneId.of("America/Toronto")
 fun Long.toZonedDateTime(): ZonedDateTime {
     val localDateTime = LocalDateTime.ofInstant(
         Instant.ofEpochMilli(this),
-        torontoZoneID
+        defaultZoneID
     )
-    return localDateTime.atZone(torontoZoneID)
+    return localDateTime.atZone(defaultZoneID)
 }
 
 fun ZonedDateTime.toJSONString(): String {
@@ -27,3 +27,5 @@ fun String.toZonedDateTime(): ZonedDateTime {
 fun ZonedDateTime.isCloseTo(other: ZonedDateTime): Boolean {
     return abs(this.toEpochSecond() - other.toEpochSecond()) <= 1
 }
+
+fun ZonedDateTimeEpoch() = ZonedDateTime.ofInstant(Instant.EPOCH, defaultZoneID)

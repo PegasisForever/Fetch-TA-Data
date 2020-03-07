@@ -56,16 +56,9 @@ object Controller {
 
             res = stringWriter.toString() + ANSI_RED + errStringWriter.toString() + ANSI_RESET
 
-            log(
-                LogLevel.INFO,
-                "Control #$hash -> $ipAddress, data=$res"
-            )
+            logInfo("Control #$hash -> $ipAddress, data=$res")
         } catch (e: Throwable) {
-            log(
-                LogLevel.ERROR,
-                "Control #$hash Unknown error: ${e.message}",
-                e
-            )
+            logError("Control #$hash Unknown error: ${e.message}", e)
             statusCode = 500
             res = ANSI_RED + e.toStackTrace() + ANSI_RESET
         }

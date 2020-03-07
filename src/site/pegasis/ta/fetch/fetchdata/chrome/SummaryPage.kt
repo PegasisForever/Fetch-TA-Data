@@ -82,7 +82,7 @@ class SummaryPage(private val webDriver: ChromeDriverWrapper, private val timing
     }
 
     fun fillDetails(doCalculation: Boolean = true): SummaryPage {
-        val currentTime = ZonedDateTime.now(torontoZoneID)
+        val currentTime = ZonedDateTime.now(defaultZoneID)
         for (i in 0 until courses.size) {
             val course = courses[i]
             if (course.overallMark != null) {
