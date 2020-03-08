@@ -141,12 +141,13 @@ class Assignment : HashMap<Category, SmallMarkGroup>() {
     fun getAverage(weightTable: WeightTable): Double {
         var get = 0.0
         var total = 0.0
+        val isNoWeight = this.isNoWeight
 
         forEach { category, smallMarkGroup ->
             if (smallMarkGroup.available && smallMarkGroup.hasFinished) {
                 val weight = weightTable[category]!!.CW
-                get += smallMarkGroup.percentage * smallMarkGroup.allWeight * weight
-                total += smallMarkGroup.allWeight * weight
+                get += smallMarkGroup.percentage * (if (isNoWeight) 1.0 else smallMarkGroup.allWeight) * weight
+                total += (if (isNoWeight) 1.0 else smallMarkGroup.allWeight) * weight
             }
         }
 
