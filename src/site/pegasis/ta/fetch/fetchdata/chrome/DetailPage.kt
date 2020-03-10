@@ -74,7 +74,6 @@ class DetailPage(webClient: ChromeDriverWrapper, courseCode: String?, time: Zone
                                         "(?<=weight=)[^ ]+$"
                                     )!!.toDouble()
                                 }
-
                             }
                             smallMarkGroup.add(smallMark)
                         }

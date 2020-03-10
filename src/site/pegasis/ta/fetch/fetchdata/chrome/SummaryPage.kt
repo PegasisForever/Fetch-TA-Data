@@ -25,7 +25,7 @@ class SummaryPage(private val webDriver: ChromeDriverWrapper, private val timing
                     val cells = row.findElements(By.tagName("td"))
                     val course = Course()
 
-                    val classText = cells[0].text.replace("\n"," \n ").replace("\r","")
+                    val classText = cells[0].text.replace("\n", " \n ").replace("\r", "")
                     course.code = findFirst(classText, "[A-Z\\d\\.]{6}-[\\d]{2}")
                     course.name = findFirst(classText, "(?<= : )[^\\n]+(?= )")
                     course.block = findFirst(classText, "(?<=Block: )[^ ]+")
@@ -52,7 +52,7 @@ class SummaryPage(private val webDriver: ChromeDriverWrapper, private val timing
                             course.overallMark = OverallMark(currentMarkText.toDouble())
                         } else if (levelMarkText != null) {
                             course.overallMark = OverallMark(levelMarkText)
-                        }else if (isClickHere) {
+                        } else if (isClickHere) {
                             course.overallMark = OverallMark()
                         }
                     }

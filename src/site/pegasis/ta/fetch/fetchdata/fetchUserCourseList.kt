@@ -8,6 +8,12 @@ import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.tools.logInfo
 import kotlin.concurrent.thread
 
+private fun jsoupFetchCourseList(studentNumber: String, password: String, raw: Boolean, timing: Timing) =
+    site.pegasis.ta.fetch.fetchdata.jsoup.LoginPage(timing)
+        .gotoSummaryPage(studentNumber, password)
+        .fillDetails(doCalculation = !raw)
+        .courses
+
 private fun htmlunitFetchCourseList(studentNumber: String, password: String, raw: Boolean, timing: Timing) =
     site.pegasis.ta.fetch.fetchdata.htmlunit.LoginPage(timing)
         .gotoSummaryPage(studentNumber, password)
