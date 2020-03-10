@@ -3,6 +3,7 @@ package site.pegasis.ta.fetch.fetchdata.jsoup
 import org.jsoup.Connection
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import site.pegasis.ta.fetch.modes.server.storage.Config
 
 class JsoupSession {
     val cookies: HashMap<String, String> = hashMapOf()
@@ -10,6 +11,11 @@ class JsoupSession {
 
     fun connect(url: String, data: Map<String, String>, method: Connection.Method, saveCookies: Boolean): Document {
         val connection = Jsoup.connect(url)
+            .timeout(Config.fetchTimeoutSecond * 1000)
+            .header("Accept-Encoding", "gzip,deflate,sdch")
+            .header("Connection", "keep-alive")
+            .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36")
+
         data.forEach { (name, value) ->
             connection.data(name, value)
         }
