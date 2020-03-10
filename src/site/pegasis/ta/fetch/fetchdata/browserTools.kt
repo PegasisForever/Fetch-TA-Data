@@ -56,8 +56,8 @@ fun getHtmlUnitWebClient() = WebClient().apply {
 
 fun Throwable.isHtmlunitError() = stackTrace.find { it.className.contains("net.sourceforge.htmlunit") } != null
 
-fun Throwable.isConnectionException() =
-    (message ?: "").indexOf("SocketTimeoutException") != -1 ||
-        this is org.apache.http.conn.ConnectTimeoutException ||
-        this is org.openqa.selenium.TimeoutException ||
-        this is org.apache.http.conn.HttpHostConnectException
+fun Throwable.isConnectionException() = this is java.net.SocketTimeoutException ||
+    this is org.apache.http.conn.ConnectTimeoutException ||
+    this is org.openqa.selenium.TimeoutException ||
+    this is org.apache.http.conn.HttpHostConnectException ||
+    (message ?: "").indexOf("SocketTimeoutException") != -1
