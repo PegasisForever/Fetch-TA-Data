@@ -46,7 +46,7 @@ fun fetchUserCourseList(studentNumber: String,
         var error: Throwable? = null
         thread(start = true) {
             try {
-                courseList = htmlunitFetchCourseList(studentNumber, password, raw, timing)
+                courseList = jsoupFetchCourseList(studentNumber, password, raw, timing)
             } catch (e: Throwable) {
                 if (e.isHtmlunitError()) {
                     logInfo("Fetch course list for ${studentNumber}: Fallback to web driver")
@@ -72,7 +72,7 @@ fun fetchUserCourseList(studentNumber: String,
             return chromeFetchCourseList(studentNumber, password, raw, timing)
         }
         return try {
-            htmlunitFetchCourseList(studentNumber, password, raw, timing)
+            jsoupFetchCourseList(studentNumber, password, raw, timing)
         } catch (e: Throwable) {
             if (e.isHtmlunitError()) {
                 logInfo("Fetch course list for ${studentNumber}: Fallback to web driver")
