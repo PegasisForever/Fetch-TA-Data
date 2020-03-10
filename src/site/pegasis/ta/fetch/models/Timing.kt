@@ -12,19 +12,24 @@ class Timing {
 
     fun getResult(divider: String = "  "): String {
         val sb = StringBuilder()
+        var total = 0.0
         timeArray.forEach { item ->
+            total += item.time
             sb.append("${item.name}: ${item.time}ms$divider")
         }
+        sb.append("Total: ${total}ms")
         return sb.toString()
     }
+
+    override fun toString() = getResult()
 
     operator fun invoke(name: String) {
         setPoint(name)
     }
 
-    operator fun <T> invoke(name:String,action:()->T):T{
+    operator fun <T> invoke(name: String, action: () -> T): T {
         lastTime = System.currentTimeMillis()
-        val result= action()
+        val result = action()
         setPoint(name)
         return result
     }
