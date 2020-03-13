@@ -83,6 +83,14 @@ const val CalendarData = """[
   },
   {
     "name": {
+      "zh": "School Closure (COVID-19)",
+      "en": "School Closure (COVID-19)"
+    },
+    "start_date": "2020-3-21",
+    "end_date": "2020-4-5"
+  },
+  {
+    "name": {
       "zh": "圣周五",
       "en": "Good Friday"
     },
