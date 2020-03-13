@@ -2,7 +2,8 @@ package site.pegasis.ta.fetch.models
 
 class Timing {
     private val timeArray = ArrayList<TimingItem>()
-    private var lastTime = System.currentTimeMillis()
+    private var startTime = System.currentTimeMillis()
+    private var lastTime = startTime
 
     fun setPoint(name: String) {
         val currentTime = System.currentTimeMillis()
@@ -12,12 +13,10 @@ class Timing {
 
     fun getResult(divider: String = "  "): String {
         val sb = StringBuilder()
-        var total = 0.0
         timeArray.forEach { item ->
-            total += item.time
             sb.append("${item.name}: ${item.time}ms$divider")
         }
-        sb.append("Total: ${total}ms")
+        sb.append("Total: ${System.currentTimeMillis() - startTime}ms")
         return sb.toString()
     }
 

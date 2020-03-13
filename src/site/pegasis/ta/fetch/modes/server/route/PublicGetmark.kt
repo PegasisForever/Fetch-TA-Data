@@ -42,7 +42,7 @@ object PublicGetMark {
         val hash = exchange.hashCode()
         val reqString = exchange.getReqString()
         val ipAddress = exchange.getIP()
-        logInfo("Request #$hash /public/getmark <- $ipAddress, data=$reqString")
+        logInfo("Request #$hash /public/getmark <- $ipAddress, data=$reqString, api version=$publicApiVersion")
 
         timing("init")
 

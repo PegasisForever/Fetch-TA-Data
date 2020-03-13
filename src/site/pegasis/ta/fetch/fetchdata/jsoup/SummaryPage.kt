@@ -78,15 +78,14 @@ class SummaryPage(private val session: JsoupSession, private val timing: Timing 
 
     fun fillDetails(doCalculation: Boolean = true): SummaryPage {
         val currentTime = ZonedDateTime.now(defaultZoneID)
-        for (i in 0 until courses.size) {
-            val course = courses[i]
-            if (course.overallMark != null) {
+        courses
+            .filter { it.overallMark != null }
+            .forEach { course->
                 val detailPage = gotoDetailPage(course, currentTime)
                 course.assignments = detailPage.assignments
                 course.weightTable = detailPage.weightTable
                 if (doCalculation) course.calculate()
             }
-        }
 
         return this
     }
