@@ -4,10 +4,7 @@ import picocli.CommandLine.Command
 import site.pegasis.ta.fetch.fetchdata.WebdriverFallbackMap
 import site.pegasis.ta.fetch.fetchdata.chromepool.ChromePool
 import site.pegasis.ta.fetch.models.User
-import site.pegasis.ta.fetch.modes.server.storage.Config
-import site.pegasis.ta.fetch.modes.server.storage.LastUpdateDoneTime
-import site.pegasis.ta.fetch.modes.server.storage.LastUserUpdateTime
-import site.pegasis.ta.fetch.modes.server.storage.PCache
+import site.pegasis.ta.fetch.modes.server.storage.*
 import site.pegasis.ta.fetch.modes.server.timeline.updateAutoUpdateThread
 import site.pegasis.ta.fetch.tools.serverBuildNumber
 import java.io.PrintWriter
@@ -26,6 +23,7 @@ class Reload(private val printWriter: PrintWriter): Callable<Unit> {
         LastUserUpdateTime.load()
         LastUpdateDoneTime.load()
         WebdriverFallbackMap.load()
+        CalendarData.load()
         PCache.clearCache()
         ChromePool.reload()
         updateAutoUpdateThread()

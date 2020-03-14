@@ -9,6 +9,6 @@ object GetCalendar {
         val ipAddress = exchange.getIP()
         val hash = exchange.hashCode()
         logInfo("Request #$hash /getcalendar <-> $ipAddress")
-        exchange.send(200, CalendarData)
+        exchange.send(200, CalendarData.get())
     }
 }
