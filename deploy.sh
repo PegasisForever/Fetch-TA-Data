@@ -1,8 +1,10 @@
+#!/usr/bin/env bash
+
 echo "Copying file....."
-rsync -z ./target/fetch_ta_data.jar pegasis@i.pegasis.site:/home/pegasis/yrdsb_ta_server/fetch_ta_data.jar.temp || exit
+rsync -z ./target/fetch_ta_data.jar pegasis@j.pegasis.site:/home/pegasis/yrdsb_ta_server/fetch_ta_data.jar.temp || exit
 echo "File copied"
 
-ssh i.pegasis.site '
+ssh j.pegasis.site '
 cd /home/pegasis/yrdsb_ta_server/ || exit
 screen -S ta-server -p 0 -X stuff "^C"
 sleep 5

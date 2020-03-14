@@ -1,6 +1,8 @@
+#!/usr/bin/env bash
+
 echo "Restarting server"
 
-ssh i.pegasis.site '
+ssh j.pegasis.site '
 cd /home/pegasis/yrdsb_ta_server/ || exit
 screen -S ta-server -p 0 -X stuff "^C"
 sleep 5
