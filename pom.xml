@@ -5,13 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>site.pegasis</groupId>
     <artifactId>fetch-ta-data</artifactId>
-    <version>BN49</version>
+    <version>BN50</version>
 
     <packaging>jar</packaging>
     <properties>
         <java.version>11</java.version>
         <kotlin.compiler.jvmTarget>11</kotlin.compiler.jvmTarget>
-        <kotlin.version>1.3.61</kotlin.version>
+        <kotlin.version>1.3.70</kotlin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
