@@ -7,6 +7,7 @@ import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.controller.Controller
 import site.pegasis.ta.fetch.modes.server.route.*
 import site.pegasis.ta.fetch.modes.server.storage.CalendarData
+import site.pegasis.ta.fetch.modes.server.storage.LastCleanDoneTime
 import site.pegasis.ta.fetch.modes.server.storage.LastUpdateDoneTime
 import site.pegasis.ta.fetch.modes.server.storage.LastUserUpdateTime
 import site.pegasis.ta.fetch.modes.server.timeline.stopAutoUpdateThread
@@ -41,6 +42,7 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
 
     LastUserUpdateTime.load()
     LastUpdateDoneTime.load()
+    LastCleanDoneTime.load()
     User.load()
     CalendarData.load()
     ChromePool.init()

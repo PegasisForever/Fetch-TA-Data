@@ -20,10 +20,12 @@ class Clean(private val printWriter: PrintWriter) : Callable<Unit> {
             .listFiles { file, _ -> file.isDirectory }!!
             .forEach { directory ->
                 var lastFileText: String? = null
-                directory
-                    .listFiles()!!
-                    .filter { it.nameWithoutExtension.toLong() > lastCleanDoneMillis }
-                    .sorted()
+                val files = directory.listFiles()!!.sorted()
+                val indexOfFirstFileAfterLastClean = files.indexOfFirst { it.nameWithoutExtension.toLong() > lastCleanDoneMillis }
+                if (indexOfFirstFileAfterLastClean == -1) return@forEach
+
+                files
+                    .subList(indexOfFirstFileAfterLastClean - 1, files.lastIndex+1)
                     .map { file ->
                         val fileText = file.readText()
                         file to if (lastFileText == null || lastFileText != fileText) {
