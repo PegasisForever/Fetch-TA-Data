@@ -35,6 +35,8 @@ fun initFiles() {
             "end": "2020-02-28T16:00:00-05:00"
           }
       ]
+      "proxy": "",
+      "proxy_port": 80
     }
     """.trimIndent().writeToFile("data/config.json")
     "[]".writeToFile("data/users.json")

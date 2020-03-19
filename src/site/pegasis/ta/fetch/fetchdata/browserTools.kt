@@ -24,6 +24,7 @@ fun getChromeWebDriver(showGui: Boolean = false): ChromeDriverWrapper {
             hashMapOf("profile.default_content_setting_values" to
                 hashMapOf("images" to 2, "stylesheet" to 2, "javascript" to 2)))
         addArguments("--silent", "--ignore-certificate-errors")
+        if (Config.proxy.isNotBlank()) addArguments("--proxy-server=${Config.proxy}:${Config.proxyPort}")
         if (!showGui) addArguments("--headless", "--disable-gpu")
 
         merge(DesiredCapabilities().apply {

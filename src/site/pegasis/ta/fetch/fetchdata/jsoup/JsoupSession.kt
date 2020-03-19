@@ -16,6 +16,7 @@ class JsoupSession {
             .header("Connection", "keep-alive")
             .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36")
 
+        if (Config.proxy.isNotBlank()) connection.proxy(Config.proxy, Config.proxyPort)
         data.forEach { (name, value) ->
             connection.data(name, value)
         }

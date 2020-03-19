@@ -20,6 +20,8 @@ object Config {
     var chromePoolCleanIntervalMinute = 10
     var disableCourseRelatedActions = ArrayList<ClosedRange<ZonedDateTime>>()
     var ignoreLastUpdateDone = false
+    var proxy = ""
+    var proxyPort = 80
 
     fun load() {
         val configJSON = jsonParser.parse(readFile("data/config.json")) as JSONObject
@@ -43,6 +45,8 @@ object Config {
                     (obj["interval"] as Long).toInt()
             }
         }
+        proxy = configJSON["proxy"] as String
+        proxyPort = (configJSON["proxy_port"] as Long).toInt()
     }
 
     fun isEnableCourseActions(time: ZonedDateTime = ZonedDateTime.now()): Boolean {
