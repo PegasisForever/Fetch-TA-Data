@@ -1,6 +1,5 @@
 package site.pegasis.ta.fetch.fetchdata
 
-import com.gargoylesoftware.htmlunit.WebClient
 import org.openqa.selenium.By
 import org.openqa.selenium.UnexpectedAlertBehaviour
 import org.openqa.selenium.WebElement
@@ -40,20 +39,6 @@ fun getChromeWebDriver(showGui: Boolean = false): ChromeDriverWrapper {
 
 fun WebElement.getDirectChildren() = findElements(By.xpath("*"))
 
-
-fun getHtmlUnitWebClient() = WebClient().apply {
-    Logger.getLogger("com.gargoylesoftware").level = Level.OFF
-    with(options) {
-        isCssEnabled = false
-        isJavaScriptEnabled = false
-        isRedirectEnabled = true
-        isThrowExceptionOnScriptError = false
-        isThrowExceptionOnFailingStatusCode = false
-        isDownloadImages = false
-        isAppletEnabled = false
-        timeout = Config.fetchTimeoutSecond * 1000
-    }
-}
 
 fun Throwable.isHtmlunitError() = stackTrace.find { it.className.contains("net.sourceforge.htmlunit") } != null
 

@@ -14,11 +14,6 @@ private fun jsoupFetchCourseList(studentNumber: String, password: String, raw: B
         .fillDetails(doCalculation = !raw)
         .courses
 
-private fun htmlunitFetchCourseList(studentNumber: String, password: String, raw: Boolean, timing: Timing) =
-    site.pegasis.ta.fetch.fetchdata.htmlunit.LoginPage(timing)
-        .gotoSummaryPage(studentNumber, password)
-        .fillDetails(doCalculation = !raw)
-        .courses
 
 private fun chromeFetchCourseList(studentNumber: String, password: String, raw: Boolean, timing: Timing): CourseList {
     val webDriver = ChromePool.get(studentNumber)
