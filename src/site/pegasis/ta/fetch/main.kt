@@ -12,7 +12,7 @@ import site.pegasis.ta.fetch.tools.getInput
 import site.pegasis.ta.fetch.tools.serverBuildNumber
 import java.util.concurrent.Callable
 
-fun main(args: Array<String>) {
+suspend fun main(args: Array<String>) {
     initFiles()
     Config.load()
     CommandLine(FetchTa())

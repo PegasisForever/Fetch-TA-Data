@@ -11,7 +11,7 @@ import site.pegasis.ta.fetch.tools.*
 import java.time.ZonedDateTime
 import java.util.concurrent.atomic.AtomicBoolean
 
-fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
+suspend fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
     val studentNumber = user.number
     val password = user.password
     var updates = TimeLine()
@@ -19,7 +19,7 @@ fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
     try {
         val compareResult = compareCourses(
             oldIn = PCache.readCourseList(studentNumber),
-            newIn = newData ?: runBlocking { fetchUserCourseList(studentNumber, password) }
+            newIn = newData ?: fetchUserCourseList(studentNumber, password)
         )
         updates = compareResult.updates
         //When a user login for the first time, there will be 4 "course added" update,
@@ -44,7 +44,7 @@ fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
             sendNotifications(user, updates)
         }
 
-        LastUserUpdateTime[studentNumber] = ZonedDateTime.now()
+        LastUserUpdateTime.set(studentNumber, ZonedDateTime.now())
     } catch (e: LoginException) {
         logInfo("Error while performing update for user ${studentNumber}: Login error")
     } catch (e: Exception) {
@@ -57,13 +57,13 @@ fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
     return updates
 }
 
-fun runFollowUpUpdate(number: String, newData: CourseList) {
+suspend fun runFollowUpUpdate(number: String, newData: CourseList) {
     User.get(number)?.let {
         performUpdate(it, newData)
     }
 }
 
-fun sendNotifications(user: User, updateList: TimeLine) {
+suspend fun sendNotifications(user: User, updateList: TimeLine) {
     val availableDevices = user.devices.filter { it.receive && it.token != "" }
     updateList.forEach { taUpdate ->
         availableDevices.forEach { device ->
@@ -89,6 +89,7 @@ private val autoUpdateThreadRunning = AtomicBoolean(false)
 fun startAutoUpdateThread() {
     if (autoUpdateThreadRunning.get()) return
 
+    //TODO use corotine
     val thread = Thread({
         autoUpdateThreadRunning.set(true)
         log(LogLevel.INFO, "Auto update thread started")
@@ -104,13 +105,13 @@ fun startAutoUpdateThread() {
                 val startTime = System.currentTimeMillis()
                 User.allUsers.forEach { user ->
                     if (!autoUpdateThreadRunning.get()) throw InterruptedException()
-                    val updates = performUpdate(user)
+                    val updates = runBlocking { performUpdate(user) }
                     logInfo("Auto performed update for user ${user.number}, ${updates.size} updates")
                 }
 
                 val interval = Config.getUpdateInterval() * 60 * 1000
                 val remainTime = interval - (System.currentTimeMillis() - startTime)
-                LastUpdateDoneTime.set()
+                runBlocking { LastUpdateDoneTime.set() }
                 logInfo("Auto update done, ${(System.currentTimeMillis() - startTime) / 1000 / 60} minutes.")
                 if (remainTime > 0) {
                     logInfo("Next auto update will be ${ZonedDateTime.now().plusSeconds(remainTime / 1000).toJSONString()}.")

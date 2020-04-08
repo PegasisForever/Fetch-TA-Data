@@ -23,6 +23,14 @@ fun noThrow(action: () -> Unit) {
     }
 }
 
+suspend fun noThrowSuspend(action: suspend () -> Unit) {
+    try {
+        action()
+    } catch (ignored: Throwable) {
+
+    }
+}
+
 fun getInput(s: String, password: Boolean = false): String {
     print(s)
     return if (password) {
@@ -44,6 +52,5 @@ infix fun Any?.nne(b: Any?): Boolean {
 
 fun Throwable.isConnectionException() = this is java.net.SocketTimeoutException ||
     this is org.apache.http.conn.ConnectTimeoutException ||
-    this is org.openqa.selenium.TimeoutException ||
     this is org.apache.http.conn.HttpHostConnectException ||
     (message ?: "").indexOf("SocketTimeoutException") != -1

@@ -5,7 +5,7 @@ import site.pegasis.ta.fetch.tools.readFile
 object CalendarData {
     private var calendar = "[]"
 
-    fun load() {
+    suspend fun load() {
         calendar = readFile("data/calendar.json")
     }
 

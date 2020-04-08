@@ -1,34 +1,38 @@
 package site.pegasis.ta.fetch.tools
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 
-fun String.writeToFile(path: String) {
+suspend fun String.writeToFile(path: String) = withContext(Dispatchers.IO) {
     val file = File(path)
     file.parentFile.mkdirs()
-    file.writeText(this)
+    file.writeText(this@writeToFile)
 }
 
-fun String.appendToFile(path: String) {
+suspend fun String.appendToFile(path: String) = withContext(Dispatchers.IO) {
     val file = File(path)
     file.parentFile.mkdirs()
-    file.appendText(this)
+    file.appendText(this@appendToFile)
 }
 
-fun readFile(path: String): String {
-    return String(Files.readAllBytes(Paths.get(path)))
+suspend fun readFile(path: String) = withContext(Dispatchers.IO) {
+    String(Files.readAllBytes(Paths.get(path)))
 }
 
-fun isFileExists(path: String): Boolean {
-    return File(path).isFile
+
+suspend fun isFileExists(path: String) = withContext(Dispatchers.IO) {
+    File(path).isFile
 }
 
-fun fileExists(path: String): Boolean {
+
+suspend fun fileExists(path: String) = withContext(Dispatchers.IO) {
     val tmpDir = File(path)
-    return tmpDir.exists()
+    tmpDir.exists()
 }
 
-fun readFile(file: File): String {
-    return file.readText()
+suspend fun readFile(file: File) = withContext(Dispatchers.IO) {
+    file.readText()
 }

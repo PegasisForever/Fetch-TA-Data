@@ -7,11 +7,11 @@ import java.time.ZonedDateTime
 object LastUserUpdateTime {
     private val updateTimeMap = HashMap<String, ZonedDateTime>()
 
-    fun load() {
+    suspend fun load() {
         updateTimeMap.clear()
         val jsonObject = jsonParser.parse(readFile("data/lastUserUpdateTime.json")) as JSONObject
-        jsonObject.forEach { jsonNumber, jsonTime ->
-            this[jsonNumber as String] = (jsonTime as String).toZonedDateTime()
+        jsonObject.forEach { (jsonNumber, jsonTime) ->
+            this.set(jsonNumber as String, (jsonTime as String).toZonedDateTime())
         }
     }
 
@@ -20,7 +20,7 @@ object LastUserUpdateTime {
     }
 
     @Synchronized
-    operator fun set(number: String, updateTime: ZonedDateTime) {
+    suspend fun set(number: String, updateTime: ZonedDateTime) {
         updateTimeMap[number] = updateTime
 
         val obj = JSONObject()

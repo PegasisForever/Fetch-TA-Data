@@ -1,5 +1,10 @@
+@file:Suppress("DeferredResultUnused")
+
 package site.pegasis.ta.fetch.tools
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import org.apache.commons.lang3.exception.ExceptionUtils
 import site.pegasis.ta.fetch.models.Timing
 import java.text.SimpleDateFormat
@@ -46,7 +51,9 @@ fun log(level: LogLevel, msg: String, throwable: Throwable? = null, timing: Timi
         logText += ExceptionUtils.getStackTrace(throwable)
     }
 
-    logText.appendToFile("data/log/${fileDateFormat.format(date)}.log")
+    GlobalScope.async(Dispatchers.IO){
+        logText.appendToFile("data/log/${fileDateFormat.format(date)}.log")
+    }
 
     val color = when (level) {
         LogLevel.DEBUG -> ANSI_BLACK
@@ -78,7 +85,9 @@ fun logUnhandled(thread: Thread?, throwable: Throwable) {
         "${logDateFormat.format(date)}\t|\tBN$serverBuildNumber\t|\t${LogLevel.FATAL.name}\t|\t${thread?.name}\t|\tUnhandled Error\n"
     logText += ExceptionUtils.getStackTrace(throwable)
 
-    logText.appendToFile("data/log/${fileDateFormat.format(date)}.log")
+    GlobalScope.async(Dispatchers.IO){
+        logText.appendToFile("data/log/${fileDateFormat.format(date)}.log")
+    }
 
     logText = ANSI_RED + logText + ANSI_RESET
     print(logText)

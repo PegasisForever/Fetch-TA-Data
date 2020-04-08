@@ -6,8 +6,8 @@ import java.time.ZonedDateTime
 object LastCleanDoneTime {
     private var time = ZonedDateTimeEpoch()
 
-    fun load() {
-        noThrow {
+    suspend fun load() {
+        noThrowSuspend  {
             time = readFile("data/lastCleanDoneTime.time").toZonedDateTime()
         }
     }
@@ -16,7 +16,7 @@ object LastCleanDoneTime {
 
     fun getMillis() = time.toInstant().toEpochMilli()
 
-    fun set() {
+    suspend fun set() {
         time = ZonedDateTime.now()
         time.toJSONString().writeToFile("data/lastCleanDoneTime.time")
     }

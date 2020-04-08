@@ -24,7 +24,7 @@ object PCache {
     }
 
     @Synchronized
-    fun save(number: String, courseList: CourseList) {
+    suspend fun save(number: String, courseList: CourseList) {
         courseListCacheMap[number] = courseList
         val str = courseList.serialize().toJSONString()
         str.writeToFile("data/courselists/$number.json")
@@ -32,29 +32,29 @@ object PCache {
     }
 
     @Synchronized
-    fun saveArchive(number: String, courseList: CourseList) {
+    suspend fun saveArchive(number: String, courseList: CourseList) {
         archivedCourseListCacheMap[number] = courseList
         courseList.serialize().toJSONString().writeToFile("data/courselists-archived/$number.json")
     }
 
     @Synchronized
-    fun save(number: String, timeLine: TimeLine) {
+    suspend fun save(number: String, timeLine: TimeLine) {
         timeLineCacheMap[number] = timeLine
         timeLine.serialize().toJSONString().writeToFile("data/timelines/$number.json")
     }
 
-    fun getAnnouncement(): String {
+    suspend fun getAnnouncement(): String {
         if (announcementCache == null) {
             announcementCache = readFile("data/announcement.txt")
         }
         return announcementCache!!
     }
 
-    fun isExistsBefore(number: String): Boolean {
+    suspend fun isExistsBefore(number: String): Boolean {
         return isFileExists("data/courselists/$number.json")
     }
 
-    fun readCourseList(number: String): CourseList {
+    suspend fun readCourseList(number: String): CourseList {
         return if (courseListCacheMap.containsKey(number)) {
             courseListCacheMap[number]!!
         } else {
@@ -76,7 +76,7 @@ object PCache {
         }
     }
 
-    fun readArchivedCourseList(number: String): CourseList {
+    suspend fun readArchivedCourseList(number: String): CourseList {
         return if (archivedCourseListCacheMap.containsKey(number)) {
             archivedCourseListCacheMap[number]!!
         } else {
@@ -98,7 +98,7 @@ object PCache {
         }
     }
 
-    fun readTimeLine(number: String): TimeLine {
+    suspend fun readTimeLine(number: String): TimeLine {
         return if (timeLineCacheMap.containsKey(number)) {
             timeLineCacheMap[number]!!
         } else {
@@ -122,14 +122,14 @@ object PCache {
 
 }
 
-fun CourseList.save(number: String) {
+suspend fun CourseList.save(number: String) {
     PCache.save(number, this)
 }
 
-fun CourseList.saveArchive(number: String) {
+suspend fun CourseList.saveArchive(number: String) {
     PCache.saveArchive(number, this)
 }
 
-fun TimeLine.save(number: String) {
+suspend fun TimeLine.save(number: String) {
     PCache.save(number, this)
 }

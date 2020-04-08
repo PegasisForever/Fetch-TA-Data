@@ -102,7 +102,7 @@ class User() {
         val allUsers = CopyOnWriteArrayList<User>()
         private const val fileName = "data/users.json"
 
-        fun load() {
+        suspend fun load() {
             allUsers.clear()
             val users = jsonParser.parse(
                 readFile(fileName)
@@ -112,7 +112,7 @@ class User() {
             }
         }
 
-        fun save() {
+        suspend fun save() {
             val array = JSONArray()
             allUsers.forEach { user ->
                 array.add(user.toJSONObject())
@@ -120,7 +120,7 @@ class User() {
             array.toJSONString().writeToFile(fileName)
         }
 
-        fun add(newUser: User) {
+        suspend fun add(newUser: User) {
             get(newUser.number)?.run {
                 newUser.devices.forEach { newDevice ->
                     //If non device of existing user have this token, then add it, else, update language
@@ -139,7 +139,7 @@ class User() {
             save()
         }
 
-        fun remove(removedUser: User) {
+        suspend fun remove(removedUser: User) {
             get(removedUser.number)?.run {
                 removedUser.devices.forEach { deviceRemoved ->
                     devices.removeIf {
@@ -150,7 +150,7 @@ class User() {
             save()
         }
 
-        fun removeToken(token: String) {
+        suspend fun removeToken(token: String) {
             allUsers.forEach { user ->
                 user.devices.removeIf {
                     it.token == token

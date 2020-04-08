@@ -3,7 +3,7 @@ package site.pegasis.ta.fetch.modes.server.storage
 import site.pegasis.ta.fetch.tools.fileExists
 import site.pegasis.ta.fetch.tools.writeToFile
 
-fun initFiles() {
+suspend fun initFiles() {
     if (fileExists("data/config.json")) return
 
     """

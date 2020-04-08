@@ -1,5 +1,6 @@
 package site.pegasis.ta.fetch.modes.server.controller
 
+import kotlinx.coroutines.runBlocking
 import picocli.CommandLine.Command
 import site.pegasis.ta.fetch.modes.server.storage.LastCleanDoneTime
 import site.pegasis.ta.fetch.tools.serverBuildNumber
@@ -42,7 +43,9 @@ class Clean(private val printWriter: PrintWriter) : Callable<Unit> {
                     }
             }
 
-        LastCleanDoneTime.set()
+        runBlocking {
+            LastCleanDoneTime.set()
+        }
         printWriter.println("Duplicate files in course list history removed.")
     }
 }

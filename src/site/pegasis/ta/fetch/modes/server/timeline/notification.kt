@@ -7,6 +7,8 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingException
 import com.google.firebase.messaging.Message
 import com.google.firebase.messaging.Notification
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import site.pegasis.ta.fetch.modes.server.storage.Config
 import site.pegasis.ta.fetch.tools.LogLevel
 import site.pegasis.ta.fetch.tools.fileExists
@@ -15,7 +17,7 @@ import java.io.FileInputStream
 
 private var initialized = false
 
-fun sendFCM(token: String, notification: site.pegasis.ta.fetch.modes.server.timeline.Notification): Boolean {
+suspend fun sendFCM(token: String, notification: site.pegasis.ta.fetch.modes.server.timeline.Notification): Boolean {
     if (!Config.notificationEnabled) {
         log(
             LogLevel.INFO,
@@ -34,10 +36,12 @@ fun sendFCM(token: String, notification: site.pegasis.ta.fetch.modes.server.time
             )
             return true
         }
-        val serviceAccount = FileInputStream("data/serviceAccountKey.json")
+        val serviceAccount = withContext(Dispatchers.IO) {
+            FileInputStream("data/serviceAccountKey.json")
+        }
 
         val options = FirebaseOptions.Builder()
-            .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+            .setCredentials(withContext(Dispatchers.IO) { GoogleCredentials.fromStream(serviceAccount) })
             .setDatabaseUrl("https://yrdsb-teach-assist.firebaseio.com")
             .build()
 
@@ -46,6 +50,7 @@ fun sendFCM(token: String, notification: site.pegasis.ta.fetch.modes.server.time
         initialized = true
     }
 
+    //TODO change notification
     val message = Message.builder()
         .setNotification(Notification(notification.title, notification.body))
         .setToken(token)

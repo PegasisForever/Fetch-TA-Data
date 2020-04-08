@@ -19,7 +19,7 @@ object Config {
     var proxy = ""
     var proxyPort = 80
 
-    fun load() {
+    suspend fun load() {
         val configJSON = jsonParser.parse(readFile("data/config.json")) as JSONObject
         notificationEnabled = configJSON["notification"] as Boolean
         autoUpdateEnabled = configJSON["auto_update"] as Boolean

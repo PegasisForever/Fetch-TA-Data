@@ -7,6 +7,7 @@ import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.netty.NettyApplicationEngine
+import kotlinx.coroutines.runBlocking
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.controller.Controller
@@ -46,12 +47,14 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
         }
     })
 
-    LastUserUpdateTime.load()
-    LastUpdateDoneTime.load()
-    LastCleanDoneTime.load()
-    User.load()
-    CalendarData.load()
-    updateAutoUpdateThread()
+    runBlocking {
+        LastUserUpdateTime.load()
+        LastUpdateDoneTime.load()
+        LastCleanDoneTime.load()
+        User.load()
+        CalendarData.load()
+        updateAutoUpdateThread()
+    }
     timing("load data")
 
     //private server

@@ -1,5 +1,6 @@
 package site.pegasis.ta.fetch.modes.server.controller
 
+import kotlinx.coroutines.runBlocking
 import picocli.CommandLine
 import site.pegasis.ta.fetch.models.CourseAdded
 import site.pegasis.ta.fetch.models.CourseList
@@ -36,18 +37,20 @@ class Regen(private val printWriter: PrintWriter) : Callable<Unit> {
     private var override = false
 
     override fun call() {
-        if (studentNumber != "all") {
-            regenForStudent(studentNumber)
-        } else {
-            File("data/courselists-history")
-                .listFiles { file, _ -> file.isDirectory }!!
-                .forEach { file ->
-                    regenForStudent(file.name)
-                }
+        runBlocking {
+            if (studentNumber != "all") {
+                regenForStudent(studentNumber)
+            } else {
+                File("data/courselists-history")
+                    .listFiles { file, _ -> file.isDirectory }!!
+                    .forEach { file ->
+                        regenForStudent(file.name)
+                    }
+            }
         }
     }
 
-    private fun regenForStudent(number: String) {
+    private suspend fun regenForStudent(number: String) {
         val timeLine = TimeLine()
         val archivedCourseList = CourseList()
         var oldCourseList: CourseList? = null
@@ -89,7 +92,7 @@ class Regen(private val printWriter: PrintWriter) : Callable<Unit> {
         }
     }
 
-    private fun checkSame(number: String, newTimeLine: TimeLine, newArchivedCourseList: CourseList): Boolean {
+    private suspend fun checkSame(number: String, newTimeLine: TimeLine, newArchivedCourseList: CourseList): Boolean {
         val storedTimeLine = PCache.readTimeLine(number)
         if (!storedTimeLine.containsAll(newTimeLine)) {
             printWriter.println("Generated timeline for $number is not same as stored timeline, use -o to override.")

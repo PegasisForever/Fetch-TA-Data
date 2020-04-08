@@ -1,5 +1,6 @@
 package site.pegasis.ta.fetch.modes.server.controller
 
+import kotlinx.coroutines.runBlocking
 import picocli.CommandLine.Command
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.storage.*
@@ -16,13 +17,15 @@ import java.util.concurrent.Callable
 )
 class Reload(private val printWriter: PrintWriter): Callable<Unit> {
     override fun call() {
-        Config.load()
-        User.load()
-        LastUserUpdateTime.load()
-        LastUpdateDoneTime.load()
-        CalendarData.load()
-        PCache.clearCache()
-        updateAutoUpdateThread()
+        runBlocking {
+            Config.load()
+            User.load()
+            LastUserUpdateTime.load()
+            LastUpdateDoneTime.load()
+            CalendarData.load()
+            PCache.clearCache()
+            updateAutoUpdateThread()
+        }
 
         printWriter.println("Server config and cached file reloaded.")
     }
