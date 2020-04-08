@@ -1,6 +1,6 @@
 package site.pegasis.ta.fetch.modes.server.timeline
 
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import site.pegasis.ta.fetch.exceptions.LoginException
 import site.pegasis.ta.fetch.fetchdata.fetchUserCourseList
 import site.pegasis.ta.fetch.models.CourseList
@@ -9,7 +9,6 @@ import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.storage.*
 import site.pegasis.ta.fetch.tools.*
 import java.time.ZonedDateTime
-import java.util.concurrent.atomic.AtomicBoolean
 
 suspend fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
     val studentNumber = user.number
@@ -75,7 +74,7 @@ suspend fun sendNotifications(user: User, updateList: TimeLine) {
 }
 
 
-fun updateAutoUpdateThread() {
+suspend fun updateAutoUpdateThread() {
     if (Config.autoUpdateEnabled) {
         startAutoUpdateThread()
     } else {
@@ -83,58 +82,48 @@ fun updateAutoUpdateThread() {
     }
 }
 
-private var autoUpdateThread: Thread? = null
-private val autoUpdateThreadRunning = AtomicBoolean(false)
+private var autoUpdateJob: Job? = null
+private val autoUpdateJobRunning
+    get() = autoUpdateJob?.isActive ?: false
 
 fun startAutoUpdateThread() {
-    if (autoUpdateThreadRunning.get()) return
+    if (autoUpdateJobRunning) return
 
-    //TODO use corotine
-    val thread = Thread({
-        autoUpdateThreadRunning.set(true)
-        log(LogLevel.INFO, "Auto update thread started")
+    autoUpdateJob = GlobalScope.launch {
+        log(LogLevel.INFO, "Auto update job started")
+
+        val timeBeforeStart = (LastUpdateDoneTime.getMillis() + Config.getUpdateInterval() * 60 * 1000) - System.currentTimeMillis()
+        if (timeBeforeStart > 0 && !Config.ignoreLastUpdateDone) {
+            logInfo("Auto update will be started at ${ZonedDateTime.now().plusSeconds(timeBeforeStart / 1000).toJSONString()}.")
+            delay(timeBeforeStart)
+        }
 
         try {
-            val timeBeforeStart = (LastUpdateDoneTime.getMillis() + Config.getUpdateInterval() * 60 * 1000) - System.currentTimeMillis()
-            if (timeBeforeStart > 0 && !Config.ignoreLastUpdateDone) {
-                logInfo("Auto update will be started at ${ZonedDateTime.now().plusSeconds(timeBeforeStart / 1000).toJSONString()}.")
-                Thread.sleep(timeBeforeStart)
-            }
-
-            while (autoUpdateThreadRunning.get()) {
+            while (isActive) {
                 val startTime = System.currentTimeMillis()
                 User.allUsers.forEach { user ->
-                    if (!autoUpdateThreadRunning.get()) throw InterruptedException()
-                    val updates = runBlocking { performUpdate(user) }
+                    if(!isActive) throw error("cancelled")
+                    val updates = performUpdate(user)
                     logInfo("Auto performed update for user ${user.number}, ${updates.size} updates")
                 }
 
                 val interval = Config.getUpdateInterval() * 60 * 1000
                 val remainTime = interval - (System.currentTimeMillis() - startTime)
-                runBlocking { LastUpdateDoneTime.set() }
+                LastUpdateDoneTime.set()
                 logInfo("Auto update done, ${(System.currentTimeMillis() - startTime) / 1000 / 60} minutes.")
                 if (remainTime > 0) {
                     logInfo("Next auto update will be ${ZonedDateTime.now().plusSeconds(remainTime / 1000).toJSONString()}.")
-                    Thread.sleep(remainTime)
+                    delay(remainTime)
                 } else {
                     logInfo("Next auto update starts now.")
                 }
             }
-        } catch (e: InterruptedException) {
-            logInfo("Thread interrupted")
+        } finally {
+            logInfo("Auto update job stopped")
         }
-
-        autoUpdateThreadRunning.set(false)
-        logInfo("Thread stopped")
-    }, "AutoUpdateThread")
-    thread.start()
-
-    autoUpdateThread = thread
+    }
 }
 
-fun stopAutoUpdateThread() {
-    if (!autoUpdateThreadRunning.get()) return
-
-    autoUpdateThreadRunning.set(false)
-    autoUpdateThread?.interrupt()
+suspend fun stopAutoUpdateThread() {
+    autoUpdateJob?.cancelAndJoin()
 }

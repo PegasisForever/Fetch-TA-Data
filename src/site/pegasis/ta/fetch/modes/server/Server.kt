@@ -42,7 +42,7 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
             privateServer?.stop(1_000L, 2_000L)
             controlServer?.stop(1_000L, 2_000L)
             publicServer?.stop(1_000L, 2_000L)
-            stopAutoUpdateThread()
+            runBlocking { stopAutoUpdateThread() }
             logInfo("Server stopped")
         }
     })
