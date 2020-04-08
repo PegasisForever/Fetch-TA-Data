@@ -1,5 +1,6 @@
 package site.pegasis.ta.fetch.modes.server
 
+import io.ktor.application.install
 import io.ktor.routing.Routing
 import io.ktor.routing.options
 import io.ktor.routing.post
@@ -7,6 +8,8 @@ import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.netty.NettyApplicationEngine
+import io.ktor.websocket.WebSockets
+import io.ktor.websocket.webSocket
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -74,6 +77,7 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
     //private server
     if (enablePrivate) {
         privateServer = embeddedServer(Netty, privatePort) {
+            install(WebSockets)
             routing {
                 createContext("/getmark_timeline", GetmarkTimeLine::route)
                 createContext("/getcalendar", GetCalendar::route)
@@ -83,6 +87,7 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
                 createContext("/feedback", Feedback::route)
                 createContext("/regi", Regi::route)
                 createContext("/deregi", Deregi::route)
+                createWsContext("/remote_fetch/v10",RemoteFetchV10::route)
             }
         }
         privateServer.start()
@@ -119,5 +124,11 @@ fun Routing.createContext(path: String, route: suspend (HttpSession) -> Unit) {
     }
     options(path) {
         route(this.toHttpSession())
+    }
+}
+
+fun Routing.createWsContext(path:String,route:suspend (WebSocketSession)->Unit){
+    webSocket(path) {
+        route(this.toWebSocketSession())
     }
 }

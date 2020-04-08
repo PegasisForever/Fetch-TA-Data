@@ -5,6 +5,9 @@ import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.cio.websocket.Frame
+import io.ktor.http.cio.websocket.close
+import io.ktor.http.cio.websocket.readText
 import io.ktor.request.header
 import io.ktor.request.httpMethod
 import io.ktor.request.receiveText
@@ -12,6 +15,7 @@ import io.ktor.response.header
 import io.ktor.response.respond
 import io.ktor.response.respondBytes
 import io.ktor.util.pipeline.PipelineContext
+import io.ktor.websocket.DefaultWebSocketServerSession
 import site.pegasis.ta.fetch.modes.server.latestApiVersion
 import site.pegasis.ta.fetch.modes.server.minApiVersion
 import site.pegasis.ta.fetch.tools.gzip
@@ -119,4 +123,18 @@ fun PipelineContext<Unit, ApplicationCall>.toHttpSession() = object : HttpSessio
         return false
     }
 
+}
+
+fun DefaultWebSocketServerSession.toWebSocketSession() = object : WebSocketSession {
+    override suspend fun nextMessage(): String {
+        return (incoming.receive() as? Frame.Text)?.readText() ?: ""
+    }
+
+    override suspend fun send(message: String) {
+        outgoing.send(Frame.Text(message))
+    }
+
+    override suspend fun close() {
+        this@toWebSocketSession.close()
+    }
 }
