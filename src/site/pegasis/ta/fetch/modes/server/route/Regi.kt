@@ -30,7 +30,7 @@ object Regi {
         }
     }
 
-    val route = out@{ session: HttpSession ->
+    suspend fun route(session: HttpSession){
         val timing = Timing()
         var statusCode = 200  //200:success  400:bad request  401:pwd incorrect  500:internal error
         var res = ""
@@ -44,7 +44,7 @@ object Regi {
         if (session.isApiVersionInsufficient()) {
             session.send(426)
             logInfo("Request #$hash -> Api version insufficient")
-            return@out
+            return
         }
 
         timing("init")

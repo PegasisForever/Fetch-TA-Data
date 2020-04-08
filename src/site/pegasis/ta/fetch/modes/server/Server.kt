@@ -1,6 +1,12 @@
 package site.pegasis.ta.fetch.modes.server
 
 import com.sun.net.httpserver.HttpServer
+import io.ktor.routing.Routing
+import io.ktor.routing.post
+import io.ktor.routing.routing
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
+import io.ktor.server.netty.NettyApplicationEngine
 import site.pegasis.ta.fetch.fetchdata.chromepool.ChromePool
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.User
@@ -29,11 +35,18 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
     val timing = Timing()
     logInfo("Starting server")
 
+    var privateServer: NettyApplicationEngine? = null
+    var controlServer: NettyApplicationEngine? = null
+    var publicServer: NettyApplicationEngine? = null
+
     setDefaultUncaughtExceptionHandler { thread: Thread?, e: Throwable ->
         logUnhandled(thread, e)
     }
     Runtime.getRuntime().addShutdownHook(object : Thread() {
         override fun run() {
+            privateServer?.stop(1_000L, 2_000L)
+            controlServer?.stop(1_000L, 2_000L)
+            publicServer?.stop(1_000L, 2_000L)
             stopAutoUpdateThread()
             ChromePool.close()
             logInfo("Server stopped")
@@ -51,18 +64,20 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
 
     //private server
     if (enablePrivate) {
-        HttpServer.create(InetSocketAddress(privatePort), 0).run {
-            executor = ThreadPoolExecutor(1, getCoreCount() * 100, 30L, TimeUnit.SECONDS, SynchronousQueue())
-            createContext("/getmark_timeline", GetmarkTimeLine.route)
-            createContext("/getcalendar", GetCalendar.route)
-            createContext("/getannouncement", GetAnnouncement.route)
-            createContext("/update_nofetch", UpdateNoFetch.route)
-            createContext("/getarchived", GetArchived.route)
-            createContext("/feedback", Feedback.route)
-            createContext("/regi", Regi.route)
-            createContext("/deregi", Deregi.route)
-            start()
+        privateServer = embeddedServer(Netty, privatePort) {
+            routing {
+                createContext("/getmark_timeline", GetmarkTimeLine::route)
+                createContext("/getcalendar", GetCalendar::route)
+                createContext("/getannouncement", GetAnnouncement::route)
+                createContext("/update_nofetch", UpdateNoFetch::route)
+                createContext("/getarchived", GetArchived::route)
+                createContext("/feedback", Feedback::route)
+                createContext("/regi", Regi::route)
+                createContext("/deregi", Deregi::route)
+            }
         }
+        privateServer.start()
+
         logInfo("Private server started on port $privatePort")
 
         HttpServer.create(InetSocketAddress(controlPort), 0).run {
@@ -87,8 +102,14 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
     logInfo("Server fully started", timing = timing)
 }
 
-fun HttpServer.createContext(path:String,route:(HttpSession) -> Unit){
-    createContext(path){
+fun Routing.createContext(path: String, route: suspend (HttpSession) -> Unit) {
+    post(path){
+        route(this.toHttpSession())
+    }
+}
+
+fun HttpServer.createContext(path: String, route: (HttpSession) -> Unit) {
+    createContext(path) {
         route(it.toHttpSession())
     }
 }

@@ -4,7 +4,7 @@ import site.pegasis.ta.fetch.modes.server.storage.PCache
 import site.pegasis.ta.fetch.tools.logInfo
 
 object GetAnnouncement {
-    val route = { session: HttpSession ->
+    suspend fun route(session: HttpSession){
         val ipAddress = session.getIP()
         val hash = session.hashCode()
         logInfo("Request #$hash /getannouncement <-> $ipAddress")

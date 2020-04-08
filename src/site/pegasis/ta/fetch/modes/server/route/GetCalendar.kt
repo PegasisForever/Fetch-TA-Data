@@ -4,7 +4,7 @@ import site.pegasis.ta.fetch.modes.server.storage.CalendarData
 import site.pegasis.ta.fetch.tools.logInfo
 
 object GetCalendar {
-    val route = { session: HttpSession ->
+    suspend fun route(session: HttpSession){
         val ipAddress = session.getIP()
         val hash = session.hashCode()
         logInfo("Request #$hash /getcalendar <-> $ipAddress")
