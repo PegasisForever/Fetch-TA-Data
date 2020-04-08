@@ -1,6 +1,5 @@
 package site.pegasis.ta.fetch.modes.server.controller
 
-import kotlinx.coroutines.runBlocking
 import org.json.simple.JSONArray
 import picocli.CommandLine
 import picocli.CommandLine.Command
@@ -20,12 +19,12 @@ object Controller {
         override fun call() {}
     }
 
-    val route = { session: HttpSession ->
+    suspend fun route(session: HttpSession){
         var statusCode = 200
         var res = ""
 
         val hash = session.hashCode()
-        val reqString = runBlocking { session.getReqString() }
+        val reqString = session.getReqString()
         val ipAddress = session.getIP()
 
         log(
@@ -61,6 +60,6 @@ object Controller {
             res = ANSI_RED + e.toStackTrace() + ANSI_RESET
         }
 
-        runBlocking { session.send(statusCode, res, false) }
+        session.send(statusCode, res, false)
     }
 }

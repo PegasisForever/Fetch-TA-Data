@@ -1,6 +1,5 @@
 package site.pegasis.ta.fetch.modes.server.route
 
-import kotlinx.coroutines.runBlocking
 import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.exceptions.LoginException
 import site.pegasis.ta.fetch.exceptions.ParseRequestException
@@ -30,9 +29,12 @@ object PublicGetMark {
         }
     }
 
-    fun route(publicApiVersion:Int) = out@{ session: HttpSession ->
-        if (runBlocking { session.makePublic() }) {
-            return@out
+    suspend fun routeV1(session: HttpSession) = route(1, session)
+    suspend fun routeV2(session: HttpSession) = route(2, session)
+
+    suspend fun route(publicApiVersion: Int, session: HttpSession) {
+        if (session.makePublic()) {
+            return
         }
 
         val timing = Timing()
@@ -40,7 +42,7 @@ object PublicGetMark {
         var res = ""
 
         val hash = session.hashCode()
-        val reqString = runBlocking { session.getReqString() }
+        val reqString = session.getReqString()
         val ipAddress = session.getIP()
         logInfo("Request #$hash /public/getmark <- $ipAddress, data=$reqString, api version=$publicApiVersion")
 
@@ -77,7 +79,7 @@ object PublicGetMark {
             }
         }
 
-        runBlocking { session.send(statusCode, res, false) }
+        session.send(statusCode, res, false)
         timing("send")
         logInfo("Request #$hash -> status=$statusCode", timing = timing)
     }
