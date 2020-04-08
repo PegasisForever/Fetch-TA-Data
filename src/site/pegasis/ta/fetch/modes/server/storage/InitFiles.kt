@@ -24,11 +24,7 @@ fun initFiles() {
           }
         ],
       "ignore_last_update_done": false,
-      "web_driver_path": "web/driver/path/here",
       "fetch_timeout_second": 100,
-      "cp_min_chrome_count": 3,
-      "cp_max_chrome_page_count": 100,
-      "cp_clean_interval_minute": 10,
       "disable_course_related_actions": [
           {
             "start": "2020-02-28T14:00:00-05:00",
@@ -41,7 +37,6 @@ fun initFiles() {
     """.trimIndent().writeToFile("data/config.json")
     "[]".writeToFile("data/users.json")
     "{}".writeToFile("data/lastUserUpdateTime.json")
-    "{}".writeToFile("data/webdriverFallbackMap.json")
     "".writeToFile("data/announcement.txt")
     "".writeToFile("data/lastUpdateDoneTime.time")
     "".writeToFile("data/lastCleanDoneTime.time")

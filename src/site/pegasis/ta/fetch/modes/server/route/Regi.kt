@@ -5,16 +5,12 @@ import site.pegasis.ta.fetch.exceptions.LoginException
 import site.pegasis.ta.fetch.exceptions.ParseRequestException
 import site.pegasis.ta.fetch.exceptions.UserParseException
 import site.pegasis.ta.fetch.fetchdata.fetchUserCourseList
-import site.pegasis.ta.fetch.fetchdata.isConnectionException
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.serializers.serialize
 import site.pegasis.ta.fetch.modes.server.storage.PCache
 import site.pegasis.ta.fetch.modes.server.timeline.runFollowUpUpdate
-import site.pegasis.ta.fetch.tools.jsonParser
-import site.pegasis.ta.fetch.tools.logError
-import site.pegasis.ta.fetch.tools.logInfo
-import site.pegasis.ta.fetch.tools.logWarn
+import site.pegasis.ta.fetch.tools.*
 
 object Regi {
     private class ReqData(req: String, version: Int) {
@@ -30,7 +26,7 @@ object Regi {
         }
     }
 
-    suspend fun route(session: HttpSession){
+    suspend fun route(session: HttpSession) {
         val timing = Timing()
         var statusCode = 200  //200:success  400:bad request  401:pwd incorrect  500:internal error
         var res = ""
@@ -51,9 +47,11 @@ object Regi {
 
         try {
             with(ReqData(reqString, reqApiVersion).user) {
-                val courses = fetchUserCourseList(number, password,
-                    timing = timing,
-                    parallel = User.get(number) == null)
+                val courses = fetchUserCourseList(
+                    number,
+                    password,
+                    timing = timing
+                )
 
                 User.add(this)
                 runFollowUpUpdate(number, courses)

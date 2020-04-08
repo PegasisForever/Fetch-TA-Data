@@ -41,3 +41,9 @@ infix fun Any?.noe(b: Any?): Boolean {
 infix fun Any?.nne(b: Any?): Boolean {
     return this != null && b != null && this == b
 }
+
+fun Throwable.isConnectionException() = this is java.net.SocketTimeoutException ||
+    this is org.apache.http.conn.ConnectTimeoutException ||
+    this is org.openqa.selenium.TimeoutException ||
+    this is org.apache.http.conn.HttpHostConnectException ||
+    (message ?: "").indexOf("SocketTimeoutException") != -1

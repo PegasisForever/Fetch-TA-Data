@@ -7,7 +7,6 @@ import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.netty.NettyApplicationEngine
-import site.pegasis.ta.fetch.fetchdata.chromepool.ChromePool
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.controller.Controller
@@ -43,7 +42,6 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
             controlServer?.stop(1_000L, 2_000L)
             publicServer?.stop(1_000L, 2_000L)
             stopAutoUpdateThread()
-            ChromePool.close()
             logInfo("Server stopped")
         }
     })
@@ -53,7 +51,6 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
     LastCleanDoneTime.load()
     User.load()
     CalendarData.load()
-    ChromePool.init()
     updateAutoUpdateThread()
     timing("load data")
 

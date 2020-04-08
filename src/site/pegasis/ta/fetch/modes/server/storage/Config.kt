@@ -13,11 +13,7 @@ object Config {
     var autoUpdateEnabled = false
     var autoUpdateIntervalMinute = 40
     var autoUpdateIntervalExceptions = HashMap<ClosedRange<LocalTime>, Int>()
-    var webDriverPath = ""
     var fetchTimeoutSecond = 100
-    var chromePoolMinChromeCount = 3
-    var chromePoolMaxChromePageCount = 100
-    var chromePoolCleanIntervalMinute = 10
     var disableCourseRelatedActions = ArrayList<ClosedRange<ZonedDateTime>>()
     var ignoreLastUpdateDone = false
     var proxy = ""
@@ -25,15 +21,11 @@ object Config {
 
     fun load() {
         val configJSON = jsonParser.parse(readFile("data/config.json")) as JSONObject
-        webDriverPath = configJSON["web_driver_path"] as String
         notificationEnabled = configJSON["notification"] as Boolean
         autoUpdateEnabled = configJSON["auto_update"] as Boolean
         autoUpdateIntervalMinute = (configJSON["auto_update_interval_minute"] as Long).toInt()
         ignoreLastUpdateDone = configJSON["ignore_last_update_done"] as Boolean
         fetchTimeoutSecond = (configJSON["fetch_timeout_second"] as Long).toInt()
-        chromePoolMinChromeCount = (configJSON["cp_min_chrome_count"] as Long).toInt()
-        chromePoolMaxChromePageCount = (configJSON["cp_max_chrome_page_count"] as Long).toInt()
-        chromePoolCleanIntervalMinute = (configJSON["cp_clean_interval_minute"] as Long).toInt()
         (configJSON["disable_course_related_actions"] as JSONArray).forEach { obj ->
             if (obj is JSONObject) {
                 disableCourseRelatedActions.add(obj["start"].toString().toZonedDateTime()..obj["end"].toString().toZonedDateTime())

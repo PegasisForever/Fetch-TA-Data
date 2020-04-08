@@ -4,14 +4,10 @@ import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.exceptions.LoginException
 import site.pegasis.ta.fetch.exceptions.ParseRequestException
 import site.pegasis.ta.fetch.fetchdata.fetchUserCourseList
-import site.pegasis.ta.fetch.fetchdata.isConnectionException
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.modes.server.serializers.serializePublic
 import site.pegasis.ta.fetch.modes.server.timeline.runFollowUpUpdate
-import site.pegasis.ta.fetch.tools.jsonParser
-import site.pegasis.ta.fetch.tools.logError
-import site.pegasis.ta.fetch.tools.logInfo
-import site.pegasis.ta.fetch.tools.logWarn
+import site.pegasis.ta.fetch.tools.*
 
 object PublicGetMark {
     private class ReqData(req: String) {

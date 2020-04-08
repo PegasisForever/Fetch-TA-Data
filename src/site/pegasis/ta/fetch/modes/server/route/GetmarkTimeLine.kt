@@ -4,7 +4,6 @@ import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.exceptions.LoginException
 import site.pegasis.ta.fetch.exceptions.ParseRequestException
 import site.pegasis.ta.fetch.fetchdata.fetchUserCourseList
-import site.pegasis.ta.fetch.fetchdata.isConnectionException
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.serializers.serialize

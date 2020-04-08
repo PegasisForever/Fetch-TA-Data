@@ -3,7 +3,6 @@ package site.pegasis.ta.fetch.modes.server.timeline
 import kotlinx.coroutines.runBlocking
 import site.pegasis.ta.fetch.exceptions.LoginException
 import site.pegasis.ta.fetch.fetchdata.fetchUserCourseList
-import site.pegasis.ta.fetch.fetchdata.isConnectionException
 import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.TimeLine
 import site.pegasis.ta.fetch.models.User
