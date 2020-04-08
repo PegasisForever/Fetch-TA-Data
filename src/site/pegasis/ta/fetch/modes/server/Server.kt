@@ -86,3 +86,9 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
 
     logInfo("Server fully started", timing = timing)
 }
+
+fun HttpServer.createContext(path:String,route:(HttpSession) -> Unit){
+    createContext(path){
+        route(it.toHttpSession())
+    }
+}

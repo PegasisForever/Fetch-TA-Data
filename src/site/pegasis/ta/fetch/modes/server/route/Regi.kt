@@ -31,18 +31,19 @@ object Regi {
         }
     }
 
-    val route = out@{ exchange: HttpExchange ->
+    val route = out@{ session: HttpSession ->
         val timing = Timing()
         var statusCode = 200  //200:success  400:bad request  401:pwd incorrect  500:internal error
         var res = ""
 
-        val hash = exchange.hashCode()
-        val reqString = exchange.getReqString()
-        val ipAddress = exchange.getIP()
-        val reqApiVersion = exchange.getApiVersion()
+        val hash = session.hashCode()
+        val reqString = session.getReqString()
+        val ipAddress = session.getIP()
+        val reqApiVersion = session.getApiVersion()
         logInfo("Request #$hash /regi <- $ipAddress, api version=$reqApiVersion, data=$reqString")
 
-        if (exchange.returnIfApiVersionInsufficient()) {
+        if (session.isApiVersionInsufficient()) {
+            session.send(426)
             logInfo("Request #$hash -> Api version insufficient")
             return@out
         }
@@ -90,7 +91,7 @@ object Regi {
             }
         }
 
-        exchange.send(statusCode, res)
+        session.send(statusCode, res)
         timing("send")
         logInfo("Request #$hash -> status=$statusCode", timing = timing)
     }
