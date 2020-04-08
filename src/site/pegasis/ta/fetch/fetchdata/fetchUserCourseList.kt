@@ -1,6 +1,7 @@
 package site.pegasis.ta.fetch.fetchdata
 
 
+import kotlinx.coroutines.runBlocking
 import site.pegasis.ta.fetch.fetchdata.chrome.LoginPage
 import site.pegasis.ta.fetch.fetchdata.chromepool.ChromePool
 import site.pegasis.ta.fetch.models.CourseList
@@ -8,10 +9,11 @@ import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.tools.logInfo
 import kotlin.concurrent.thread
 
-private fun jsoupFetchCourseList(studentNumber: String, password: String, raw: Boolean, timing: Timing) =
+private suspend fun jsoupFetchCourseList(studentNumber: String, password: String, raw: Boolean, timing: Timing) =
     site.pegasis.ta.fetch.fetchdata.jsoup.LoginPage(timing)
         .gotoSummaryPage(studentNumber, password)
         .fillDetails(doCalculation = !raw)
+        .closeSession()
         .courses
 
 
@@ -30,18 +32,18 @@ private fun chromeFetchCourseList(studentNumber: String, password: String, raw: 
     }
 }
 
-fun fetchUserCourseList(studentNumber: String,
-                        password: String,
-                        raw: Boolean = false,
-                        timing: Timing = Timing(),
-                        forceChrome: Boolean = false,
-                        parallel: Boolean = false): CourseList {
+suspend fun fetchUserCourseList(studentNumber: String,
+                                password: String,
+                                raw: Boolean = false,
+                                timing: Timing = Timing(),
+                                forceChrome: Boolean = false,
+                                parallel: Boolean = false): CourseList {
     if (parallel && !forceChrome && !WebdriverFallbackMap.contains(studentNumber)) {
         var courseList: CourseList? = null
         var error: Throwable? = null
         thread(start = true) {
             try {
-                courseList = jsoupFetchCourseList(studentNumber, password, raw, timing)
+                courseList = runBlocking { jsoupFetchCourseList(studentNumber, password, raw, timing) }
             } catch (e: Throwable) {
                 if (e.isHtmlunitError()) {
                     logInfo("Fetch course list for ${studentNumber}: Fallback to web driver")

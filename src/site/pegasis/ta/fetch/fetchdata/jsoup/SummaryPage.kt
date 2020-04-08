@@ -56,7 +56,7 @@ class SummaryPage(private val session: JsoupSession, private val timing: Timing 
 
                     courses.add(course)
                     if (course.overallMark != null) {
-                        detailLinkMap[course] = cells[2].getElementsByTag("a")[0].attr("abs:href")
+                        detailLinkMap[course] = "https://ta.yrdsb.ca/live/students/" + cells[2].getElementsByTag("a")[0].attr("href")
                     }
                 } catch (e: Exception) {
                     logError("Cannot parse summary row #$i", e)
@@ -66,9 +66,9 @@ class SummaryPage(private val session: JsoupSession, private val timing: Timing 
 
     }
 
-    fun gotoDetailPage(course: Course, time: ZonedDateTime): DetailPage {
+    suspend fun gotoDetailPage(course: Course, time: ZonedDateTime): DetailPage {
         val link = detailLinkMap[course]!!
-        timing("get detail page ${course.code}") {
+        timing.suspend("get detail page ${course.code}") {
             session.get(link)
         }
 
@@ -76,17 +76,22 @@ class SummaryPage(private val session: JsoupSession, private val timing: Timing 
         return DetailPage(session, course.code, time, timing)
     }
 
-    fun fillDetails(doCalculation: Boolean = true): SummaryPage {
+    suspend fun fillDetails(doCalculation: Boolean = true): SummaryPage {
         val currentTime = ZonedDateTime.now(defaultZoneID)
         courses
             .filter { it.overallMark != null }
-            .forEach { course->
+            .forEach { course ->
                 val detailPage = gotoDetailPage(course, currentTime)
                 course.assignments = detailPage.assignments
                 course.weightTable = detailPage.weightTable
                 if (doCalculation) course.calculate()
             }
 
+        return this
+    }
+
+    suspend fun closeSession(): SummaryPage {
+        session.close()
         return this
     }
 }

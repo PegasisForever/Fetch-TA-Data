@@ -31,6 +31,12 @@
         </dependency>
         <dependency>
             <groupId>io.ktor</groupId>
+            <artifactId>ktor-client-apache</artifactId>
+            <version>${ktor.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.ktor</groupId>
             <artifactId>ktor-server-core</artifactId>
             <version>${ktor.version}</version>
         </dependency>

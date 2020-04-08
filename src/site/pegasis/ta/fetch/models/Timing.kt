@@ -32,6 +32,13 @@ class Timing {
         setPoint(name)
         return result
     }
+
+    suspend fun <T> suspend(name: String, action: suspend () -> T): T {
+        lastTime = System.currentTimeMillis()
+        val result = action()
+        setPoint(name)
+        return result
+    }
 }
 
 class TimingItem(val name: String, val time: Long)

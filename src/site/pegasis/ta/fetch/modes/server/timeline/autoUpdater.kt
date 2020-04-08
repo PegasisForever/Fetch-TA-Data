@@ -1,5 +1,6 @@
 package site.pegasis.ta.fetch.modes.server.timeline
 
+import kotlinx.coroutines.runBlocking
 import site.pegasis.ta.fetch.exceptions.LoginException
 import site.pegasis.ta.fetch.fetchdata.fetchUserCourseList
 import site.pegasis.ta.fetch.fetchdata.isConnectionException
@@ -19,7 +20,7 @@ fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
     try {
         val compareResult = compareCourses(
             oldIn = PCache.readCourseList(studentNumber),
-            newIn = newData ?: fetchUserCourseList(studentNumber, password)
+            newIn = newData ?: runBlocking { fetchUserCourseList(studentNumber, password) }
         )
         updates = compareResult.updates
         //When a user login for the first time, there will be 4 "course added" update,
