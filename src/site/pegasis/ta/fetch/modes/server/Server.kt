@@ -7,6 +7,8 @@ import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.netty.NettyApplicationEngine
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.User
@@ -39,10 +41,22 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
     }
     Runtime.getRuntime().addShutdownHook(object : Thread() {
         override fun run() {
-            privateServer?.stop(1_000L, 2_000L)
-            controlServer?.stop(1_000L, 2_000L)
-            publicServer?.stop(1_000L, 2_000L)
-            runBlocking { stopAutoUpdateThread() }
+            val job1 = GlobalScope.launch {
+                privateServer?.stop(1_000L, 2_000L)
+            }
+            val job2 = GlobalScope.launch {
+                controlServer?.stop(1_000L, 2_000L)
+            }
+            val job3 = GlobalScope.launch {
+                publicServer?.stop(1_000L, 2_000L)
+            }
+            val job4 = GlobalScope.launch {
+                stopAutoUpdateThread()
+            }
+            runBlocking {
+                job1.join();job2.join();job3.join();job4.join()
+            }
+
             logInfo("Server stopped")
         }
     })
@@ -103,7 +117,7 @@ fun Routing.createContext(path: String, route: suspend (HttpSession) -> Unit) {
     post(path) {
         route(this.toHttpSession())
     }
-    options(path){
+    options(path) {
         route(this.toHttpSession())
     }
 }
