@@ -6,8 +6,6 @@ import java.io.StringWriter
 
 val jsonParser = JSONParser()
 
-fun getCoreCount() = Runtime.getRuntime().availableProcessors()
-
 fun Throwable.toStackTrace(): String {
     val sw = StringWriter()
     val pw = PrintWriter(sw)
