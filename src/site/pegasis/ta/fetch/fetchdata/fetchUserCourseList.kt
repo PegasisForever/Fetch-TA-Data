@@ -4,7 +4,7 @@ import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.Timing
 
 private suspend fun jsoupFetchCourseList(studentNumber: String, password: String, raw: Boolean, timing: Timing) =
-    site.pegasis.ta.fetch.fetchdata.jsoup.LoginPage(timing)
+    site.pegasis.ta.fetch.fetchdata.jsoup.LoginPage(KtorNetworkRequester(), timing)
         .gotoSummaryPage(studentNumber, password)
         .fillDetails(doCalculation = !raw)
         .closeSession()
