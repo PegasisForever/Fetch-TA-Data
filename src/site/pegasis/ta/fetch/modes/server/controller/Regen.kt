@@ -9,10 +9,10 @@ import site.pegasis.ta.fetch.modes.server.parsers.toCourseList
 import site.pegasis.ta.fetch.modes.server.storage.Config
 import site.pegasis.ta.fetch.modes.server.storage.PCache
 import site.pegasis.ta.fetch.modes.server.timeline.compareCourses
+import site.pegasis.ta.fetch.tools.defaultZoneID
 import site.pegasis.ta.fetch.tools.jsonParser
 import site.pegasis.ta.fetch.tools.serverBuildNumber
 import site.pegasis.ta.fetch.tools.toJSONString
-import site.pegasis.ta.fetch.tools.defaultZoneID
 import java.io.File
 import java.io.PrintWriter
 import java.time.Instant

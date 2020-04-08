@@ -1,6 +1,5 @@
 package site.pegasis.ta.fetch.modes.server.route
 
-import com.sun.net.httpserver.HttpExchange
 import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.exceptions.LoginException
 import site.pegasis.ta.fetch.exceptions.ParseRequestException
@@ -30,8 +29,8 @@ object PublicGetMark {
         }
     }
 
-    fun route(publicApiVersion:Int) = out@{ exchange: HttpExchange ->
-        if (exchange.makePublic()) {
+    fun route(publicApiVersion:Int) = out@{ session: HttpSession ->
+        if (session.makePublic()) {
             return@out
         }
 
@@ -39,9 +38,9 @@ object PublicGetMark {
         var statusCode = 200  //200:success  400:bad request  401:pwd incorrect  500:internal error
         var res = ""
 
-        val hash = exchange.hashCode()
-        val reqString = exchange.getReqString()
-        val ipAddress = exchange.getIP()
+        val hash = session.hashCode()
+        val reqString = session.getReqString()
+        val ipAddress = session.getIP()
         logInfo("Request #$hash /public/getmark <- $ipAddress, data=$reqString, api version=$publicApiVersion")
 
         timing("init")
@@ -77,7 +76,7 @@ object PublicGetMark {
             }
         }
 
-        exchange.send(statusCode, res, false)
+        session.send(statusCode, res, false)
         timing("send")
         logInfo("Request #$hash -> status=$statusCode", timing = timing)
     }

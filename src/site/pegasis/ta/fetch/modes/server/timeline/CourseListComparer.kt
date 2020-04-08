@@ -2,8 +2,8 @@ package site.pegasis.ta.fetch.modes.server.timeline
 
 import site.pegasis.ta.fetch.models.*
 import site.pegasis.ta.fetch.modes.server.storage.Config
-import site.pegasis.ta.fetch.tools.findAndRemove
 import site.pegasis.ta.fetch.tools.defaultZoneID
+import site.pegasis.ta.fetch.tools.findAndRemove
 import java.time.ZonedDateTime
 
 fun compareAssignments(

@@ -1,6 +1,5 @@
 package site.pegasis.ta.fetch.modes.server.route
 
-import com.sun.net.httpserver.HttpExchange
 import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.exceptions.LoginException
 import site.pegasis.ta.fetch.exceptions.ParseRequestException

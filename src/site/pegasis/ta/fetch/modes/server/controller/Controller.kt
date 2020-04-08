@@ -1,12 +1,9 @@
 package site.pegasis.ta.fetch.modes.server.controller
 
-import com.sun.net.httpserver.HttpExchange
 import org.json.simple.JSONArray
 import picocli.CommandLine
 import picocli.CommandLine.Command
-import site.pegasis.ta.fetch.modes.server.route.getIP
-import site.pegasis.ta.fetch.modes.server.route.getReqString
-import site.pegasis.ta.fetch.modes.server.route.send
+import site.pegasis.ta.fetch.modes.server.route.HttpSession
 import site.pegasis.ta.fetch.tools.*
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -22,13 +19,13 @@ object Controller {
         override fun call() {}
     }
 
-    val route = { exchange: HttpExchange ->
+    val route = { session: HttpSession ->
         var statusCode = 200
         var res = ""
 
-        val hash = exchange.hashCode()
-        val reqString = exchange.getReqString()
-        val ipAddress = exchange.getIP()
+        val hash = session.hashCode()
+        val reqString = session.getReqString()
+        val ipAddress = session.getIP()
 
         log(
             LogLevel.INFO,
@@ -63,6 +60,6 @@ object Controller {
             res = ANSI_RED + e.toStackTrace() + ANSI_RESET
         }
 
-        exchange.send(statusCode, res, false)
+        session.send(statusCode, res, false)
     }
 }

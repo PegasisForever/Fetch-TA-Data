@@ -7,4 +7,5 @@ interface HttpSession {
     fun isApiVersionInsufficient(minApi: Int = 0): Boolean
     fun send(status: Int, res: String, isGzip: Boolean = true)
     fun send(statusCode: Int, body: ByteArray = ByteArray(0))
+    fun makePublic():Boolean
 }

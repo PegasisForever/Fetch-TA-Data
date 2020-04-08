@@ -1,6 +1,5 @@
 package site.pegasis.ta.fetch.modes.server.route
 
-import com.sun.net.httpserver.HttpExchange
 import site.pegasis.ta.fetch.modes.server.storage.PCache
 import site.pegasis.ta.fetch.tools.logInfo
 
