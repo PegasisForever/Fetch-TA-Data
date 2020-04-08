@@ -50,9 +50,12 @@ suspend fun sendFCM(token: String, notification: site.pegasis.ta.fetch.modes.ser
         initialized = true
     }
 
-    //TODO change notification
+    val fireBaseNotification = Notification.builder()
+        .setTitle(notification.title)
+        .setBody(notification.body)
+        .build()
     val message = Message.builder()
-        .setNotification(Notification(notification.title, notification.body))
+        .setNotification(fireBaseNotification)
         .setToken(token)
         .build()
 
