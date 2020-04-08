@@ -131,6 +131,7 @@ fun DefaultWebSocketServerSession.toWebSocketSession() = object : WebSocketSessi
     }
 
     override suspend fun send(message: String) {
+        println(message)
         outgoing.send(Frame.Text(message))
     }
 

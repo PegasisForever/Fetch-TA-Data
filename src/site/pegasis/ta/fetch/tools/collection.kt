@@ -1,5 +1,6 @@
 package site.pegasis.ta.fetch.tools
 
+import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.models.WeightedDouble
 
 
@@ -42,4 +43,8 @@ inline fun <T> ArrayList<T>.findAndRemove(predicate: (T) -> Boolean): T? {
     val item = this.find(predicate)
     item?.let { remove(it) }
     return item
+}
+
+fun JSONObject.addAll(map: Map<*, *>) {
+    map.forEach { (key, value) -> this[key] = value }
 }

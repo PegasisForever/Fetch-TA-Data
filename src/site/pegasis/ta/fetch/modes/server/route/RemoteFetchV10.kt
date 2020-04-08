@@ -3,7 +3,11 @@ package site.pegasis.ta.fetch.modes.server.route
 import kotlinx.coroutines.withTimeout
 import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.exceptions.ParseRequestException
+import site.pegasis.ta.fetch.fetchdata.NetworkRequester
+import site.pegasis.ta.fetch.fetchdata.fetchUserCourseList
 import site.pegasis.ta.fetch.models.User
+import site.pegasis.ta.fetch.modes.server.serializers.serialize
+import site.pegasis.ta.fetch.tools.addAll
 import site.pegasis.ta.fetch.tools.jsonParser
 
 object RemoteFetchV10 {
@@ -22,10 +26,43 @@ object RemoteFetchV10 {
         }
     }
 
-    suspend fun route(session: WebSocketSession) {
-        val initMessage = InitMessage(session.nextMessage())
-        withTimeout(if (initMessage.isBackground) 20_000L else 60_000L) {
+    private class RemoteRequester(private val session: WebSocketSession) : NetworkRequester {
+        override suspend fun post(url: String, data: Map<String, String>): String {
+            val json = JSONObject().apply {
+                this["method"] = "POST"
+                this["url"] = url
+                this["data"] = JSONObject().apply { addAll(data) }
+            }
+            session.send(json.toJSONString())
+            return session.nextMessage()
+        }
 
+        override suspend fun get(url: String): String {
+            val json = JSONObject().apply {
+                this["method"] = "GET"
+                this["url"] = url
+            }
+            session.send(json.toJSONString())
+            return session.nextMessage()
+        }
+
+        override suspend fun close() {
+            session.send(JSONObject()
+                .apply { this["close"] = true }
+                .toJSONString())
+        }
+    }
+
+    suspend fun route(session: WebSocketSession) {
+        val msg = session.nextMessage()
+        val initMessage = InitMessage(msg)
+        withTimeout(if (initMessage.isBackground) 20_000L else 60_000L) {
+            val user = initMessage.user
+            val requester = RemoteRequester(session)
+            val courseList = fetchUserCourseList(user.number, user.password, requester = requester)
+
+            session.send(courseList.serialize(10).toJSONString())
+            session.close()
         }
     }
 }
