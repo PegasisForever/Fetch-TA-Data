@@ -1,52 +1,28 @@
 package site.pegasis.ta.fetch
 
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import site.pegasis.ta.fetch.modes.server.route.WebSocketSession
-import site.pegasis.ta.fetch.tools.ANSI_CYAN
+import site.pegasis.ta.fetch.tools.io
 import site.pegasis.ta.fetch.tools.noThrow
-import java.io.IOException
+import site.pegasis.ta.fetch.tools.noThrowSuspend
 import java.io.InputStream
 import java.io.OutputStream
 import java.net.ServerSocket
 import java.net.Socket
-import kotlin.concurrent.thread
 
-fun main() {
-    val server = ServerSocket(5002)
-    while (true) {
-        val socket = server.accept()
-        val request = ByteArray(1024)
-        val inputStream = socket.getInputStream()
-        var bytes_read: Int
-        try {
-            while (inputStream.read(request).also { bytes_read = it } != -1) {
-                println(ANSI_CYAN + request.copyOf(bytes_read).joinToString(""))
-            }
-        } catch (e: IOException) {
-        }
-    }
-
-}
-
-fun startSocketProxy(wsSession: WebSocketSession):Thread {
-    return thread(start = true) {
-        val server = ServerSocket(5001)
-        while (true) {
-            val socket = server.accept()
-            runBlocking {
-                ThreadProxy(socket, wsSession).run()
+fun startSocketProxy(wsSession: WebSocketSession, port: Int): ServerSocket {
+    val server = ServerSocket(port)
+    GlobalScope.launch {
+        noThrowSuspend {
+            while (true) {
+                val socket = io { server.accept() }
+                runProxy(socket, wsSession)
             }
         }
     }
-
+    return server
 }
-
-/**
- * Handles a socket connection to the proxy server from the client and uses 2
- * threads to proxy between server and client
- *
- * @author jcgonzalez.com
- */
 
 suspend fun InputStream.onData(action: suspend (data: ByteArray) -> Unit) {
     withContext(Dispatchers.IO) {
@@ -59,6 +35,7 @@ suspend fun InputStream.onData(action: suspend (data: ByteArray) -> Unit) {
                 }
             }
         } catch (e: Throwable) {
+            println("inputstream")
             e.printStackTrace()
         }
     }
@@ -70,6 +47,8 @@ suspend fun WebSocketSession.onData(action: suspend (data: ByteArray) -> Unit) {
             val data = nextMessage()
             action(data)
         }
+    } catch (e: ClosedReceiveChannelException) {
+    } catch (e: CancellationException) {
     } catch (e: Throwable) {
         e.printStackTrace()
     }
@@ -88,39 +67,45 @@ suspend fun InputStream.closeSuspend() = withContext(Dispatchers.IO) {
     }
 }
 
-internal class ThreadProxy(private val client: Socket, private val wsSession: WebSocketSession) {
-    fun run() {
-        try {
-            val fromClient = client.getInputStream()
-            val toClient = client.getOutputStream()
+suspend fun OutputStream.closeSuspend() = withContext(Dispatchers.IO) {
+    noThrow {
+        close()
+    }
+}
 
-            val t1 = GlobalScope.launch {
-                fromClient.onData { data: ByteArray ->
-                    wsSession.send(data)
-                }
-            }
+suspend fun Socket.closeSuspend() = withContext(Dispatchers.IO) {
+    noThrow {
+        close()
+    }
+}
 
-            val t2 = GlobalScope.launch {
-                wsSession.onData { data: ByteArray ->
-                    withContext(Dispatchers.IO){
-                        toClient.write(data)
-                        toClient.flush()
-                    }
-                }
-            }
+suspend fun runProxy(client: Socket, wsSession: WebSocketSession) {
+    val fromClient = io { client.getInputStream() }
+    val toClient = io { client.getOutputStream() }
 
-            println("job launched")
-            runBlocking {
-                t1.join()
-                t2.join()
-            }
-
-            println("closing")
-            fromClient.close()
-            toClient.close()
-            client.close()
-        } catch (e: IOException) {
-            e.printStackTrace()
+    val socketToWsJob = GlobalScope.launch {
+        fromClient.onData { data: ByteArray ->
+            wsSession.send(data)
         }
     }
+
+    val wsToSocketJob = GlobalScope.launch {
+        wsSession.onData { data: ByteArray ->
+            withContext(Dispatchers.IO) {
+                toClient.write(data)
+                toClient.flush()
+            }
+        }
+    }
+
+    println("job launched")
+    socketToWsJob.join()
+    wsToSocketJob.join()
+
+
+    println("closing")
+    fromClient.closeSuspend()
+    toClient.closeSuspend()
+    client.closeSuspend()
+    println("closed")
 }
