@@ -2,7 +2,6 @@ package site.pegasis.ta.fetch
 
 import kotlinx.coroutines.*
 import site.pegasis.ta.fetch.modes.server.route.WebSocketSession
-import site.pegasis.ta.fetch.tools.ANSI_BLUE
 import site.pegasis.ta.fetch.tools.ANSI_CYAN
 import site.pegasis.ta.fetch.tools.noThrow
 import java.io.IOException
@@ -29,8 +28,8 @@ fun main() {
 
 }
 
-fun startSocketProxy(wsSession: WebSocketSession) {
-    thread(start = true) {
+fun startSocketProxy(wsSession: WebSocketSession):Thread {
+    return thread(start = true) {
         val server = ServerSocket(5001)
         while (true) {
             val socket = server.accept()
@@ -90,29 +89,31 @@ suspend fun InputStream.closeSuspend() = withContext(Dispatchers.IO) {
 }
 
 internal class ThreadProxy(private val client: Socket, private val wsSession: WebSocketSession) {
-    suspend fun run() {
+    fun run() {
         try {
             val fromClient = client.getInputStream()
             val toClient = client.getOutputStream()
 
-            val passDataJob = GlobalScope.launch {
+            val t1 = GlobalScope.launch {
                 fromClient.onData { data: ByteArray ->
-                    println(ANSI_CYAN + "send " + data.joinToString(""))
                     wsSession.send(data)
                 }
             }
 
-            val receiveDataJob = GlobalScope.launch {
+            val t2 = GlobalScope.launch {
                 wsSession.onData { data: ByteArray ->
-                    println(ANSI_BLUE + "receive " + data.joinToString(""))
-
-                    toClient.writeSuspend(data, true)
+                    withContext(Dispatchers.IO){
+                        toClient.write(data)
+                        toClient.flush()
+                    }
                 }
             }
-            println("job launched")
 
-            passDataJob.join()
-            receiveDataJob.join()
+            println("job launched")
+            runBlocking {
+                t1.join()
+                t2.join()
+            }
 
             println("closing")
             fromClient.close()

@@ -71,15 +71,14 @@ fun main() {
         install(WebSockets)
         routing {
             webSocket("/") {
-                val session = this.toWebSocketSession()
-                GlobalScope.launch {
-                    while (isActive) {
-                        session.send(ByteArray(0))
-                        delay(500)
-                    }
-                }
+                val session=toWebSocketSession()
+//                session.send("hi".toByteArray())
+//
+//                session.onData { data->
+//                        session.send(data)
+//                }
 
-                startSocketProxy(session)
+                val proxy= startSocketProxy(session)
 
                 delay(100)
 //                val connectJob = GlobalScope.launch { connect(session, 5001) }
@@ -88,23 +87,31 @@ fun main() {
                 val socket = factory.createSocket("localhost", 5001) as SSLSocket
 //                val socket = factory.createSocket("ta.yrdsb.ca", 443) as SSLSocket
 
-                socket.startHandshake()
+                withContext(Dispatchers.IO){
+                    socket.startHandshake()
+                }
 
                 val socketWriter = PrintWriter(BufferedWriter(OutputStreamWriter(socket.outputStream)))
                 socketWriter.println("GET /yrdsb/ HTTP/1.0")
                 socketWriter.println()
-                socketWriter.flush()
+                withContext(Dispatchers.IO){
+                    socketWriter.flush()
+                }
+
 
                 if (socketWriter.checkError()) println("SSLSocketClient:  java.io.PrintWriter error")
 
                 val socketReader = BufferedReader(InputStreamReader(socket.inputStream))
                 var inputLine: String?
-                while (socketReader.readLine().also { inputLine = it } != null) println(inputLine)
+                withContext(Dispatchers.IO){
+                    while (socketReader.readLine().also { inputLine = it } != null) println(inputLine)
+                }
 
+                proxy.join()
                 socketWriter.close()
                 socketReader.close()
                 socket.close()
-//                connectJob.cancelAndJoin()
+
             }
         }
     }.start(true)

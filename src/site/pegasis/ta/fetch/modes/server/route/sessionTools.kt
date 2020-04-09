@@ -17,6 +17,8 @@ import io.ktor.util.pipeline.PipelineContext
 import io.ktor.websocket.DefaultWebSocketServerSession
 import site.pegasis.ta.fetch.modes.server.latestApiVersion
 import site.pegasis.ta.fetch.modes.server.minApiVersion
+import site.pegasis.ta.fetch.tools.ANSI_BLUE
+import site.pegasis.ta.fetch.tools.ANSI_CYAN
 import site.pegasis.ta.fetch.tools.gzip
 import java.nio.charset.StandardCharsets
 import kotlin.math.max
@@ -126,16 +128,19 @@ fun PipelineContext<Unit, ApplicationCall>.toHttpSession() = object : HttpSessio
 
 fun DefaultWebSocketServerSession.toWebSocketSession() = object : WebSocketSession {
     override suspend fun nextMessage(): ByteArray {
-        return (incoming.receive() as Frame.Binary).data
+        val data = incoming.receive().data
+        println(ANSI_BLUE + "receive " + data.joinToString(""))
+        return data
     }
 
     override suspend fun send(message: ByteArray) {
-        try {
-            outgoing.send(Frame.Binary(true, message))
-//            outgoing.offer(Frame.Binary(true, message))
-        }catch (e:Throwable){
-            e.printStackTrace()
-        }
+        println(ANSI_CYAN + "send " + message.joinToString(""))
+        outgoing.send(Frame.Binary(true, message))
+    }
+
+    override fun send2(message: ByteArray) {
+        println(ANSI_CYAN + "send2 " + message.joinToString(""))
+        outgoing.offer(Frame.Binary(true, message))
     }
 
     override suspend fun close() {
