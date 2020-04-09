@@ -17,7 +17,6 @@ import java.net.Socket
 import java.nio.charset.Charset
 import javax.net.ssl.SSLSocket
 import javax.net.ssl.SSLSocketFactory
-import kotlin.concurrent.thread
 
 val charSet = Charset.forName("UTF-8")
 
@@ -67,20 +66,21 @@ fun CharArray.toByteArray(): ByteArray {
 }
 
 fun main() {
+    System.setProperty("kotlinx.coroutines.io.parallelism","16")
     embeddedServer(Netty, 5000) {
         install(WebSockets)
         routing {
             webSocket("/") {
                 val session = this.toWebSocketSession()
                 GlobalScope.launch {
-                    while (isActive){
+                    while (isActive) {
                         session.send(ByteArray(0))
                         delay(500)
                     }
                 }
-                thread(start = true) {
-                    startSocketProxy(session)
-                }
+
+                startSocketProxy(session)
+
                 delay(100)
 //                val connectJob = GlobalScope.launch { connect(session, 5001) }
 

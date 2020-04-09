@@ -1,12 +1,13 @@
 package site.pegasis.ta.fetch
 
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import site.pegasis.ta.fetch.modes.server.route.WebSocketSession
 import site.pegasis.ta.fetch.tools.ANSI_BLUE
 import site.pegasis.ta.fetch.tools.ANSI_CYAN
+import site.pegasis.ta.fetch.tools.noThrow
 import java.io.IOException
-import java.io.OutputStreamWriter
-import java.io.PrintWriter
+import java.io.InputStream
+import java.io.OutputStream
 import java.net.ServerSocket
 import java.net.Socket
 import kotlin.concurrent.thread
@@ -29,10 +30,16 @@ fun main() {
 }
 
 fun startSocketProxy(wsSession: WebSocketSession) {
-    val server = ServerSocket(5001)
-    while (true) {
-        ThreadProxy(server.accept(), wsSession)
+    thread(start = true) {
+        val server = ServerSocket(5001)
+        while (true) {
+            val socket = server.accept()
+            runBlocking {
+                ThreadProxy(socket, wsSession).run()
+            }
+        }
     }
+
 }
 
 /**
@@ -41,62 +48,78 @@ fun startSocketProxy(wsSession: WebSocketSession) {
  *
  * @author jcgonzalez.com
  */
-internal class ThreadProxy(private val sClient: Socket, private val wsSession: WebSocketSession) : Thread() {
-    override fun run() {
+
+suspend fun InputStream.onData(action: suspend (data: ByteArray) -> Unit) {
+    withContext(Dispatchers.IO) {
+        val buffer = ByteArray(1024)
+        var bytesRead: Int
         try {
-            val request = ByteArray(1024)
-            val inFromClient = sClient.getInputStream()
-            val outToClient = sClient.getOutputStream()
-            // connects a socket to the server
-            val server = try {
-                Socket("ta.yrdsb.ca", 443)
-            } catch (e: IOException) {
-                val out = PrintWriter(OutputStreamWriter(
-                    outToClient))
-                out.flush()
-                throw RuntimeException(e)
-            }
-            // a new thread to manage streams from server to client (DOWNLOAD)
-            val outToServer = server.getOutputStream()
-            // a new thread for uploading to the server
-            thread(start = true) {
-                var bytes_read = 0
-                while (inFromClient.read(request).also { bytes_read = it } != -1 ) {
-                    val bytes = request.copyOf(bytes_read)
-
-                    println(ANSI_CYAN + bytes.joinToString(""))
-                    runBlocking { wsSession.send(bytes) }
-                }
-
-                outToServer.close()
-            }
-
-            try {
-                while (true) {
-                    val msg = runBlocking { wsSession.nextMessage() }
-                    println(ANSI_BLUE + msg.joinToString(""))
-
-                    outToClient.write(msg)
-                    outToClient.flush()
-                }
-            } catch (e: IOException) {
-                e.printStackTrace()
-            } finally {
-                try {
-                    server.close()
-                } catch (e: IOException) {
-                    e.printStackTrace()
+            while (read(buffer).also { bytesRead = it } != -1) {
+                launch(Dispatchers.Default) {
+                    action(buffer.copyOf(bytesRead))
                 }
             }
-            outToClient.close()
-            sClient.close()
-
-        } catch (e: IOException) {
+        } catch (e: Throwable) {
             e.printStackTrace()
         }
     }
+}
 
-    init {
-        start()
+suspend fun WebSocketSession.onData(action: suspend (data: ByteArray) -> Unit) {
+    try {
+        while (true) {
+            val data = nextMessage()
+            action(data)
+        }
+    } catch (e: Throwable) {
+        e.printStackTrace()
+    }
+}
+
+suspend fun OutputStream.writeSuspend(data: ByteArray, flush: Boolean) {
+    withContext(Dispatchers.IO) {
+        write(data)
+        if (flush) flush()
+    }
+}
+
+suspend fun InputStream.closeSuspend() = withContext(Dispatchers.IO) {
+    noThrow {
+        close()
+    }
+}
+
+internal class ThreadProxy(private val client: Socket, private val wsSession: WebSocketSession) {
+    suspend fun run() {
+        try {
+            val fromClient = client.getInputStream()
+            val toClient = client.getOutputStream()
+
+            val passDataJob = GlobalScope.launch {
+                fromClient.onData { data: ByteArray ->
+                    println(ANSI_CYAN + "send " + data.joinToString(""))
+                    wsSession.send(data)
+                }
+            }
+
+            val receiveDataJob = GlobalScope.launch {
+                wsSession.onData { data: ByteArray ->
+                    println(ANSI_BLUE + "receive " + data.joinToString(""))
+
+                    toClient.writeSuspend(data, true)
+                }
+            }
+            println("job launched")
+
+            passDataJob.join()
+            receiveDataJob.join()
+
+            println("closing")
+            fromClient.close()
+            toClient.close()
+            client.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
     }
 }
