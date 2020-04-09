@@ -7,7 +7,6 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.cio.websocket.Frame
 import io.ktor.http.cio.websocket.close
-import io.ktor.http.cio.websocket.readText
 import io.ktor.request.header
 import io.ktor.request.httpMethod
 import io.ktor.request.receiveText
@@ -126,13 +125,17 @@ fun PipelineContext<Unit, ApplicationCall>.toHttpSession() = object : HttpSessio
 }
 
 fun DefaultWebSocketServerSession.toWebSocketSession() = object : WebSocketSession {
-    override suspend fun nextMessage(): String {
-        return (incoming.receive() as? Frame.Text)?.readText() ?: ""
+    override suspend fun nextMessage(): ByteArray {
+        return (incoming.receive() as Frame.Binary).data
     }
 
-    override suspend fun send(message: String) {
-        println(message)
-        outgoing.send(Frame.Text(message))
+    override suspend fun send(message: ByteArray) {
+        try {
+            outgoing.send(Frame.Binary(true, message))
+//            outgoing.offer(Frame.Binary(true, message))
+        }catch (e:Throwable){
+            e.printStackTrace()
+        }
     }
 
     override suspend fun close() {
