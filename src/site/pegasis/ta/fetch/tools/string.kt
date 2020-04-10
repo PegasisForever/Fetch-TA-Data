@@ -40,8 +40,16 @@ fun String.gzip(): ByteArray {
     return bos.toByteArray()
 }
 
-fun ByteArray.unGzip(): String {
-    return GZIPInputStream(inputStream()).bufferedReader(StandardCharsets.UTF_8).use { it.readText() }
+fun ByteArray.gzip(): ByteArray {
+    val bos = ByteArrayOutputStream()
+    val gz = GZIPOutputStream(bos)
+    gz.write(this)
+    gz.close()
+    return bos.toByteArray()
+}
+
+fun ByteArray.unGzip(): ByteArray {
+    return GZIPInputStream(inputStream()).readAllBytes()
 }
 
 fun String.removeBlank(): String {

@@ -3,9 +3,7 @@ package site.pegasis.ta.fetch
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import site.pegasis.ta.fetch.modes.server.route.WebSocketSession
-import site.pegasis.ta.fetch.tools.io
-import site.pegasis.ta.fetch.tools.noThrow
-import site.pegasis.ta.fetch.tools.noThrowSuspend
+import site.pegasis.ta.fetch.tools.*
 import java.io.InputStream
 import java.io.OutputStream
 import java.net.ServerSocket
@@ -85,14 +83,14 @@ suspend fun runProxy(client: Socket, wsSession: WebSocketSession) {
 
     val socketToWsJob = GlobalScope.launch {
         fromClient.onData { data: ByteArray ->
-            wsSession.send(data)
+            wsSession.send(data.gzip())
         }
     }
 
     val wsToSocketJob = GlobalScope.launch {
         wsSession.onData { data: ByteArray ->
             withContext(Dispatchers.IO) {
-                toClient.write(data)
+                toClient.write(data.unGzip())
                 toClient.flush()
             }
         }
@@ -104,8 +102,7 @@ suspend fun runProxy(client: Socket, wsSession: WebSocketSession) {
 
 
     println("closing")
-    fromClient.closeSuspend()
-    toClient.closeSuspend()
     client.closeSuspend()
+
     println("closed")
 }
