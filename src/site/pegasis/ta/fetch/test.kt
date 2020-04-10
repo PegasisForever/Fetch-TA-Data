@@ -17,8 +17,11 @@ import io.ktor.websocket.WebSockets
 import io.ktor.websocket.webSocket
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import site.pegasis.ta.fetch.fetchdata.NetworkRequester
+import site.pegasis.ta.fetch.fetchdata.fetchUserCourseList
 import site.pegasis.ta.fetch.modes.server.route.WebSocketSession
 import site.pegasis.ta.fetch.modes.server.route.toWebSocketSession
+import site.pegasis.ta.fetch.modes.server.serializers.serialize
 import java.io.Closeable
 import java.net.InetSocketAddress
 import java.net.URL
@@ -122,7 +125,7 @@ fun createHttpRawRequest(method: String, host: String, path: String, headers: He
 fun createHttpGetRawRequest(host: String, path: String, cookies: Cookies = Cookies()): String {
     return if (cookies.isNotEmpty()) {
         val cookieHeaderString = cookies.map { "${it.key}=${it.value}" }.joinToString("; ")
-        val headers=Headers()
+        val headers = Headers()
         headers.add("Cookie" to cookieHeaderString)
         createHttpRawRequest("GET", host, path, headers)
     } else {
@@ -222,22 +225,41 @@ suspend fun httpPost(wsSession: WebSocketSession, urlString: String, data: Map<S
 }
 
 @KtorExperimentalAPI
+class WsNetworkRequester(private val wsSession: WebSocketSession) : NetworkRequester {
+    val cookies = Cookies()
+    override suspend fun post(url: String, data: Map<String, String>): String {
+        val response = httpPost(wsSession, url, data)
+        cookies.putAll(response.getCookies())
+
+        if (response.statusCode == 302) {
+            return get(response.headers["Location"])
+        } else {
+            return response.body
+        }
+    }
+
+    override suspend fun get(url: String): String {
+        val response = httpGet(wsSession, url, cookies)
+        return response.body
+    }
+
+    override suspend fun close() {
+
+    }
+
+}
+
+@KtorExperimentalAPI
 fun main() {
     embeddedServer(Netty, 5000) {
         install(WebSockets)
         routing {
             webSocket("/") {
                 val session = toWebSocketSession()
-                val response1 = httpPost(session, "https://ta.yrdsb.ca/yrdsb/", mapOf(
-                    "username" to "",
-                    "password" to ""
-                ))
 
-                val response2 = httpGet(session,
-                    response1.headers["Location"],
-                    response1.getCookies())
-
-                println(response2)
+                val cl= fetchUserCourseList("", "",
+                    requester = WsNetworkRequester(session))
+                println(cl.serialize())
             }
         }
     }.start(true)
