@@ -1,8 +1,7 @@
 package site.pegasis.ta.fetch.modes.server.route
 
 interface WebSocketSession {
-    suspend fun nextMessage():ByteArray
-    suspend fun send(message:ByteArray)
-    fun send2(message:ByteArray)
+    suspend fun nextMessage(): Pair<ByteArray, WebsocketMessageType>
+    suspend fun send(message: ByteArray, type: WebsocketMessageType)
     suspend fun close()
 }

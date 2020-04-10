@@ -126,21 +126,38 @@ fun PipelineContext<Unit, ApplicationCall>.toHttpSession() = object : HttpSessio
 
 }
 
+enum class WebsocketMessageType(val byte: Byte) {
+    DATA(0x00),
+    CONNECT(0x01),
+    DISCONNECT(0x02);
+
+    companion object {
+        fun from(byte: Byte) = when (byte) {
+            DATA.byte -> DATA
+            CONNECT.byte -> CONNECT
+            DISCONNECT.byte -> DISCONNECT
+            else -> error("Unknown websocket message type: $byte")
+        }
+    }
+}
+
 fun DefaultWebSocketServerSession.toWebSocketSession() = object : WebSocketSession {
-    override suspend fun nextMessage(): ByteArray {
-        val data = incoming.receive().data
-        println(ANSI_BLUE + "receive " + data.joinToString(""))
-        return data
+    override suspend fun nextMessage(): Pair<ByteArray, WebsocketMessageType> {
+        val rawData = incoming.receive().data
+        val type = WebsocketMessageType.from(rawData.first())
+        val data = rawData.copyOfRange(1, rawData.size)
+        println(ANSI_BLUE + "receive ${type.name}: " + data.joinToString(","))
+        return data to type
     }
 
-    override suspend fun send(message: ByteArray) {
-        println(ANSI_CYAN + "send " + message.joinToString(""))
-        outgoing.send(Frame.Binary(true, message))
-    }
+    override suspend fun send(message: ByteArray, type: WebsocketMessageType) {
+        println(ANSI_CYAN + "send ${type.name}: " + message.joinToString(","))
+        val finalMessage = ByteArray(message.size + 1)
+        finalMessage[0] = type.byte
+        message.copyInto(finalMessage,1)
 
-    override fun send2(message: ByteArray) {
-        println(ANSI_CYAN + "send2 " + message.joinToString(""))
-        outgoing.offer(Frame.Binary(true, message))
+        outgoing.send(Frame.Binary(true, finalMessage))
+        flush()
     }
 
     override suspend fun close() {

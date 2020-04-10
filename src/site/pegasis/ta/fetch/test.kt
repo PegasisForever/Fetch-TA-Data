@@ -53,7 +53,7 @@ fun main() {
         routing {
             webSocket("/") {
                 val session = toWebSocketSession()
-                val socketProxy = startSocketProxy(session, 5001)
+                val socketProxy = startSocketProxy(session, 5001, "ta.yrdsb.ca", 443)
                 val socket = getSSLSocket("localhost", 5001)
 
                 socket.handshakeSuspend()
