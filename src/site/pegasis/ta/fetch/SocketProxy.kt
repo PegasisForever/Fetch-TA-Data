@@ -21,14 +21,14 @@ import java.nio.ByteBuffer
 @KtorExperimentalAPI
 fun getServerSocket(port: Int) = aSocket(ActorSelectorManager(Dispatchers.IO))
     .tcp()
-    .bind(InetSocketAddress("127.0.0.1", port))
+    .bind(InetSocketAddress("localhost", port))
 
 @KtorExperimentalAPI
-fun startSocketProxy(wsSession: WebSocketSession, port: Int, targetHost: String, targetPort: Int): Job {
+fun startSocketProxy(wsSession: WebSocketSession, port: Int, target: InetSocketAddress): Job {
     return GlobalScope.launch {
         val serverSocket = getServerSocket(port)
         val socket = serverSocket.accept()
-        runProxy(socket, wsSession, targetHost, targetPort)
+        runProxy(socket, wsSession, target.hostString, target.port)
         serverSocket.closeSuspend()
     }
 }
@@ -42,6 +42,8 @@ suspend fun ByteReadChannel.forEachData(action: suspend (data: ByteArray) -> Uni
             action(buffer.toByteArray(bytesRead))
             buffer.position(0)
         }
+    } catch (e: ClosedReceiveChannelException) {
+    } catch (e: CancellationException) {
     } catch (e: Throwable) {
         e.printStackTrace()
     }
@@ -89,13 +91,10 @@ suspend fun runProxy(client: Socket, wsSession: WebSocketSession, targetHost: St
         wsSession.forEachData { data, type ->
             when (type) {
                 WebsocketMessageType.DATA -> toClient.write(data.unGzip())
-                WebsocketMessageType.DISCONNECT -> {
-                    println("closing")
-                    client.closeSuspend()
-                    throw CancellationException()
-                }
+                WebsocketMessageType.DISCONNECT -> throw CancellationException()
             }
         }
+        client.closeSuspend()
         println("proxy w2s closed")
     }
 

@@ -17,8 +17,6 @@ import io.ktor.util.pipeline.PipelineContext
 import io.ktor.websocket.DefaultWebSocketServerSession
 import site.pegasis.ta.fetch.modes.server.latestApiVersion
 import site.pegasis.ta.fetch.modes.server.minApiVersion
-import site.pegasis.ta.fetch.tools.ANSI_BLUE
-import site.pegasis.ta.fetch.tools.ANSI_CYAN
 import site.pegasis.ta.fetch.tools.gzip
 import java.nio.charset.StandardCharsets
 import kotlin.math.max
@@ -146,12 +144,12 @@ fun DefaultWebSocketServerSession.toWebSocketSession() = object : WebSocketSessi
         val rawData = incoming.receive().data
         val type = WebsocketMessageType.from(rawData.first())
         val data = rawData.copyOfRange(1, rawData.size)
-        println(ANSI_BLUE + "receive ${type.name}: " + data.joinToString(","))
         return data to type
     }
 
     override suspend fun send(message: ByteArray, type: WebsocketMessageType) {
-        println(ANSI_CYAN + "send ${type.name}: " + message.joinToString(","))
+        if (outgoing.isClosedForSend) return
+
         val finalMessage = ByteArray(message.size + 1)
         finalMessage[0] = type.byte
         message.copyInto(finalMessage,1)

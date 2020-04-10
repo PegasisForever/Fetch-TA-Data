@@ -1,8 +1,5 @@
 package site.pegasis.ta.fetch.tools
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.json.simple.parser.JSONParser
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -57,9 +54,3 @@ fun Throwable.isConnectionException() = this is java.net.SocketTimeoutException 
     this is org.apache.http.conn.ConnectTimeoutException ||
     this is org.apache.http.conn.HttpHostConnectException ||
     (message ?: "").indexOf("SocketTimeoutException") != -1
-
-suspend fun <T> io(block: suspend CoroutineScope.() -> T):T{
-    return withContext(Dispatchers.IO){
-        block()
-    }
-}
