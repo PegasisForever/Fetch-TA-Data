@@ -1,7 +1,10 @@
 package site.pegasis.ta.fetch
 
 import io.ktor.network.selector.ActorSelectorManager
-import io.ktor.network.sockets.*
+import io.ktor.network.sockets.Socket
+import io.ktor.network.sockets.aSocket
+import io.ktor.network.sockets.openReadChannel
+import io.ktor.network.sockets.openWriteChannel
 import io.ktor.util.KtorExperimentalAPI
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.ByteWriteChannel
@@ -21,17 +24,13 @@ fun getServerSocket(port: Int) = aSocket(ActorSelectorManager(Dispatchers.IO))
     .bind(InetSocketAddress("127.0.0.1", port))
 
 @KtorExperimentalAPI
-fun startSocketProxy(wsSession: WebSocketSession, port: Int, targetHost: String, targetPort: Int): ServerSocket {
-    val server = getServerSocket(port)
-
-    GlobalScope.launch {
-        while (true) {
-            val socket = server.accept()
-            runProxy(socket, wsSession, targetHost, targetPort)
-        }
+fun startSocketProxy(wsSession: WebSocketSession, port: Int, targetHost: String, targetPort: Int): Job {
+    return GlobalScope.launch {
+        val serverSocket = getServerSocket(port)
+        val socket = serverSocket.accept()
+        runProxy(socket, wsSession, targetHost, targetPort)
+        serverSocket.closeSuspend()
     }
-
-    return server
 }
 
 suspend fun ByteReadChannel.forEachData(action: suspend (data: ByteArray) -> Unit) {
@@ -83,23 +82,26 @@ suspend fun runProxy(client: Socket, wsSession: WebSocketSession, targetHost: St
         fromClient.forEachData { data ->
             wsSession.send(data.gzip(), WebsocketMessageType.DATA)
         }
-        println("s2w closed")
+        println("proxy s2w closed")
     }
 
     val wsToSocketJob = GlobalScope.launch {
-        wsSession.forEachData { data, _ ->
-            toClient.write(data.unGzip())
+        wsSession.forEachData { data, type ->
+            when (type) {
+                WebsocketMessageType.DATA -> toClient.write(data.unGzip())
+                WebsocketMessageType.DISCONNECT -> {
+                    println("closing")
+                    client.closeSuspend()
+                    throw CancellationException()
+                }
+            }
         }
-        println("w2s closed")
+        println("proxy w2s closed")
     }
 
-    println("job launched")
+    println("proxy launched")
     socketToWsJob.join()
     wsToSocketJob.join()
 
-    println("closing")
-    wsSession.send(ByteArray(0), WebsocketMessageType.DISCONNECT)
-    client.closeSuspend()
-
-    println("closed")
+    println("proxy closed")
 }

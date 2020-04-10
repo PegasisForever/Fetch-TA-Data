@@ -50,6 +50,7 @@ suspend fun ByteReadChannel.readAllLines(): String {
     return sb.toString()
 }
 
+//TODO http parser https://stackoverflow.com/a/31600846/10874380
 @KtorExperimentalAPI
 fun main() {
     System.setProperty("kotlinx.coroutines.io.parallelism", "16")
@@ -58,7 +59,7 @@ fun main() {
         routing {
             webSocket("/") {
                 val session = toWebSocketSession()
-                val socketProxy = startSocketProxy(session, 5001, "ta.yrdsb.ca", 443)
+                val socketProxyJob = startSocketProxy(session, 5001, "ta.yrdsb.ca", 443)
                 val socket = getSSLSocket("localhost", 5001)
 
                 val toSocketChannel = socket.openWriteChannel(autoFlush = true)
@@ -66,10 +67,11 @@ fun main() {
 
                 toSocketChannel.write("GET /yrdsb/ HTTP/1.0\n\n")
                 println(fromSocketChannel.readAllLines())
+                session.sendDisconnect()
 
-                socketProxy.closeSuspend()
+                socketProxyJob.join()
                 socket.closeSuspend()
-                println("ws closed")
+                println("ws end")
             }
         }
     }.start(true)

@@ -141,7 +141,7 @@ enum class WebsocketMessageType(val byte: Byte) {
     }
 }
 
-fun DefaultWebSocketServerSession.toWebSocketSession() = object : WebSocketSession {
+fun DefaultWebSocketServerSession.toWebSocketSession() = object : WebSocketSession() {
     override suspend fun nextMessage(): Pair<ByteArray, WebsocketMessageType> {
         val rawData = incoming.receive().data
         val type = WebsocketMessageType.from(rawData.first())
