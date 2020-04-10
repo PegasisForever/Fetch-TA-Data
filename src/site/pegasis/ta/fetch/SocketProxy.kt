@@ -24,11 +24,11 @@ fun getServerSocket(port: Int) = aSocket(ActorSelectorManager(Dispatchers.IO))
     .bind(InetSocketAddress("localhost", port))
 
 @KtorExperimentalAPI
-fun startSocketProxy(wsSession: WebSocketSession, port: Int, target: InetSocketAddress): Job {
+fun startSocketProxy(wsSession: WebSocketSession, port: Int, targetHost: String,targetPort: Int): Job {
     return GlobalScope.launch {
         val serverSocket = getServerSocket(port)
         val socket = serverSocket.accept()
-        runProxy(socket, wsSession, target.hostString, target.port)
+        runProxy(socket, wsSession, targetHost, targetPort)
         serverSocket.closeSuspend()
     }
 }
