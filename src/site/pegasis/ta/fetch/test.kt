@@ -1,16 +1,25 @@
 package site.pegasis.ta.fetch
 
 import io.ktor.application.install
+import io.ktor.network.selector.ActorSelectorManager
+import io.ktor.network.sockets.aSocket
+import io.ktor.network.sockets.openReadChannel
+import io.ktor.network.sockets.openWriteChannel
+import io.ktor.network.tls.tls
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import io.ktor.util.KtorExperimentalAPI
+import io.ktor.util.cio.write
+import io.ktor.utils.io.ByteReadChannel
+import io.ktor.utils.io.readUTF8Line
 import io.ktor.websocket.WebSockets
 import io.ktor.websocket.webSocket
+import kotlinx.coroutines.Dispatchers
 import site.pegasis.ta.fetch.modes.server.route.toWebSocketSession
 import site.pegasis.ta.fetch.tools.io
-import java.io.*
-import javax.net.ssl.SSLSocket
-import javax.net.ssl.SSLSocketFactory
+import java.io.Closeable
+import java.net.InetSocketAddress
 
 fun CharArray.toByteArray(): ByteArray {
     val byteArray = ByteArray(size)
@@ -21,31 +30,27 @@ fun CharArray.toByteArray(): ByteArray {
     return byteArray
 }
 
-val sslFactory = SSLSocketFactory.getDefault() as SSLSocketFactory
-fun getSSLSocket(host: String, port: Int) = sslFactory.createSocket(host, port) as SSLSocket
-
-suspend fun SSLSocket.handshakeSuspend() = io {
-    startHandshake()
-}
-
-suspend fun Flushable.flushSuspend() = io {
-    flush()
-}
-
-suspend fun BufferedReader.readTextSuspend() = io {
-    readText()
-}
+@KtorExperimentalAPI
+suspend fun getSSLSocket(host: String, port: Int) =
+    aSocket(ActorSelectorManager(Dispatchers.IO))
+        .tcp()
+        .connect(InetSocketAddress(host, port))
+        .tls(Dispatchers.IO)
 
 suspend fun Closeable.closeSuspend() = io {
     close()
 }
 
-val SSLSocket.printWriter: PrintWriter
-    get() = PrintWriter(BufferedWriter(OutputStreamWriter(outputStream)))
+suspend fun ByteReadChannel.readAllLines(): String {
+    val sb = StringBuffer()
+    var line: String?
+    while (readUTF8Line().also { line = it } != null) {
+        sb.append(line).append("\n")
+    }
+    return sb.toString()
+}
 
-val SSLSocket.bufferedReader: BufferedReader
-    get() = BufferedReader(InputStreamReader(inputStream))
-
+@KtorExperimentalAPI
 fun main() {
     System.setProperty("kotlinx.coroutines.io.parallelism", "16")
     embeddedServer(Netty, 5000) {
@@ -56,20 +61,11 @@ fun main() {
                 val socketProxy = startSocketProxy(session, 5001, "ta.yrdsb.ca", 443)
                 val socket = getSSLSocket("localhost", 5001)
 
-                socket.handshakeSuspend()
+                val toSocketChannel = socket.openWriteChannel(autoFlush = true)
+                val fromSocketChannel = socket.openReadChannel()
 
-                with(socket.printWriter) {
-                    println("GET /yrdsb/ HTTP/1.0")
-                    println()
-                    flushSuspend()
-
-                    if (checkError()) error("SSLSocketClient:  java.io.PrintWriter error")
-                }
-
-                with(socket.bufferedReader) {
-                    val response = readTextSuspend()
-                    println(response)
-                }
+                toSocketChannel.write("GET /yrdsb/ HTTP/1.0\n\n")
+                println(fromSocketChannel.readAllLines())
 
                 socketProxy.closeSuspend()
                 socket.closeSuspend()

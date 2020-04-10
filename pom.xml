@@ -26,6 +26,12 @@
     <dependencies>
         <dependency>
             <groupId>io.ktor</groupId>
+            <artifactId>ktor-network-tls</artifactId>
+            <version>${ktor.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.ktor</groupId>
             <artifactId>ktor-websockets</artifactId>
             <version>${ktor.version}</version>
             <scope>compile</scope>
