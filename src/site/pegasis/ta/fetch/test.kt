@@ -149,6 +149,7 @@ class WsNetworkRequester(private val wsSession: WebSocketSession) : NetworkReque
         var response: String? = null
         try {
             with(getSSLSocket("localhost", proxyPort)) {
+
                 openWriteChannel(autoFlush = true).write(rawRequest)
                 response = openReadChannel().readAllLines()
                 closeSuspend()
