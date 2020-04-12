@@ -10,6 +10,8 @@ import io.ktor.util.KtorExperimentalAPI
 import io.ktor.util.cio.write
 import io.ktor.websocket.WebSockets
 import io.ktor.websocket.webSocket
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import site.pegasis.ta.fetch.HttpProtocol.createHttpGetRawRequest
 import site.pegasis.ta.fetch.HttpProtocol.createHttpPostRawRequest
 import site.pegasis.ta.fetch.HttpProtocol.parseHttpRawResponse
@@ -143,23 +145,23 @@ class WsNetworkRequester(private val wsSession: WebSocketSession) : NetworkReque
 
     override suspend fun close() {}
 
-    private suspend fun getRawHttpResponse(wsSession: WebSocketSession, rawRequest: String, server: String, port: Int): String? {
+    private suspend fun getRawResponse(wsSession: WebSocketSession, rawRequest: String, server: String, port: Int): String? {
         val proxyPort = PortPool.getPort()
         val socketProxyJob = startSocketProxy(wsSession, proxyPort, server, port)
+        val sslSocket = getSSLSocket("localhost", proxyPort)
         var response: String? = null
+
         try {
-            with(getSSLSocket("localhost", proxyPort)) {
-
-                openWriteChannel(autoFlush = true).write(rawRequest)
-                response = openReadChannel().readAllLines()
-                closeSuspend()
-            }
-
-            wsSession.sendDisconnect()
+            sslSocket.openWriteChannel(autoFlush = true).write(rawRequest)
+            response = sslSocket.openReadChannel().readAllLines()
+        } catch (e: ClosedReceiveChannelException) {
+        } catch (e: CancellationException) {
         } catch (e: Throwable) {
             e.printStackTrace()
         }
 
+        sslSocket.closeSuspend()
+        wsSession.sendDisconnect()
         socketProxyJob.join()
         PortPool.releasePort(proxyPort)
         return response
@@ -170,7 +172,7 @@ class WsNetworkRequester(private val wsSession: WebSocketSession) : NetworkReque
 
         val rawRequest = createHttpGetRawRequest(url.host, url.path + (if (url.query != null) "?" + url.query else ""), cookies)
         println(rawRequest)
-        val rawResponse = getRawHttpResponse(wsSession, rawRequest, url.host, 443) ?: error("http error")
+        val rawResponse = getRawResponse(wsSession, rawRequest, url.host, 443) ?: error("http error")
 
         return parseHttpRawResponse(rawResponse)
     }
@@ -179,7 +181,7 @@ class WsNetworkRequester(private val wsSession: WebSocketSession) : NetworkReque
         val url = urlString.toURL()
 
         val rawRequest = createHttpPostRawRequest(url.host, url.path, data)
-        val rawResponse = getRawHttpResponse(wsSession, rawRequest, url.host, 443) ?: error("http error")
+        val rawResponse = getRawResponse(wsSession, rawRequest, url.host, 443) ?: error("http error")
 
         return parseHttpRawResponse(rawResponse)
     }
