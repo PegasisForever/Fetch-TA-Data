@@ -20,6 +20,7 @@ import site.pegasis.ta.fetch.fetchdata.fetchUserCourseList
 import site.pegasis.ta.fetch.modes.server.route.WebSocketSession
 import site.pegasis.ta.fetch.modes.server.route.toWebSocketSession
 import site.pegasis.ta.fetch.modes.server.serializers.serialize
+import site.pegasis.ta.fetch.tools.noThrowSuspend
 
 object HttpProtocol {
     class Cookies : HashMap<String, String>()
@@ -108,7 +109,7 @@ object HttpProtocol {
             .forEach { line ->
                 if (statusCode == -1) {
                     statusCode = line.split(" ")[1].toInt()
-                } else if (readingBody == false) {
+                } else if (!readingBody) {
                     val colonIndex = line.indexOf(":")
                     if (colonIndex >= 0) {
                         headers.add(line.substring(0 until colonIndex) to line.substring(colonIndex + 2))
@@ -160,8 +161,8 @@ class WsNetworkRequester(private val wsSession: WebSocketSession) : NetworkReque
             e.printStackTrace()
         }
 
-        sslSocket.closeSuspend()
-        wsSession.sendDisconnect()
+        noThrowSuspend { sslSocket.closeSuspend() }
+        noThrowSuspend { wsSession.sendDisconnect() }
         socketProxyJob.join()
         PortPool.releasePort(proxyPort)
         return response

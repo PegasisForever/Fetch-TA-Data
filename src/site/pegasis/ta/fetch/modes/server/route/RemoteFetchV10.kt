@@ -1,64 +1,42 @@
 package site.pegasis.ta.fetch.modes.server.route
 
-import kotlinx.coroutines.withTimeout
-import org.json.simple.JSONObject
-import site.pegasis.ta.fetch.exceptions.ParseRequestException
-import site.pegasis.ta.fetch.models.User
-import site.pegasis.ta.fetch.tools.jsonParser
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import site.pegasis.ta.fetch.WsNetworkRequester
+import site.pegasis.ta.fetch.models.Timing
+import site.pegasis.ta.fetch.modes.server.timeline.AutoUpdateUserQueue
+import site.pegasis.ta.fetch.modes.server.timeline.performUpdate
+import site.pegasis.ta.fetch.tools.logInfo
+import site.pegasis.ta.fetch.tools.logWarn
 
 object RemoteFetchV10 {
-    private class InitMessage(req: String) {
-        val user: User
-        val isBackground: Boolean
+    suspend fun route(session: WebSocketSession) = coroutineScope {
+        val timing = Timing()
+        val hash = session.hashCode()
+        val ipAddress = session.getIP()
+        val reqApiVersion = 10
 
-        init {
-            try {
-                val json = jsonParser.parse(req) as JSONObject
-                user = User.fromClient(json["user"] as JSONObject)
-                isBackground = json["is_background"] as Boolean
-            } catch (e: Exception) {
-                throw ParseRequestException()
-            }
+        logInfo("WS connection #$hash <- $ipAddress, api version=$reqApiVersion")
+
+        val forceCloseJob = launch {
+            delay(55 * 1000)
+            logWarn("WS connection #$hash timeout, force closing", timing = timing)
+            session.close()
         }
-    }
 
-//    private class RemoteRequester(private val session: WebSocketSession) : NetworkRequester {
-//        override suspend fun post(url: String, data: Map<String, String>): String {
-//            val json = JSONObject().apply {
-//                this["method"] = "POST"
-//                this["url"] = url
-//                this["data"] = JSONObject().apply { addAll(data) }
-//            }
-//            session.send(json.toJSONString())
-//            return session.nextMessage()
-//        }
-//
-//        override suspend fun get(url: String): String {
-//            val json = JSONObject().apply {
-//                this["method"] = "GET"
-//                this["url"] = url
-//            }
-//            session.send(json.toJSONString())
-//            return session.nextMessage()
-//        }
-//
-//        override suspend fun close() {
-//            session.send(JSONObject()
-//                .apply { this["close"] = true }
-//                .toJSONString())
-//        }
-//    }
+        timing("init")
 
-    suspend fun route(session: WebSocketSession) {
-        withTimeout(60_000L) {
-//            val proxyServer = launch { WSProxyServer(session, 5002).run() }
-//            delay(100)
-//
-//            val courseList = fetchUserCourseList("349891234","43z955n9", requester = requester)
-//
-//            session.send(courseList.serialize(10).toJSONString().toByteArray())
-//            proxyServer.cancelAndJoin()
-//            session.close()
+        val requester = WsNetworkRequester(session)
+        val startTime = System.currentTimeMillis()
+        while (System.currentTimeMillis() - startTime < 40 * 1000) {
+            val user = AutoUpdateUserQueue.poll() ?: break
+            val updates = performUpdate(user, requester = requester, timing = timing)
+            logInfo("WS connection #$hash performed update for user ${user.number}, ${updates.size} updates")
         }
+        forceCloseJob.cancelAndJoin()
+
+        logInfo("WS connection #$hash disconnected", timing = timing)
     }
 }

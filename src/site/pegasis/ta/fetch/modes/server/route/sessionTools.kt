@@ -158,6 +158,10 @@ fun DefaultWebSocketServerSession.toWebSocketSession() = object : WebSocketSessi
         flush()
     }
 
+    override fun getIP(): String? {
+        return call.request.header("X-real-ip") ?: call.request.local.remoteHost
+    }
+
     override suspend fun close() {
         this@toWebSocketSession.close()
     }
