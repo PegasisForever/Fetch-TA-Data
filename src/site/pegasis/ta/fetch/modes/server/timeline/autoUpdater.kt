@@ -2,15 +2,18 @@ package site.pegasis.ta.fetch.modes.server.timeline
 
 import kotlinx.coroutines.*
 import site.pegasis.ta.fetch.exceptions.LoginException
+import site.pegasis.ta.fetch.fetchdata.KtorNetworkRequester
+import site.pegasis.ta.fetch.fetchdata.NetworkRequester
 import site.pegasis.ta.fetch.fetchdata.fetchUserCourseList
 import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.TimeLine
+import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.storage.*
 import site.pegasis.ta.fetch.tools.*
 import java.time.ZonedDateTime
 
-suspend fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
+suspend fun performUpdate(user: User, newData: CourseList? = null, requester: NetworkRequester = KtorNetworkRequester(), timing: Timing = Timing()): TimeLine {
     val studentNumber = user.number
     val password = user.password
     var updates = TimeLine()
@@ -18,7 +21,7 @@ suspend fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
     try {
         val compareResult = compareCourses(
             oldIn = PCache.readCourseList(studentNumber),
-            newIn = newData ?: fetchUserCourseList(studentNumber, password)
+            newIn = newData ?: fetchUserCourseList(studentNumber, password, requester = requester, timing = timing)
         )
         updates = compareResult.updates
         //When a user login for the first time, there will be 4 "course added" update,
@@ -100,23 +103,15 @@ fun startAutoUpdateThread() {
 
         try {
             while (isActive) {
-                val startTime = System.currentTimeMillis()
-                User.allUsers.forEach { user ->
-                    if(!isActive) throw error("cancelled")
-                    val updates = performUpdate(user)
-                    logInfo("Auto performed update for user ${user.number}, ${updates.size} updates")
-                }
+                val updateBatch = User.allUsers.filter { it.devices.any { it.receive && it.token != "" } }
+                AutoUpdateUserQueue.addBatch(updateBatch)
 
-                val interval = Config.getUpdateInterval() * 60 * 1000
-                val remainTime = interval - (System.currentTimeMillis() - startTime)
+                val interval = Config.getUpdateInterval() * 60 * 1000L
                 LastUpdateDoneTime.set()
-                logInfo("Auto update done, ${(System.currentTimeMillis() - startTime) / 1000 / 60} minutes.")
-                if (remainTime > 0) {
-                    logInfo("Next auto update will be ${ZonedDateTime.now().plusSeconds(remainTime / 1000).toJSONString()}.")
-                    delay(remainTime)
-                } else {
-                    logInfo("Next auto update starts now.")
-                }
+                logInfo("Auto update batch added, count: ${updateBatch.size}. " +
+                    "Next auto update will be ${ZonedDateTime.now().plusSeconds(interval / 1000).toJSONString()}.")
+
+                delay(interval)
             }
         } finally {
             logInfo("Auto update job stopped")
