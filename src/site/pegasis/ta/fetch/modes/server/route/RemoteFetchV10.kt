@@ -11,6 +11,7 @@ import site.pegasis.ta.fetch.modes.server.timeline.performUpdate
 import site.pegasis.ta.fetch.tools.logError
 import site.pegasis.ta.fetch.tools.logInfo
 import site.pegasis.ta.fetch.tools.logWarn
+import site.pegasis.ta.fetch.tools.noThrowSuspend
 
 object RemoteFetchV10 {
     suspend fun route(session: WebSocketSession) = coroutineScope {
@@ -21,13 +22,15 @@ object RemoteFetchV10 {
 
         logInfo("WS connection #$hash <- $ipAddress, api version=$reqApiVersion")
 
-        try {
-            val forceCloseJob = launch {
+        val forceCloseJob = launch {
+            noThrowSuspend {
                 delay(55 * 1000)
                 logWarn("WS connection #$hash timeout, force closing", timing = timing)
                 session.close()
             }
+        }
 
+        try {
             timing("init")
 
             val requester = WsNetworkRequester(session)
@@ -39,12 +42,11 @@ object RemoteFetchV10 {
                 logInfo("WS connection #$hash performed update for user ${user.number}, ${updates.size} updates")
 
             }
-            forceCloseJob.cancelAndJoin()
-
         } catch (e: Throwable) {
             logError("WS connection #$hash :: Unknown error: ${e.message}", e, timing)
         }
 
+        forceCloseJob.cancelAndJoin()
         logInfo("WS connection #$hash disconnected", timing = timing)
     }
 }

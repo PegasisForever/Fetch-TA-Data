@@ -13,6 +13,7 @@ import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.withContext
 import site.pegasis.ta.fetch.modes.server.route.WebSocketSession
 import site.pegasis.ta.fetch.modes.server.route.WebsocketMessageType
+import site.pegasis.ta.fetch.tools.logError
 import site.pegasis.ta.fetch.tools.noThrow
 import java.io.Closeable
 import java.io.FileInputStream
@@ -82,12 +83,17 @@ fun getServerSocket(port: Int) = aSocket(ActorSelectorManager(Dispatchers.IO))
 suspend fun Closeable.closeSuspend() = withContext(Dispatchers.IO) { close() }
 
 suspend fun ByteReadChannel.readAllLines(): String {
-    val sb = StringBuffer()
-    forEachData { data ->
-        val text = String(data, Charsets.UTF_8)
-        sb.append(text)
+    return try {
+        val sb = StringBuffer()
+        forEachData { data ->
+            val text = String(data, Charsets.UTF_8)
+            sb.append(text)
+        }
+        sb.toString()
+    } catch (e: Throwable) {
+        logError("error when read all lines, ${e.message}", e)
+        ""
     }
-    return sb.toString()
 }
 
 fun StringBuilder.newLine() = append('\n')
