@@ -456,6 +456,7 @@ class Course {
         block = this@Course.block
         room = this@Course.room
         overallMark = this@Course.overallMark?.copy()
+        midTermMark = this@Course.midTermMark?.copy()
         cached = this@Course.cached
         id = this@Course.id
     }
@@ -471,6 +472,7 @@ class Course {
             block == other.block &&
             room == other.room &&
             overallMark == other.overallMark &&
+            midTermMark == other.midTermMark &&
             cached == other.cached
     }
 
