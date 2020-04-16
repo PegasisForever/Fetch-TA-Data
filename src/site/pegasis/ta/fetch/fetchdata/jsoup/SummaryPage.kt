@@ -41,16 +41,23 @@ class SummaryPage(private val session: JsoupSession, private val timing: Timing 
                     }
 
                     if (cells.size == 3) {
-                        val markText = cells[2].text()
-                        val currentMarkText = find(markText, "(?<=current mark = )[^%]+")?.get(0)
-                        val levelMarkText = find(markText, "(?<=Level ).*")?.get(0)
-                        val isClickHere = markText == "Click Here"
-                        if (currentMarkText != null) {
-                            course.overallMark = OverallMark(currentMarkText.toDouble())
-                        } else if (levelMarkText != null) {
-                            course.overallMark = OverallMark(levelMarkText)
-                        } else if (isClickHere) {
-                            course.overallMark = OverallMark()
+                        noThrow {
+                            val markText = cells[2].getElementsByTag("a")[0].text()
+                            val currentMarkText = find(markText, "(?<=current mark = )[^%]+")?.get(0)
+                            val levelMarkText = find(markText, "(?<=Level ).*")?.get(0)
+                            val isClickHere = markText == "Click Here"
+                            course.overallMark = when {
+                                currentMarkText != null -> OverallMark(currentMarkText.toDouble())
+                                levelMarkText != null -> OverallMark(levelMarkText)
+                                isClickHere -> OverallMark()
+                                else -> null
+                            }
+                        }
+
+                        noThrow {
+                            val midTermText = cells[2].getElementsByTag("span")[0].text()
+                            val midTermMarkText = find(midTermText, "(?<=MIDTERM MARK: )[^%]+")?.get(0)
+                            course.midTermMark = OverallMark(midTermMarkText!!.toDouble())
                         }
                     }
 

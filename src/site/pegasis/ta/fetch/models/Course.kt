@@ -337,6 +337,7 @@ class Course {
     var block: String? = null
     var room: String? = null
     var overallMark: OverallMark? = null
+    var midTermMark: OverallMark? = null
     var cached = false
     var id: Int? = null
 
