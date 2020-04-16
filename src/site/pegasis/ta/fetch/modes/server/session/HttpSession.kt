@@ -1,4 +1,4 @@
-package site.pegasis.ta.fetch.modes.server.route
+package site.pegasis.ta.fetch.modes.server.session
 
 interface HttpSession {
     suspend fun getReqString(): String

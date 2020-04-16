@@ -1,4 +1,4 @@
-package site.pegasis.ta.fetch.modes.server.route
+package site.pegasis.ta.fetch.modes.server.session
 
 abstract class WebSocketSession {
     abstract suspend fun nextMessage(): Pair<ByteArray, WebsocketMessageType>

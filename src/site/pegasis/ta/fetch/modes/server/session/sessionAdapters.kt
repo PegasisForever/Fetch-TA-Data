@@ -1,4 +1,4 @@
-package site.pegasis.ta.fetch.modes.server.route
+package site.pegasis.ta.fetch.modes.server.session
 
 import com.sun.net.httpserver.HttpExchange
 import io.ktor.application.ApplicationCall

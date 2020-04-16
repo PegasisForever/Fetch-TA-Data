@@ -1,21 +1,19 @@
-package site.pegasis.ta.fetch
+package site.pegasis.ta.fetch.modes.server.wsproxy
 
 import io.ktor.network.sockets.Socket
 import io.ktor.network.sockets.openReadChannel
 import io.ktor.network.sockets.openWriteChannel
-import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import site.pegasis.ta.fetch.modes.server.route.WebSocketSession
-import site.pegasis.ta.fetch.modes.server.route.WebsocketMessageType
+import site.pegasis.ta.fetch.modes.server.session.WebSocketSession
+import site.pegasis.ta.fetch.modes.server.session.WebsocketMessageType
 import site.pegasis.ta.fetch.tools.gzip
 import site.pegasis.ta.fetch.tools.logDebug
 import site.pegasis.ta.fetch.tools.unGzip
 
-@KtorExperimentalAPI
-fun startSocketProxy(wsSession: WebSocketSession, port: Int, targetHost: String, targetPort: Int): Job {
+fun startWsSocketProxy(wsSession: WebSocketSession, port: Int, targetHost: String, targetPort: Int): Job {
     val serverSocket = getServerSocket(port)
     return GlobalScope.launch {
         val socket = serverSocket.accept()
@@ -24,7 +22,7 @@ fun startSocketProxy(wsSession: WebSocketSession, port: Int, targetHost: String,
     }
 }
 
-suspend fun runProxy(client: Socket, wsSession: WebSocketSession, targetHost: String, targetPort: Int) {
+private suspend fun runProxy(client: Socket, wsSession: WebSocketSession, targetHost: String, targetPort: Int) {
     val fromClient = client.openReadChannel()
     val toClient = client.openWriteChannel(autoFlush = true)
 

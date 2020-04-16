@@ -17,6 +17,10 @@ import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.controller.Controller
 import site.pegasis.ta.fetch.modes.server.route.*
+import site.pegasis.ta.fetch.modes.server.session.HttpSession
+import site.pegasis.ta.fetch.modes.server.session.WebSocketSession
+import site.pegasis.ta.fetch.modes.server.session.toHttpSession
+import site.pegasis.ta.fetch.modes.server.session.toWebSocketSession
 import site.pegasis.ta.fetch.modes.server.storage.CalendarData
 import site.pegasis.ta.fetch.modes.server.storage.LastCleanDoneTime
 import site.pegasis.ta.fetch.modes.server.storage.LastUpdateDoneTime

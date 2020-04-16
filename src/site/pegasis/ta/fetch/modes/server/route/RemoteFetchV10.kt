@@ -4,10 +4,11 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import site.pegasis.ta.fetch.WsNetworkRequester
 import site.pegasis.ta.fetch.models.Timing
+import site.pegasis.ta.fetch.modes.server.session.WebSocketSession
 import site.pegasis.ta.fetch.modes.server.timeline.AutoUpdateUserQueue
 import site.pegasis.ta.fetch.modes.server.timeline.performUpdate
+import site.pegasis.ta.fetch.modes.server.wsproxy.WsNetworkRequester
 import site.pegasis.ta.fetch.tools.logError
 import site.pegasis.ta.fetch.tools.logInfo
 import site.pegasis.ta.fetch.tools.logWarn

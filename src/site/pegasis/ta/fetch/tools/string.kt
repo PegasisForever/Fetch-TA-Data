@@ -1,6 +1,9 @@
 package site.pegasis.ta.fetch.tools
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
+import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.util.regex.Pattern
 import java.util.zip.GZIPInputStream
@@ -63,4 +66,10 @@ operator fun String.times(time: Int): String {
     }
 
     return builder.toString()
+}
+
+fun StringBuilder.newLine() = append('\n')
+
+suspend fun String.toURL() = withContext(Dispatchers.IO) {
+    URL(this@toURL)
 }
