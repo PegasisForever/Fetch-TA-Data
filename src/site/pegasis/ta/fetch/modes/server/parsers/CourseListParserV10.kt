@@ -62,7 +62,7 @@ object CourseListParserV10 {
         room = json["room"] as String?
         overallMark = (json["overall_mark"] as Double?)?.let { OverallMark(it) }
         cached = json["cached"] as Boolean
-        id = (json["id"] as Long?)?.toInt()
+        id = (json["id"] as Number?)?.toInt()
 
         if (overallMark != null) {
             assignments = AssignmentList()

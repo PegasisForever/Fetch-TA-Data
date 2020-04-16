@@ -54,7 +54,7 @@ object CourseListSerializerV8 {
     private fun serializeWeightTable(weightTable: WeightTable): JSONObject {
         val obj = JSONObject()
         weightTable.forEach { category, weight ->
-            obj[category] = serializeWeight(weight)
+            obj[category.name] = serializeWeight(weight)
         }
 
         return obj

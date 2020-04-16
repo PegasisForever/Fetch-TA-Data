@@ -15,7 +15,7 @@ import site.pegasis.ta.fetch.modes.server.parsers.TimeLineParserV9.parseTimeLine
 class UnwrappedData(val data: JSONArray, val version: Int)
 
 fun unwrapVersion(obj: JSONObject): UnwrappedData {
-    return UnwrappedData(obj["data"] as JSONArray, (obj["version"] as Long).toInt())
+    return UnwrappedData(obj["data"] as JSONArray, (obj["version"] as Number).toInt())
 }
 
 val CourseListParsers = mapOf<Int, (JSONArray) -> CourseList>(
