@@ -5,6 +5,7 @@ import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.TimeLine
 import site.pegasis.ta.fetch.modes.server.parsers.CourseListParserV10.parseCourseList as CourseListParserV10
+import site.pegasis.ta.fetch.modes.server.parsers.CourseListParserV11.parseCourseList as CourseListParserV11
 import site.pegasis.ta.fetch.modes.server.parsers.CourseListParserV4.parseCourseList as CourseListParserV4
 import site.pegasis.ta.fetch.modes.server.parsers.CourseListParserV8.parseCourseList as CourseListParserV8
 import site.pegasis.ta.fetch.modes.server.parsers.TimeLineParserV4.parseTimeLine as TimeLineParserV4
@@ -24,7 +25,8 @@ val CourseListParsers = mapOf<Int, (JSONArray) -> CourseList>(
     7 to ::CourseListParserV4,
     8 to ::CourseListParserV8,
     9 to ::CourseListParserV8,
-    10 to ::CourseListParserV10
+    10 to ::CourseListParserV10,
+    11 to ::CourseListParserV11
 )
 
 fun Any.toCourseList(): CourseList {
@@ -45,7 +47,8 @@ val TimeLineParsers = mapOf<Int, (JSONArray) -> TimeLine>(
     7 to ::TimeLineParserV6,
     8 to ::TimeLineParserV6,
     9 to ::TimeLineParserV9,
-    10 to ::TimeLineParserV9
+    10 to ::TimeLineParserV9,
+    11 to ::TimeLineParserV9
 )
 
 fun Any.toTimeLine(): TimeLine {
