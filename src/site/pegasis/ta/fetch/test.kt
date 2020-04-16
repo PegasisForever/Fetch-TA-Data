@@ -172,7 +172,6 @@ class WsNetworkRequester(private val wsSession: WebSocketSession) : NetworkReque
         val url = urlString.toURL()
 
         val rawRequest = createHttpGetRawRequest(url.host, url.path + (if (url.query != null) "?" + url.query else ""), cookies)
-        println(rawRequest)
         val rawResponse = getRawResponse(wsSession, rawRequest, url.host, 443) ?: error("http error")
 
         return parseHttpRawResponse(rawResponse)

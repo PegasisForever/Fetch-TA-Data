@@ -66,6 +66,9 @@ fun log(level: LogLevel, msg: String, throwable: Throwable? = null, timing: Timi
     print(logText)
 }
 
+fun logDebug(msg: String, throwable: Throwable? = null, timing: Timing? = null) =
+    log(LogLevel.DEBUG, msg, throwable, timing)
+
 fun logInfo(msg: String, throwable: Throwable? = null, timing: Timing? = null) =
     log(LogLevel.INFO, msg, throwable, timing)
 

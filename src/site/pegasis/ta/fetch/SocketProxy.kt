@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import site.pegasis.ta.fetch.modes.server.route.WebSocketSession
 import site.pegasis.ta.fetch.modes.server.route.WebsocketMessageType
 import site.pegasis.ta.fetch.tools.gzip
+import site.pegasis.ta.fetch.tools.logDebug
 import site.pegasis.ta.fetch.tools.unGzip
 
 @KtorExperimentalAPI
@@ -33,7 +34,7 @@ suspend fun runProxy(client: Socket, wsSession: WebSocketSession, targetHost: St
         fromClient.forEachData { data ->
             wsSession.send(data.gzip(), WebsocketMessageType.DATA)
         }
-        println("proxy s2w closed")
+        logDebug("proxy s2w closed")
     }
 
     val wsToSocketJob = GlobalScope.launch {
@@ -44,12 +45,12 @@ suspend fun runProxy(client: Socket, wsSession: WebSocketSession, targetHost: St
             }
         }
         client.closeSuspend()
-        println("proxy w2s closed")
+        logDebug("proxy w2s closed")
     }
 
-    println("proxy launched")
+    logDebug("proxy launched")
     socketToWsJob.join()
     wsToSocketJob.join()
 
-    println("proxy closed")
+    logDebug("proxy closed")
 }
