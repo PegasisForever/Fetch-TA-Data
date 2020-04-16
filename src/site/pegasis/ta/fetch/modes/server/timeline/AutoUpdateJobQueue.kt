@@ -23,4 +23,6 @@ object AutoUpdateUserQueue {
 
         return user
     }
+
+    override fun toString() = "${batches.size} batches left, ${batches.peek()?.size ?: 0} users left in current batch"
 }

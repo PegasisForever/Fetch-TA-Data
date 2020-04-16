@@ -1,6 +1,7 @@
 package site.pegasis.ta.fetch.modes.server.route
 
 import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -37,16 +38,26 @@ object RemoteFetchV10 {
             val requester = WsNetworkRequester(session)
             val startTime = System.currentTimeMillis()
             while (System.currentTimeMillis() - startTime < 40 * 1000) {
-                val user = AutoUpdateUserQueue.poll() ?: break
+                val user = AutoUpdateUserQueue.poll()
+                if (user == null) {
+                    logInfo("Auto update user queue is empty")
+                    break
+                } else {
+                    logInfo(AutoUpdateUserQueue.toString())
+                }
+
                 logInfo("WS connection #$hash performing update for ${user.number}")
                 val updates = performUpdate(user, requester = requester, timing = timing)
                 logInfo("WS connection #$hash performed update for user ${user.number}, ${updates.size} updates")
             }
         } catch (e: Throwable) {
-            logError("WS connection #$hash :: Unknown error: ${e.message}", e, timing)
+            when (e) {
+                is ClosedReceiveChannelException -> logWarn("WS connection #$hash :: client disconnected")
+                else -> logError("WS connection #$hash :: Unknown error: ${e.message}", e, timing)
+            }
         }
 
         forceCloseJob.cancelAndJoin()
-        logInfo("WS connection #$hash disconnected", timing = timing)
+        logInfo("WS connection #$hash closed", timing = timing)
     }
 }
