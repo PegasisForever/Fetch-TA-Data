@@ -18,6 +18,7 @@ object Config {
     var ignoreLastUpdateDone = false
     var proxy = ""
     var proxyPort = 80
+    var taCertificatePath = "data/ta.yrdsb.ca.cer"
 
     suspend fun load() {
         val configJSON = jsonParser.parse(readFile("data/config.json")) as JSONObject
@@ -39,6 +40,7 @@ object Config {
         }
         proxy = configJSON["proxy"] as String
         proxyPort = (configJSON["proxy_port"] as Long).toInt()
+        taCertificatePath = (configJSON["ta_certificate_path"] as String)
     }
 
     fun isEnableCourseActions(time: ZonedDateTime = ZonedDateTime.now()): Boolean {

@@ -2,6 +2,7 @@ package site.pegasis.ta.fetch.modes.server.controller
 
 import kotlinx.coroutines.runBlocking
 import picocli.CommandLine.Command
+import site.pegasis.ta.fetch.fetchdata.TATrustManager
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.storage.*
 import site.pegasis.ta.fetch.modes.server.timeline.updateAutoUpdateThread
@@ -24,6 +25,7 @@ class Reload(private val printWriter: PrintWriter): Callable<Unit> {
             LastUpdateDoneTime.load()
             CalendarData.load()
             PCache.clearCache()
+            TATrustManager.load()
             updateAutoUpdateThread()
         }
 

@@ -10,6 +10,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.withContext
+import site.pegasis.ta.fetch.fetchdata.TATrustManager
 import site.pegasis.ta.fetch.modes.server.session.WebSocketSession
 import site.pegasis.ta.fetch.modes.server.session.WebsocketMessageType
 import site.pegasis.ta.fetch.tools.logError

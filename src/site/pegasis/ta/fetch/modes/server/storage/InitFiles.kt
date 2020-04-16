@@ -31,6 +31,7 @@ suspend fun initFiles() {
             "end": "2020-02-28T16:00:00-05:00"
           }
       ]
+      "ta_certificate_path": "data/ta.yrdsb.ca.cer",
       "proxy": "",
       "proxy_port": 80
     }
@@ -188,4 +189,45 @@ suspend fun initFiles() {
       }
     ]
     """.trimIndent().writeToFile("data/calendar.json")
+    """
+        -----BEGIN CERTIFICATE-----
+        MIIG1TCCBb2gAwIBAgIQBS36w/OdwrHm/HPWmO/wlTANBgkqhkiG9w0BAQsFADBw
+        MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3
+        d3cuZGlnaWNlcnQuY29tMS8wLQYDVQQDEyZEaWdpQ2VydCBTSEEyIEhpZ2ggQXNz
+        dXJhbmNlIFNlcnZlciBDQTAeFw0xODEwMTgwMDAwMDBaFw0yMDEwMjgxMjAwMDBa
+        MHIxCzAJBgNVBAYTAkNBMRAwDgYDVQQIEwdPbnRhcmlvMQ8wDQYDVQQHEwZBdXJv
+        cmExKjAoBgNVBAoTIVlvcmsgUmVnaW9uIERpc3RyaWN0IFNjaG9vbCBCb2FyZDEU
+        MBIGA1UEAxMLdGEueXJkc2IuY2EwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+        AoIBAQDTKU6EYMn6Iq9f/dpPfKw3SuGbTgQqNXpKuF9UA0SNHLyxmMIF9Yei8v2F
+        1Vk+k6WaP1yT8lxR/Iim/XqldpfrDymABNmWhGXl37V2DZM5GKSb47g/+FQdclXu
+        PKvQ6fHQ9d5pn3wS6Wh6ZLRIKdF1LiikS9nTw1N4pgWlsHQVYhZHgNbJnPZjhbQw
+        MomDTSada/tixgp8BXXAfyWXy9ONagyreDInB3fhaBF3rCINRhTM9EiIc2q4tynl
+        bct58+mJOtUCIg3xBur5m154wf9qI2VvgXoeGxSSrySAVpXSy1s805E2UxBKo54Q
+        hYuWRTCjAFNKZLOitYONxEbCKfWXAgMBAAGjggNnMIIDYzAfBgNVHSMEGDAWgBRR
+        aP+QrwIHdTzM2WVkYqISuFlyOzAdBgNVHQ4EFgQU0nlLx6NS/ibxKj0Gr7EUoBmu
+        CwkwFgYDVR0RBA8wDYILdGEueXJkc2IuY2EwDgYDVR0PAQH/BAQDAgWgMB0GA1Ud
+        JQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjB1BgNVHR8EbjBsMDSgMqAwhi5odHRw
+        Oi8vY3JsMy5kaWdpY2VydC5jb20vc2hhMi1oYS1zZXJ2ZXItZzYuY3JsMDSgMqAw
+        hi5odHRwOi8vY3JsNC5kaWdpY2VydC5jb20vc2hhMi1oYS1zZXJ2ZXItZzYuY3Js
+        MEwGA1UdIARFMEMwNwYJYIZIAYb9bAEBMCowKAYIKwYBBQUHAgEWHGh0dHBzOi8v
+        d3d3LmRpZ2ljZXJ0LmNvbS9DUFMwCAYGZ4EMAQICMIGDBggrBgEFBQcBAQR3MHUw
+        JAYIKwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmRpZ2ljZXJ0LmNvbTBNBggrBgEFBQcw
+        AoZBaHR0cDovL2NhY2VydHMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0U0hBMkhpZ2hB
+        c3N1cmFuY2VTZXJ2ZXJDQS5jcnQwDAYDVR0TAQH/BAIwADCCAX8GCisGAQQB1nkC
+        BAIEggFvBIIBawFpAHcApLkJkLQYWBSHuxOizGdwCjw1mAT5G9+443fNDsgN3BAA
+        AAFmiK35LwAABAMASDBGAiEAqT55y0nUufBRcwIMrfx0YEXte9aRvVWOZOby0xF/
+        iXYCIQC0am0t2Qhc25+TYdhPReA82sSQmnzGkaNRRdz0BPG31AB2AId1v+dZfPiM
+        Q5lfvfNu/1aNR1Y2/0q1YMG06v9eoIMPAAABZoit+ikAAAQDAEcwRQIgexPHJZYK
+        QEZR+OptWd1hKD4cDJ4RSi7ay92ze+3bA6ACIQCbIGWmavGFCfjyL2U34M2FJO1F
+        P8H4DpUEK4k9ObNu6QB2AO5Lvbd1zmC64UJpH6vhnmajD35fsHLYgwDEe4l6qP3L
+        AAABZoit+XcAAAQDAEcwRQIhAK4nI7L/g3UAiCtMaGGQ0Fo+Ka96SI6Bq10WaMXe
+        uAd9AiBqUMnyV2kzQCuJVe8JSbpCm96CHKtaaSCqc+a1pcOUrjANBgkqhkiG9w0B
+        AQsFAAOCAQEAjYdVxjCo0YOWx0mN4SlNG/QL9Uuw/4py0evAIdJmjMKcnLq7VwMP
+        kCI4GecoRkKPDr40d2KvYZ+I0LEIUPKTChCLex58YxrkNUKefi+tmuhfHCTY4wE3
+        4DuE1hl2ESCoYuJy3fJ3GwqEoMIAvP38zKuoxnAA1eRdgw0ecRX5Nwj9KSM+p9cj
+        j+wGHCLEIKCgsfrXScRpyizAgeFEDXcAC7ZpzXt9uJfzyIvkxEF0v0zjNVLLNGz+
+        DT14220WAAF5hxphfaWULzv9oHSiLmZ//MhzWS8UgU9ZhqhSLQRXR6zZzzVIwO7I
+        D0QHUJzF7i95f0Zv9l4QdT4ztnEoYHaxuQ==
+        -----END CERTIFICATE-----
+    """.trimIndent().writeToFile("data/ta.yrdsb.ca.cer")
 }

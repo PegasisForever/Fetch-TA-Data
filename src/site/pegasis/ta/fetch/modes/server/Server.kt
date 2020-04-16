@@ -13,6 +13,7 @@ import io.ktor.websocket.webSocket
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import site.pegasis.ta.fetch.fetchdata.TATrustManager
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.controller.Controller
@@ -74,6 +75,7 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
         LastCleanDoneTime.load()
         User.load()
         CalendarData.load()
+        TATrustManager.load()
         updateAutoUpdateThread()
     }
     timing("load data")

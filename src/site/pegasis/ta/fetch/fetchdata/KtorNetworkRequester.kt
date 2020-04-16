@@ -19,6 +19,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.withTimeout
 import org.apache.http.HttpHost
 import site.pegasis.ta.fetch.modes.server.storage.Config
+import javax.net.ssl.SSLContext
 
 class KtorNetworkRequester : NetworkRequester {
     val client = HttpClient(Apache) {
@@ -31,6 +32,7 @@ class KtorNetworkRequester : NetworkRequester {
             socketTimeout = Config.fetchTimeoutSecond * 1000
             connectTimeout = Config.fetchTimeoutSecond * 1000
             connectionRequestTimeout = Config.fetchTimeoutSecond * 1000
+            sslContext = taSslContext
             if (Config.proxy.isNotBlank()) {
                 customizeClient {
                     setProxy(HttpHost(Config.proxy, Config.proxyPort))
@@ -81,4 +83,9 @@ class KtorNetworkRequester : NetworkRequester {
         }
     }
 
+    companion object {
+        private val taSslContext = SSLContext.getInstance("TLS").apply {
+            init(null, arrayOf(TATrustManager()), null)
+        }
+    }
 }

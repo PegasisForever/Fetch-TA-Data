@@ -41,7 +41,6 @@ object RemoteFetchV10 {
                 logInfo("performing update for ${user.number}")
                 val updates = performUpdate(user, requester = requester, timing = timing)
                 logInfo("WS connection #$hash performed update for user ${user.number}, ${updates.size} updates")
-
             }
         } catch (e: Throwable) {
             logError("WS connection #$hash :: Unknown error: ${e.message}", e, timing)

@@ -2,6 +2,7 @@ package site.pegasis.ta.fetch
 
 import picocli.CommandLine
 import picocli.CommandLine.*
+import site.pegasis.ta.fetch.fetchdata.TATrustManager
 import site.pegasis.ta.fetch.modes.getMark
 import site.pegasis.ta.fetch.modes.server.latestApiVersion
 import site.pegasis.ta.fetch.modes.server.minApiVersion
@@ -15,6 +16,7 @@ import java.util.concurrent.Callable
 suspend fun main(args: Array<String>) {
     initFiles()
     Config.load()
+    TATrustManager.load()
     CommandLine(FetchTa())
         .addSubcommand(GetMark())
         .addSubcommand(Server())
