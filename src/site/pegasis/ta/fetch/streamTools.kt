@@ -7,7 +7,6 @@ import io.ktor.network.tls.tls
 import io.ktor.util.KtorExperimentalAPI
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.ByteWriteChannel
-import io.ktor.utils.io.readUTF8Line
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
@@ -84,9 +83,9 @@ suspend fun Closeable.closeSuspend() = withContext(Dispatchers.IO) { close() }
 
 suspend fun ByteReadChannel.readAllLines(): String {
     val sb = StringBuffer()
-    var line: String?
-    while (readUTF8Line().also { line = it } != null) {
-        sb.append(line).append("\n")
+    forEachData { data ->
+        val text = String(data, Charsets.UTF_8)
+        sb.append(text)
     }
     return sb.toString()
 }
@@ -98,7 +97,7 @@ suspend fun String.toURL(): URL = withContext(Dispatchers.IO) {
 }
 
 suspend fun ByteReadChannel.forEachData(action: suspend (data: ByteArray) -> Unit) {
-    val buffer = ByteBuffer.allocate(4096)
+    val buffer = ByteBuffer.allocate(40960)
 
     var bytesRead: Int
     try {

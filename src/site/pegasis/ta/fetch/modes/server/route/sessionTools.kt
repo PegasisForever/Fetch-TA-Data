@@ -18,6 +18,7 @@ import io.ktor.websocket.DefaultWebSocketServerSession
 import site.pegasis.ta.fetch.modes.server.latestApiVersion
 import site.pegasis.ta.fetch.modes.server.minApiVersion
 import site.pegasis.ta.fetch.tools.gzip
+import site.pegasis.ta.fetch.tools.logInfo
 import java.nio.charset.StandardCharsets
 import kotlin.math.max
 
@@ -142,6 +143,7 @@ enum class WebsocketMessageType(val byte: Byte) {
 fun DefaultWebSocketServerSession.toWebSocketSession() = object : WebSocketSession() {
     override suspend fun nextMessage(): Pair<ByteArray, WebsocketMessageType> {
         val rawData = incoming.receive().data
+        logInfo("received ${rawData.size} bytes")
         val type = WebsocketMessageType.from(rawData.first())
         val data = rawData.copyOfRange(1, rawData.size)
         return data to type
@@ -154,6 +156,7 @@ fun DefaultWebSocketServerSession.toWebSocketSession() = object : WebSocketSessi
         finalMessage[0] = type.byte
         message.copyInto(finalMessage,1)
 
+        logInfo("sent ${finalMessage.size} bytes")
         outgoing.send(Frame.Binary(true, finalMessage))
         flush()
     }

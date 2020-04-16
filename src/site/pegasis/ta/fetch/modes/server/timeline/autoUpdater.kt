@@ -53,7 +53,8 @@ suspend fun performUpdate(user: User, newData: CourseList? = null, requester: Ne
         if (e.isConnectionException()) {
             logWarn("Error while performing update for user ${studentNumber}: Connect timeout")
         } else {
-            logError("Error while performing update for user ${studentNumber}", e)
+//            logError("Error while performing update for user ${studentNumber}", e)
+            throw e
         }
     }
     return updates
