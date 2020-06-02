@@ -4,9 +4,7 @@ import site.pegasis.ta.fetch.exceptions.LoginException
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.tools.findFirst
 
-class LoginPage(private val timing: Timing = Timing()) {
-    private val session = JsoupSession()
-
+class LoginPage(private val session: JsoupSession,private val timing: Timing = Timing()) {
     suspend fun gotoSummaryPage(studentNumber: String, password: String): SummaryPage {
         timing.suspend("load summary page") {
             session.post("https://ta.yrdsb.ca/live/index.php",

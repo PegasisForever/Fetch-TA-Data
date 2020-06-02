@@ -22,7 +22,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import site.pegasis.ta.fetch.modes.server.storage.Config
 
-class JsoupSession {
+class JsoupSession(useProxy:Boolean) {
     var currentPage: Document? = null
     val client = HttpClient(Apache) {
         install(HttpCookies) {
@@ -34,7 +34,7 @@ class JsoupSession {
             socketTimeout = Config.fetchTimeoutSecond * 1000
             connectTimeout = Config.fetchTimeoutSecond * 1000
             connectionRequestTimeout = Config.fetchTimeoutSecond * 1000
-            if (Config.proxy.isNotBlank()) {
+            if (Config.proxy.isNotBlank() && useProxy) {
                 customizeClient {
                     setProxy(HttpHost(Config.proxy, Config.proxyPort))
                 }

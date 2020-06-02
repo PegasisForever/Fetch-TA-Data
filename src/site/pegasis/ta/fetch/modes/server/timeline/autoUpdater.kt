@@ -18,7 +18,7 @@ suspend fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
     try {
         val compareResult = compareCourses(
             oldIn = PCache.readCourseList(studentNumber),
-            newIn = newData ?: fetchUserCourseList(studentNumber, password)
+            newIn = newData ?: fetchUserCourseList(studentNumber, password, useProxy = true)
         )
         updates = compareResult.updates
         //When a user login for the first time, there will be 4 "course added" update,
@@ -102,7 +102,7 @@ fun startAutoUpdateThread() {
             while (isActive) {
                 val startTime = System.currentTimeMillis()
                 User.allUsers.forEach { user ->
-                    if(!isActive) throw error("cancelled")
+                    if (!isActive) throw error("cancelled")
                     val updates = performUpdate(user)
                     logInfo("Auto performed update for user ${user.number}, ${updates.size} updates")
                 }
