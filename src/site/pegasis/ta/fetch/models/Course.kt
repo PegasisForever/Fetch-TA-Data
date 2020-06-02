@@ -392,7 +392,7 @@ class Course {
         if (!foundSolution) {
             for (i in 0 until otherSize) {
                 val assignment = otherAssignments[i]
-                if (assignment.name.contains("final", true)) {
+                if (assignment.name.contains("final", true) || assignment.name.contains("culminating", true)) {
                     assignment[F] = assignment[O].takeIf { it!!.available } ?: assignment[F]!!
                     assignment[O] = SmallMarkGroup()
                 }
