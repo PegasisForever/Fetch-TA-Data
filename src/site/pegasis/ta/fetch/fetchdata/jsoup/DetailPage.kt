@@ -132,6 +132,12 @@ class DetailPage(session: JsoupSession, courseCode: String?, time: ZonedDateTime
                 null
             }
 
+            val weightsPieUrl = try {
+                session.currentPage!!.getElementsByTag("img").last().attr("src")!!
+            } catch (e: Throwable) {
+                null
+            }
+
             if (weightsTable != null) {
                 val weightRows = weightsTable.getElementsByTag("tr")
                 for (rowI in 1..5) {
@@ -162,6 +168,34 @@ class DetailPage(session: JsoupSession, courseCode: String?, time: ZonedDateTime
                     OverallMark(finalCells[2].text())
                 }
                 weightTable[Category.F] = finalWeight
+            } else if (weightsPieUrl != null) {
+                enumValues<Category>().forEach { category ->
+                    weightTable[category] = Weight()
+                }
+                val query = weightsPieUrl.substring(weightsPieUrl.indexOf('?'))
+                query.split("&").forEach { q ->
+                    val (key, value) = q.split("=")
+                    when (key) {
+                        "k" -> weightTable[Category.KU]!!.CW = value.toDouble() * 100
+                        "t" -> weightTable[Category.T]!!.CW = value.toDouble() * 100
+                        "c" -> weightTable[Category.C]!!.CW = value.toDouble() * 100
+                        "a" -> weightTable[Category.A]!!.CW = value.toDouble() * 100
+                        "n" -> weightTable[Category.O]!!.CW = value.toDouble() * 100
+                        "f" -> weightTable[Category.F]!!.CW = value.toDouble() * 100
+                        "kv" -> weightTable[Category.KU]!!.SA = OverallMark(value.toDouble() * 100)
+                        "tv" -> weightTable[Category.T]!!.SA = OverallMark(value.toDouble() * 100)
+                        "cv" -> weightTable[Category.C]!!.SA = OverallMark(value.toDouble() * 100)
+                        "av" -> weightTable[Category.A]!!.SA = OverallMark(value.toDouble() * 100)
+                        "nv" -> weightTable[Category.O]!!.SA = OverallMark(value.toDouble() * 100)
+                        "fv" -> weightTable[Category.F]!!.SA = OverallMark(value.toDouble() * 100)
+                    }
+                }
+                enumValues<Category>().forEach { category ->
+                    if (category == Category.F) return@forEach
+                    val weight = weightTable[category]!!
+                    val finalCW = weightTable[Category.F]!!.CW
+                    weight.W = weight.CW + finalCW * weight.CW / (100 - finalCW)
+                }
             } else {
                 weightTable.fillFakeData()
             }
