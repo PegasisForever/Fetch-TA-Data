@@ -51,7 +51,7 @@ object PCache {
     }
 
     suspend fun isExistsBefore(number: String): Boolean {
-        return isFileExists("data/courselists/$number.json")
+        return fileExists("data/courselists/$number.json")
     }
 
     suspend fun readCourseList(number: String): CourseList {
