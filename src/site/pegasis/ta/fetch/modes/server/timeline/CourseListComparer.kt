@@ -79,6 +79,9 @@ fun compareCourses(
         } else if (newCourse.overallMark == null && oldCourse.overallMark != null) { //teacher hides the mark in new course
             oldCourse.apply {
                 cached = true
+                if (noCredit == null) {
+                    noCredit = newCourse.noCredit
+                }
                 if (extraMarks == null) {
                     extraMarks = newCourse.extraMarks
                 } else {

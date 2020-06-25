@@ -61,16 +61,11 @@ class SummaryPage(private val session: JsoupSession, private val timing: Timing 
                                         name.capitalizeWord(),
                                         OverallMark(mark.substring(0, mark.lastIndex).toDouble())
                                     ))
-                                } else {
-                                    logWarn("Unknown pattern: $extraMarkText")
+                                } else if (mark.indexOf("No Credit") != -1) {
+                                    course.noCredit = true
                                 }
                             }
                         }
-//                        noThrow {
-//                            val midTermText = cells[2].getElementsByTag("span")[0].text()
-//                            val midTermMarkText = find(midTermText, "(?<=MIDTERM MARK: )[^%]+")?.get(0)
-//                            course.midTermMark = OverallMark(midTermMarkText!!.toDouble())
-//                        }
                     }
 
                     courses.add(course)

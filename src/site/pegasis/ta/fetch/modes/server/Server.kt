@@ -25,7 +25,7 @@ import site.pegasis.ta.fetch.tools.logUnhandled
 import java.lang.Thread.setDefaultUncaughtExceptionHandler
 
 const val minApiVersion = 4
-const val latestApiVersion = 11
+const val latestApiVersion = 12
 const val latestPublicApiVersion = 2
 
 fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publicPort: Int) {

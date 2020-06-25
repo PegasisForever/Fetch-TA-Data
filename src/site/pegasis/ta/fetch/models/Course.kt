@@ -366,6 +366,7 @@ class Course {
     var room: String? = null
     var overallMark: OverallMark? = null
     var extraMarks: ExtraMarks? = null
+    var noCredit: Boolean? = null
     var cached = false
     var id: Int? = null
 
@@ -485,6 +486,7 @@ class Course {
         room = this@Course.room
         overallMark = this@Course.overallMark?.copy()
         extraMarks = this@Course.extraMarks?.copy()
+        noCredit = this@Course.noCredit
         cached = this@Course.cached
         id = this@Course.id
     }
@@ -501,6 +503,7 @@ class Course {
             room == other.room &&
             overallMark == other.overallMark &&
             listsEqual(extraMarks, other.extraMarks) &&
+            noCredit == other.noCredit &&
             cached == other.cached
     }
 
