@@ -327,6 +327,34 @@ class OverallMark {
     }
 }
 
+class ExtraMark(val name: String, val mark: OverallMark) {
+    fun copy() = ExtraMark(name, mark.copy())
+
+    override operator fun equals(other: Any?): Boolean {
+        if (other !is ExtraMark) return false
+        return name == other.name &&
+            mark == other.mark
+    }
+
+    override fun hashCode(): Int {
+        var result = name.hashCode()
+        result = 31 * result + mark.hashCode()
+        return result
+    }
+}
+
+class ExtraMarks : ArrayList<ExtraMark>() {
+    fun copy() = ExtraMarks().apply {
+        this@ExtraMarks.forEach {
+            add(it.copy())
+        }
+    }
+
+    operator fun get(name: String): OverallMark? {
+        return find { it.name == name }?.mark
+    }
+}
+
 class Course {
     var assignments: AssignmentList? = null
     var weightTable: WeightTable? = null
@@ -337,7 +365,7 @@ class Course {
     var block: String? = null
     var room: String? = null
     var overallMark: OverallMark? = null
-    var midTermMark: OverallMark? = null
+    var extraMarks: ExtraMarks? = null
     var cached = false
     var id: Int? = null
 
@@ -456,7 +484,7 @@ class Course {
         block = this@Course.block
         room = this@Course.room
         overallMark = this@Course.overallMark?.copy()
-        midTermMark = this@Course.midTermMark?.copy()
+        extraMarks = this@Course.extraMarks?.copy()
         cached = this@Course.cached
         id = this@Course.id
     }
@@ -472,7 +500,7 @@ class Course {
             block == other.block &&
             room == other.room &&
             overallMark == other.overallMark &&
-            midTermMark == other.midTermMark &&
+            listsEqual(extraMarks, other.extraMarks) &&
             cached == other.cached
     }
 

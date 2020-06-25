@@ -1,9 +1,6 @@
 package site.pegasis.ta.fetch.fetchdata.jsoup
 
-import site.pegasis.ta.fetch.models.Course
-import site.pegasis.ta.fetch.models.CourseList
-import site.pegasis.ta.fetch.models.OverallMark
-import site.pegasis.ta.fetch.models.Timing
+import site.pegasis.ta.fetch.models.*
 import site.pegasis.ta.fetch.tools.*
 import java.time.LocalDate
 import java.time.ZonedDateTime
@@ -54,11 +51,26 @@ class SummaryPage(private val session: JsoupSession, private val timing: Timing 
                             }
                         }
 
-                        noThrow {
-                            val midTermText = cells[2].getElementsByTag("span")[0].text()
-                            val midTermMarkText = find(midTermText, "(?<=MIDTERM MARK: )[^%]+")?.get(0)
-                            course.midTermMark = OverallMark(midTermMarkText!!.toDouble())
+                        course.extraMarks = ExtraMarks()
+                        cells[2].getElementsByTag("span").forEach { span ->
+                            noThrow {
+                                val extraMarkText = span.text()
+                                val (name, mark) = extraMarkText.split(": ")
+                                if (mark.matches("[\\d\\.]+%")) {
+                                    course.extraMarks!!.add(ExtraMark(
+                                        name.capitalizeWord(),
+                                        OverallMark(mark.substring(0, mark.lastIndex).toDouble())
+                                    ))
+                                } else {
+                                    logWarn("Unknown pattern: $extraMarkText")
+                                }
+                            }
                         }
+//                        noThrow {
+//                            val midTermText = cells[2].getElementsByTag("span")[0].text()
+//                            val midTermMarkText = find(midTermText, "(?<=MIDTERM MARK: )[^%]+")?.get(0)
+//                            course.midTermMark = OverallMark(midTermMarkText!!.toDouble())
+//                        }
                     }
 
                     courses.add(course)

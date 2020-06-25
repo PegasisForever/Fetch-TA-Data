@@ -69,7 +69,7 @@ object CourseListSerializerV11 {
         obj["block"] = course.block
         obj["room"] = course.room
         obj["overall_mark"] = course.overallMark?.getMarkValue()
-        obj["midterm_mark"] = course.midTermMark?.getMarkValue()
+        obj["midterm_mark"] = course.extraMarks?.get("Midterm Mark")?.getMarkValue()
         obj["cached"] = course.cached
         obj["id"] = course.id
 

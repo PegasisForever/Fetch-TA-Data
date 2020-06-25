@@ -56,3 +56,5 @@ operator fun String.times(time: Int): String {
 
     return builder.toString()
 }
+
+fun String.capitalizeWord() = split(" ").map { it.capitalize() }.joinToString(" ")

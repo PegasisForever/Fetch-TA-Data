@@ -43,3 +43,17 @@ inline fun <T> ArrayList<T>.findAndRemove(predicate: (T) -> Boolean): T? {
     item?.let { remove(it) }
     return item
 }
+
+fun listsEqual(list1: List<Any>?, list2: List<Any>?): Boolean {
+    if ((list1 == null || list1.isEmpty()) && (list2 == null || list2.isEmpty())) return true
+    if (list1 == null || list2 == null) return false
+
+    if (list1.size != list2.size)
+        return false
+
+    val pairList = list1.zip(list2)
+
+    return pairList.all { (a, b) ->
+        a == b
+    }
+}

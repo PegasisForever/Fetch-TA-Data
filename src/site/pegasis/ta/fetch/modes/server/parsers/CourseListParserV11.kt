@@ -61,7 +61,11 @@ object CourseListParserV11 {
         block = json["block"] as String?
         room = json["room"] as String?
         overallMark = (json["overall_mark"] as Double?)?.let { OverallMark(it) }
-        midTermMark = (json["midterm_mark"] as Double?)?.let { OverallMark(it) }
+        (json["midterm_mark"] as Double?)?.let {
+            extraMarks = ExtraMarks().apply {
+                add(ExtraMark("Midterm Mark", OverallMark(it)))
+            }
+        }
         cached = json["cached"] as Boolean
         id = (json["id"] as Number?)?.toInt()
 

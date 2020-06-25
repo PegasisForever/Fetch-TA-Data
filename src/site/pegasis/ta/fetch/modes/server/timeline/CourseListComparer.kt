@@ -79,7 +79,15 @@ fun compareCourses(
         } else if (newCourse.overallMark == null && oldCourse.overallMark != null) { //teacher hides the mark in new course
             oldCourse.apply {
                 cached = true
-                if (newCourse.midTermMark != null) midTermMark = newCourse.midTermMark
+                if (extraMarks == null) {
+                    extraMarks = newCourse.extraMarks
+                } else {
+                    newCourse.extraMarks?.forEach { extraMark ->
+                        if (extraMark !in extraMarks!!) {
+                            extraMarks!!.add(extraMark)
+                        }
+                    }
+                }
             }
         } else { //this course is in both new and old course list
             updateList += compareAssignments(oldCourse, newCourse, compareTime)
