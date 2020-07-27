@@ -1,0 +1,9 @@
+version: "3.7"
+
+services:
+  server:
+    image: pegasis0/fetch-ta:latest
+    ports:
+    - 5005:5005
+  mongo:
+    image: mongo:4.2-bionic

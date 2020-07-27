@@ -32,6 +32,13 @@ add `-h` to get help
 
 The config file is `data/config.json`. If you need to send notifications, you need to add `data/serviceAccountKey.json` file (download it from firebase cloud messaging)
 
+## Create Docker Image
+
+```
+./build.sh
+docker build --rm -t pegasis/fetch-ta:latest .
+```
+
 ## Support Me
 
 I spent hundreds of hours on this project, consider buy me a cup of coffee?
