@@ -1,6 +1,7 @@
 package site.pegasis.ta.fetch.tools
 
 import java.io.ByteArrayOutputStream
+import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.util.regex.Pattern
 import java.util.zip.GZIPInputStream
@@ -58,3 +59,5 @@ operator fun String.times(time: Int): String {
 }
 
 fun String.capitalizeWord() = split(" ").map { it.toLowerCase().capitalize() }.joinToString(" ")
+
+fun String.toUrlEncoded(): String = URLEncoder.encode(this, "UTF-8")

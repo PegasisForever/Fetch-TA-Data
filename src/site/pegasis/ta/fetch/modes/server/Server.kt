@@ -1,5 +1,7 @@
 package site.pegasis.ta.fetch.modes.server
 
+import com.mongodb.MongoClient
+import com.mongodb.MongoClientURI
 import io.ktor.routing.Routing
 import io.ktor.routing.options
 import io.ktor.routing.post
@@ -22,15 +24,15 @@ import site.pegasis.ta.fetch.modes.server.timeline.stopAutoUpdateThread
 import site.pegasis.ta.fetch.modes.server.timeline.updateAutoUpdateThread
 import site.pegasis.ta.fetch.tools.logInfo
 import site.pegasis.ta.fetch.tools.logUnhandled
+import site.pegasis.ta.fetch.tools.toUrlEncoded
 import java.lang.Thread.setDefaultUncaughtExceptionHandler
 
 const val minApiVersion = 4
 const val latestApiVersion = 12
 const val latestPublicApiVersion = 2
 
-fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publicPort: Int) {
+fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publicPort: Int, dbHost: String, dbPort: Int, dbUSer: String, dbPassword: String) {
     val timing = Timing()
-    logInfo("Starting server")
 
     var privateServer: NettyApplicationEngine? = null
     var controlServer: NettyApplicationEngine? = null
@@ -61,6 +63,11 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
         }
     })
 
+    logInfo("Connecting to mongodb.....")
+    val mongoClient = MongoClient(MongoClientURI("mongodb://${dbUSer.toUrlEncoded()}:${dbPassword.toUrlEncoded()}@$dbHost:$dbPort"))
+    timing("connect to mongodb")
+
+    logInfo("Loading data.....")
     runBlocking {
         LastUserUpdateTime.load()
         LastUpdateDoneTime.load()
@@ -71,6 +78,7 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
     }
     timing("load data")
 
+    logInfo("Starting server.....")
     //private server
     if (enablePrivate) {
         privateServer = embeddedServer(Netty, privatePort) {

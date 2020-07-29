@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="BranchesTreeState">
     <expand>
       <path>
@@ -24,8 +27,16 @@
     </select>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="90fa7a66-5d3e-4fe9-98ea-b0485a795cdb" name="Default Changelist" comment="dockerize">
-      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
+    <list default="true" id="90fa7a66-5d3e-4fe9-98ea-b0485a795cdb" name="Default Changelist" comment="remove debug env in docker file">
+      <change afterPath="$PROJECT_DIR$/build-docker.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/run-dev-mongo.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/site/pegasis/ta/fetch/main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/site/pegasis/ta/fetch/main.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/site/pegasis/ta/fetch/modes/server/Server.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/site/pegasis/ta/fetch/modes/server/Server.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/site/pegasis/ta/fetch/tools/string.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/site/pegasis/ta/fetch/tools/string.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -118,7 +129,7 @@
     <property name="aspect.path.notification.shown" value="true" />
     <property name="com.intellij.ide.scratch.LRUPopupBuilder$1/New Scratch File" value="kotlin" />
     <property name="dart.analysis.tool.window.visible" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/build.sh" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/build-docker.sh" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -158,7 +169,7 @@
       <recent name="C:\Users\Pegasis\Temp\Fetch-TA-Data" />
     </key>
   </component>
-  <component name="RunManager" selected="Remote.debug">
+  <component name="RunManager" selected="Kotlin.Server">
     <configuration name="GetMark -i" type="JetRunConfigurationType">
       <module name="Fetch-TA-Data" />
       <option name="VM_PARAMETERS" value="" />
@@ -188,7 +199,7 @@
     <configuration name="Server" type="JetRunConfigurationType">
       <module name="Fetch-TA-Data" />
       <option name="VM_PARAMETERS" value="-XX:-OmitStackTraceInFastThrow" />
-      <option name="PROGRAM_PARAMETERS" value="server -p  --control-port 5007" />
+      <option name="PROGRAM_PARAMETERS" value="server -p --control-port 5007" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
       <option name="PASS_PARENT_ENVS" value="true" />
@@ -198,25 +209,9 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="debug" type="Remote">
-      <module name="Fetch-TA-Data" />
-      <option name="USE_SOCKET_TRANSPORT" value="true" />
-      <option name="SERVER_MODE" value="false" />
-      <option name="SHMEM_ADDRESS" />
-      <option name="HOST" value="127.0.0.1" />
-      <option name="PORT" value="10000" />
-      <option name="AUTO_RESTART" value="false" />
-      <RunnerSettings RunnerId="Debug">
-        <option name="DEBUG_PORT" value="10000" />
-        <option name="LOCAL" value="false" />
-      </RunnerSettings>
-      <method v="2">
-        <option name="com.intellij.docker.debug.DockerBeforeRunTask" run-config="docker debug" />
-      </method>
-    </configuration>
-    <configuration name="build" type="ShConfigurationType">
+    <configuration name="build docker" type="ShConfigurationType">
       <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
-      <option name="SCRIPT_PATH" value="$PROJECT_DIR$/build.sh" />
+      <option name="SCRIPT_PATH" value="$PROJECT_DIR$/build-docker.sh" />
       <option name="SCRIPT_OPTIONS" value="" />
       <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
       <option name="SCRIPT_WORKING_DIRECTORY" value="$PROJECT_DIR$" />
@@ -225,49 +220,39 @@
       <option name="INTERPRETER_OPTIONS" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="docker build" type="docker-deploy" factoryName="dockerfile" server-name="Local Docker">
-      <deployment type="dockerfile">
+    <configuration name="docker compose" type="docker-deploy" factoryName="docker-compose.yml" server-name="Local Docker">
+      <deployment type="docker-compose.yml">
         <settings>
-          <option name="imageTag" value="pegasis/fetch-ta:latest" />
-          <option name="buildCliOptions" value="--rm" />
-          <option name="buildOnly" value="true" />
-          <option name="command" value="" />
-          <option name="containerName" value="" />
-          <option name="entrypoint" value="" />
-          <option name="commandLineOptions" value="" />
-          <option name="sourceFilePath" value="Dockerfile" />
+          <option name="envVars">
+            <list>
+              <DockerEnvVarImpl>
+                <option name="name" value="JAVA_TOOL_OPTIONS" />
+                <option name="value" value="-agentlib:jdwp=transport=dt_socket,address=10000,server=y,suspend=n" />
+              </DockerEnvVarImpl>
+            </list>
+          </option>
+          <option name="services">
+            <list>
+              <option value="mongo" />
+              <option value="server" />
+            </list>
+          </option>
+          <option name="sourceFilePath" value="docker-compose.yml" />
         </settings>
       </deployment>
       <method v="2">
-        <option name="RunConfigurationTask" enabled="true" run_configuration_name="build" run_configuration_type="ShConfigurationType" run_configuration_target="default_target" />
-      </method>
-    </configuration>
-    <configuration name="docker debug" type="docker-deploy" factoryName="dockerfile" server-name="Local Docker">
-      <deployment type="dockerfile">
-        <settings>
-          <option name="imageTag" value="pegasis/fetch-ta:latest" />
-          <option name="buildCliOptions" value="--rm" />
-          <option name="command" value="" />
-          <option name="containerName" value="" />
-          <option name="entrypoint" value="" />
-          <option name="commandLineOptions" value="--rm --network host --env JAVA_TOOL_OPTIONS=&quot;-agentlib:jdwp=transport=dt_socket,address=10000,server=y,suspend=n&quot;" />
-          <option name="sourceFilePath" value="Dockerfile" />
-        </settings>
-      </deployment>
-      <method v="2">
-        <option name="RunConfigurationTask" enabled="true" run_configuration_name="build" run_configuration_type="ShConfigurationType" run_configuration_target="default_target" />
+        <option name="RunConfigurationTask" enabled="true" run_configuration_name="build docker" run_configuration_type="ShConfigurationType" run_configuration_target="default_target" />
       </method>
     </configuration>
     <list>
-      <item itemvalue="Docker.docker debug" />
-      <item itemvalue="Docker.docker build" />
+      <item itemvalue="Docker.docker compose" />
       <item itemvalue="Kotlin.Server" />
       <item itemvalue="Kotlin.GetMark" />
       <item itemvalue="Kotlin.GetMark -i" />
-      <item itemvalue="Remote.debug" />
-      <item itemvalue="Shell Script.build" />
+      <item itemvalue="Shell Script.build docker" />
     </list>
   </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="project-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -353,21 +338,9 @@
       <workItem from="1594715560319" duration="50000" />
       <workItem from="1595246861640" duration="9329000" />
       <workItem from="1595351264528" duration="2121000" />
-      <workItem from="1595829695179" duration="6269000" />
-    </task>
-    <task id="LOCAL-00096" summary="+ change all file related function to suspend">
-      <created>1586338677175</created>
-      <option name="number" value="00096" />
-      <option name="presentableId" value="LOCAL-00096" />
-      <option name="project" value="LOCAL" />
-      <updated>1586338677176</updated>
-    </task>
-    <task id="LOCAL-00097" summary="+ fix deprecated notification api">
-      <created>1586338891007</created>
-      <option name="number" value="00097" />
-      <option name="presentableId" value="LOCAL-00097" />
-      <option name="project" value="LOCAL" />
-      <updated>1586338891007</updated>
+      <workItem from="1595829695179" duration="13631000" />
+      <workItem from="1595906881565" duration="2676000" />
+      <workItem from="1596012704372" duration="3674000" />
     </task>
     <task id="LOCAL-00098" summary="+ use coroutine instead of thread for auto updating">
       <created>1586340782319</created>
@@ -698,11 +671,25 @@
       <option name="project" value="LOCAL" />
       <updated>1595835823054</updated>
     </task>
-    <option name="localTasksCounter" value="145" />
+    <task id="LOCAL-00145" summary="remove debug env in docker file">
+      <created>1595836191278</created>
+      <option name="number" value="00145" />
+      <option name="presentableId" value="LOCAL-00145" />
+      <option name="project" value="LOCAL" />
+      <updated>1595836191278</updated>
+    </task>
+    <task id="LOCAL-00146" summary="remove debug env in docker file">
+      <created>1595836373634</created>
+      <option name="number" value="00146" />
+      <option name="presentableId" value="LOCAL-00146" />
+      <option name="project" value="LOCAL" />
+      <updated>1595836373635</updated>
+    </task>
+    <option name="localTasksCounter" value="147" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="2" />
+    <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.History.Properties">
     <option name="COLUMN_ORDER">
@@ -727,7 +714,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="verify website certificate" />
     <MESSAGE value="catch exceptions" />
     <MESSAGE value="added auto update job queue" />
     <MESSAGE value="implemented remote fetch ws route" />
@@ -752,7 +738,8 @@
     <MESSAGE value="change build number to 52, fix capitalize word" />
     <MESSAGE value="commit" />
     <MESSAGE value="dockerize" />
-    <option name="LAST_COMMIT_MESSAGE" value="dockerize" />
+    <MESSAGE value="remove debug env in docker file" />
+    <option name="LAST_COMMIT_MESSAGE" value="remove debug env in docker file" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="WindowStateProjectService">
@@ -760,10 +747,18 @@
       <screen x="883" y="803" width="1366" height="768" />
     </state>
     <state x="1227" y="913" key="#DockerBeforeRunTaskProvider/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1595834958885" />
-    <state x="1122" y="830" width="768" height="521" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1595835957497">
+    <state x="1261" y="803" width="609" height="728" key="#Dockerfile" timestamp="1595906899413">
       <screen x="883" y="803" width="1366" height="768" />
     </state>
-    <state x="1122" y="830" key="#com.intellij.execution.impl.EditConfigurationsDialog/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1595835957497" />
+    <state x="1261" y="803" width="609" height="728" key="#Dockerfile/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1595906899413" />
+    <state x="1385" y="865" width="624" height="622" key="#Remote_with_compose" timestamp="1595907028845">
+      <screen x="883" y="803" width="1366" height="768" />
+    </state>
+    <state x="1385" y="865" width="624" height="622" key="#Remote_with_compose/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1595907028845" />
+    <state x="2483" y="764" width="1084" height="710" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1596015966929">
+      <screen x="2249" y="491" width="1920" height="1080" />
+    </state>
+    <state x="2483" y="764" width="1084" height="710" key="#com.intellij.execution.impl.EditConfigurationsDialog/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1596015966929" />
     <state x="1141" y="929" width="768" height="521" key="#com.intellij.execution.impl.EditConfigurationsDialog/2249.491.1920.1080/883.803.1366.768/0.0.883.1513@883.803.1366.768" timestamp="1591111266272" />
     <state x="1292" y="969" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1595248867103">
       <screen x="883" y="803" width="1366" height="768" />
@@ -781,38 +776,46 @@
       <screen x="2249" y="491" width="1920" height="1080" />
     </state>
     <state x="2499" y="821" width="1093" height="615" maximized="true" key="DiffContextDialog/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1593101380597" />
-    <state x="1371" y="962" key="FileChooserDialogImpl" timestamp="1595835323479">
+    <state x="1504" y="1060" key="DockerComposeFileDialog" timestamp="1595836811699">
+      <screen x="883" y="803" width="1366" height="768" />
+    </state>
+    <state x="1504" y="1060" key="DockerComposeFileDialog/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1595836811699" />
+    <state x="1399" y="984" key="EnvironmentVariablesDialog" timestamp="1595905715409">
+      <screen x="883" y="803" width="1366" height="768" />
+    </state>
+    <state x="1399" y="984" key="EnvironmentVariablesDialog/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1595905715409" />
+    <state x="1371" y="962" key="FileChooserDialogImpl" timestamp="1595905245653">
       <screen x="883" y="803" width="1366" height="768" />
     </state>
     <state x="686" y="224" key="FileChooserDialogImpl/0.0.1920.1080/1920.0.2400.1350@0.0.1920.1080" timestamp="1588477291836" />
-    <state x="1371" y="962" key="FileChooserDialogImpl/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1595835323479" />
+    <state x="1371" y="962" key="FileChooserDialogImpl/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1595905245653" />
     <state x="2935" y="715" key="FileChooserDialogImpl/2249.491.1920.1080/883.803.1366.768/0.0.883.1513@2249.491.1920.1080" timestamp="1590703048928" />
-    <state width="1308" height="752" key="GridCell.Tab.0.bottom" timestamp="1595835593198">
+    <state width="1031" height="794" key="GridCell.Tab.0.bottom" timestamp="1596016149793">
       <screen x="883" y="803" width="1366" height="768" />
     </state>
     <state width="1664" height="1034" key="GridCell.Tab.0.bottom/0.0.1920.1080/1920.0.2400.1350@0.0.1920.1080" timestamp="1588479165163" />
-    <state width="1308" height="752" key="GridCell.Tab.0.bottom/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1595835593198" />
+    <state width="1031" height="794" key="GridCell.Tab.0.bottom/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1596016149793" />
     <state width="1874" height="275" key="GridCell.Tab.0.bottom/2249.491.1920.1080/883.803.1366.768/0.0.883.1513@2249.491.1920.1080" timestamp="1590758412932" />
     <state width="1320" height="131" key="GridCell.Tab.0.bottom/2249.491.1920.1080/883.803.1366.768/0.0.883.1513@883.803.1366.768" timestamp="1591113719255" />
-    <state width="1308" height="752" key="GridCell.Tab.0.center" timestamp="1595835593198">
+    <state width="1031" height="794" key="GridCell.Tab.0.center" timestamp="1596016149793">
       <screen x="883" y="803" width="1366" height="768" />
     </state>
     <state width="1664" height="1034" key="GridCell.Tab.0.center/0.0.1920.1080/1920.0.2400.1350@0.0.1920.1080" timestamp="1588479165163" />
-    <state width="1308" height="752" key="GridCell.Tab.0.center/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1595835593198" />
+    <state width="1031" height="794" key="GridCell.Tab.0.center/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1596016149793" />
     <state width="1874" height="275" key="GridCell.Tab.0.center/2249.491.1920.1080/883.803.1366.768/0.0.883.1513@2249.491.1920.1080" timestamp="1590758412932" />
     <state width="1320" height="131" key="GridCell.Tab.0.center/2249.491.1920.1080/883.803.1366.768/0.0.883.1513@883.803.1366.768" timestamp="1591113719254" />
-    <state width="1308" height="752" key="GridCell.Tab.0.left" timestamp="1595835593198">
+    <state width="1031" height="794" key="GridCell.Tab.0.left" timestamp="1596016149792">
       <screen x="883" y="803" width="1366" height="768" />
     </state>
     <state width="1664" height="1034" key="GridCell.Tab.0.left/0.0.1920.1080/1920.0.2400.1350@0.0.1920.1080" timestamp="1588479165163" />
-    <state width="1308" height="752" key="GridCell.Tab.0.left/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1595835593198" />
+    <state width="1031" height="794" key="GridCell.Tab.0.left/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1596016149792" />
     <state width="1874" height="275" key="GridCell.Tab.0.left/2249.491.1920.1080/883.803.1366.768/0.0.883.1513@2249.491.1920.1080" timestamp="1590758412932" />
     <state width="1320" height="131" key="GridCell.Tab.0.left/2249.491.1920.1080/883.803.1366.768/0.0.883.1513@883.803.1366.768" timestamp="1591113719254" />
-    <state width="1308" height="752" key="GridCell.Tab.0.right" timestamp="1595835593255">
+    <state width="1031" height="794" key="GridCell.Tab.0.right" timestamp="1596016149793">
       <screen x="883" y="803" width="1366" height="768" />
     </state>
     <state width="1664" height="1034" key="GridCell.Tab.0.right/0.0.1920.1080/1920.0.2400.1350@0.0.1920.1080" timestamp="1588479165163" />
-    <state width="1308" height="752" key="GridCell.Tab.0.right/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1595835593255" />
+    <state width="1031" height="794" key="GridCell.Tab.0.right/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1596016149793" />
     <state width="1874" height="275" key="GridCell.Tab.0.right/2249.491.1920.1080/883.803.1366.768/0.0.883.1513@2249.491.1920.1080" timestamp="1590758412932" />
     <state width="1320" height="131" key="GridCell.Tab.0.right/2249.491.1920.1080/883.803.1366.768/0.0.883.1513@883.803.1366.768" timestamp="1591113719255" />
     <state x="1154" y="913" width="824" height="519" key="IDE.errors.dialog" timestamp="1593095864318">
@@ -831,6 +834,10 @@
     <state x="1104" y="803" width="911" height="728" key="SettingsEditor/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1595830226000" />
     <state x="2560" y="491" key="SettingsEditor/2249.491.1920.1080/883.803.1366.768/0.0.883.1513@2249.491.1920.1080" timestamp="1590686317479" />
     <state x="1079" y="143" key="SettingsEditor/768.143.1920.1080/0.0.768.1308@768.143.1920.1080" timestamp="1589481929554" />
+    <state x="3061" y="905" key="VCS.ChangelistChooser" timestamp="1595836347066">
+      <screen x="2249" y="491" width="1920" height="1080" />
+    </state>
+    <state x="3061" y="905" key="VCS.ChangelistChooser/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1595836347066" />
     <state x="1204" y="942" key="Vcs.Push.Dialog.v2" timestamp="1593115745959">
       <screen x="883" y="803" width="1366" height="768" />
     </state>
@@ -864,5 +871,9 @@
       <screen x="883" y="803" width="1366" height="768" />
     </state>
     <state x="1266" y="876" width="672" height="633" key="search.everywhere.popup/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1593112644182" />
+    <state x="1264" y="1003" width="572" height="260" key="vcs.readOnlyHandler.ReadOnlyStatusDialog" timestamp="1595838492786">
+      <screen x="883" y="803" width="1366" height="768" />
+    </state>
+    <state x="1264" y="1003" width="572" height="260" key="vcs.readOnlyHandler.ReadOnlyStatusDialog/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1595838492786" />
   </component>
 </project>

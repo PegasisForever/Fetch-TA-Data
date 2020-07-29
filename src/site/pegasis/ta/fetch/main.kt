@@ -123,5 +123,29 @@ class Server : Callable<Unit> {
     )
     private var publicPort = 5005
 
-    override fun call() = startServer(enablePrivate, privatePort, controlPort, publicPort)
+    @Option(
+        names = ["--host", "--db-host"],
+        description = ["Host of the database, default to localhost."]
+    )
+    private var dbHost = "localhost"
+
+    @Option(
+        names = ["--port", "--db-port"],
+        description = ["Host of the database, default to 27017."]
+    )
+    private var dbPort = 27017
+
+    @Option(
+        names = ["-u", "--db-user"],
+        description = ["User of the database, default to root."]
+    )
+    private var dbUser = "root"
+
+    @Option(
+        names = ["--password", "--db-password"],
+        description = ["Password of the database, default to password."]
+    )
+    private var dbPassword = "password"
+
+    override fun call() = startServer(enablePrivate, privatePort, controlPort, publicPort, dbHost, dbPort, dbUser, dbPassword)
 }

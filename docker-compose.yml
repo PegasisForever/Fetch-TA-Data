@@ -3,7 +3,25 @@ version: "3.7"
 services:
   server:
     image: pegasis0/fetch-ta:latest
+    restart: always
+    depends_on:
+      - "mongo"
+    volumes:
+      - fetch_ta_data:/server/data
     ports:
-    - 5005:5005
+      - 5006:5004
+      - 5007:5005
+      - 5008:5006
+    command: java -XX:-OmitStackTraceInFastThrow -jar fetch_ta_data.jar server
   mongo:
     image: mongo:4.2-bionic
+    restart: always
+    volumes:
+      - fetch_ta_data_mongo:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+
+volumes:
+  fetch_ta_data:
+  fetch_ta_data_mongo:
