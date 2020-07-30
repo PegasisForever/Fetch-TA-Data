@@ -1,34 +1,32 @@
 package site.pegasis.ta.fetch.modes.server.parsers
 
-import org.json.simple.JSONArray
-import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.models.*
 import site.pegasis.ta.fetch.tools.toZonedDateTime
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 object CourseListParserV10 {
-    private fun parseSmallMark(json: JSONObject) = SmallMark().apply {
+    private fun parseSmallMark(json: Map<*,*>) = SmallMark().apply {
         finished = json["finished"] as Boolean
         total = json["total"] as Double
         get = json["get"] as Double
         weight = json["weight"] as Double
     }
 
-    private fun parseSmallMarkGroup(json: JSONObject) = SmallMarkGroup().apply {
-        (json["smallmarks"] as JSONArray).forEach { smallMarkJSON ->
-            add(parseSmallMark(smallMarkJSON as JSONObject))
+    private fun parseSmallMarkGroup(json: Map<*,*>) = SmallMarkGroup().apply {
+        (json["smallmarks"] as List<*>).forEach { smallMarkJSON ->
+            add(parseSmallMark(smallMarkJSON as Map<*,*>))
         }
     }
 
-    fun parseAssignment(json: JSONObject) = Assignment().apply {
+    fun parseAssignment(json: Map<*,*>) = Assignment().apply {
         json.forEach { key, value ->
             when (key) {
                 "name" -> name = value as String
                 "time" -> time = (value as String?)?.toZonedDateTime()
                 "feedback" -> feedback = value as String?
                 else -> {
-                    this[categoryFromInitial(key as String)] = parseSmallMarkGroup(value as JSONObject)
+                    this[categoryFromInitial(key as String)] = parseSmallMarkGroup(value as Map<*,*>)
                 }
             }
         }
@@ -37,19 +35,19 @@ object CourseListParserV10 {
         }
     }
 
-    private fun parseWeight(json: JSONObject) = Weight().apply {
+    private fun parseWeight(json: Map<*,*>) = Weight().apply {
         W = json["W"] as Double
         CW = json["CW"] as Double
         SA = OverallMark(json["SA"] as Double)
     }
 
-    private fun parseWeightTable(json: JSONObject) = WeightTable().apply {
+    private fun parseWeightTable(json: Map<*,*>) = WeightTable().apply {
         json.forEach { key, value ->
-            this[categoryFromInitial(key as String)] = parseWeight(value as JSONObject)
+            this[categoryFromInitial(key as String)] = parseWeight(value as Map<*,*>)
         }
     }
 
-    private fun parseCourse(json: JSONObject) = Course().apply {
+    private fun parseCourse(json: Map<*,*>) = Course().apply {
         startTime = (json["start_time"] as String?)?.let {
             LocalDate.parse(it, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         }
@@ -66,16 +64,16 @@ object CourseListParserV10 {
 
         if (overallMark != null) {
             assignments = AssignmentList()
-            (json["assignments"] as JSONArray).forEach { assignmentJSON ->
-                assignments!!.add(parseAssignment(assignmentJSON as JSONObject))
+            (json["assignments"] as List<*>).forEach { assignmentJSON ->
+                assignments!!.add(parseAssignment(assignmentJSON as Map<*,*>))
             }
-            weightTable = parseWeightTable(json["weight_table"] as JSONObject)
+            weightTable = parseWeightTable(json["weight_table"] as Map<*,*>)
         }
     }
 
-    fun parseCourseList(json: JSONArray) = CourseList().apply {
+    fun parseCourseList(json: List<*>) = CourseList().apply {
         json.forEach { courseJSON ->
-            add(parseCourse(courseJSON as JSONObject))
+            add(parseCourse(courseJSON as Map<*,*>))
         }
     }
 }

@@ -1,5 +1,10 @@
 package site.pegasis.ta.fetch.modes.server.storage
 
+import com.mongodb.client.model.Filters.eq
+import com.mongodb.client.model.UpdateOptions
+import io.fluidsonic.mongo.MongoCollection
+import io.fluidsonic.mongo.MongoDatabase
+import org.bson.Document
 import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.TimeLine
@@ -11,13 +16,22 @@ import java.util.*
 import kotlin.collections.HashMap
 
 object PCache {
-    private val courseListCacheMap = HashMap<String, CourseList>()
     private val archivedCourseListCacheMap = HashMap<String, CourseList>()
     private val timeLineCacheMap = HashMap<String, TimeLine>()
     private var announcementCache: String? = null
 
+    const val courseListCollectionName = "courselists"
+    lateinit var courseListCollection: MongoCollection<Document>
+
+    const val courseListHistoryCollectionName = "courselists-history"
+    lateinit var courseListHistoryCollection: MongoCollection<Document>
+
+    fun init(db: MongoDatabase) {
+        courseListCollection = db.getCollection(courseListCollectionName)
+        courseListHistoryCollection = db.getCollection(courseListHistoryCollectionName)
+    }
+
     fun clearCache() {
-        courseListCacheMap.clear()
         archivedCourseListCacheMap.clear()
         timeLineCacheMap.clear()
         announcementCache = null
@@ -25,10 +39,18 @@ object PCache {
 
     @Synchronized
     suspend fun save(number: String, courseList: CourseList) {
-        courseListCacheMap[number] = courseList
-        val str = courseList.serialize().toJSONString()
-        str.writeToFile("data/courselists/$number.json")
-        str.writeToFile("data/courselists-history/$number/${Date().time}.json")
+        val bson = courseList.serialize().toBSON()
+        courseListCollection.updateOne(eq("_id", number), Document("\$set", bson), UpdateOptions().apply { upsert(true) })
+        courseListHistoryCollection
+            .updateOne(eq("_id", number),
+                Document(
+                    "\$push",
+                    Document("history",
+                        bson.append("time", Date())
+                    )
+                )
+                , UpdateOptions().apply { upsert(true) }
+            )
     }
 
     @Synchronized
@@ -55,25 +77,8 @@ object PCache {
     }
 
     suspend fun readCourseList(number: String): CourseList {
-        return if (courseListCacheMap.containsKey(number)) {
-            courseListCacheMap[number]!!
-        } else {
-            try {
-                val text = readFile("data/courselists/$number.json")
-                val courseList = (jsonParser.parse(text) as JSONObject).toCourseList()
-                courseListCacheMap[number] = courseList
-                courseList
-            } catch (e: java.nio.file.NoSuchFileException) {
-                CourseList()
-            } catch (e: Throwable) {
-                log(
-                    LogLevel.ERROR,
-                    "Error when reading course list of $number",
-                    e
-                )
-                CourseList()
-            }
-        }
+        val bson = courseListCollection.find(eq("_id", number)).limit(1).firstOrNull()
+        return bson?.toCourseList() ?: CourseList()
     }
 
     suspend fun readArchivedCourseList(number: String): CourseList {

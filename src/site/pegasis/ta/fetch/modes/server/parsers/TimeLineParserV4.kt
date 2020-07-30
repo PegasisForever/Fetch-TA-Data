@@ -1,44 +1,42 @@
 package site.pegasis.ta.fetch.modes.server.parsers
 
-import org.json.simple.JSONArray
-import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.models.*
 import site.pegasis.ta.fetch.modes.server.parsers.CourseListParserV4.parseAssignment
 import site.pegasis.ta.fetch.tools.toZonedDateTime
 
 object TimeLineParserV4 {
-    private fun parseAssignmentAdded(json: JSONObject) = AssignmentAdded().apply {
+    private fun parseAssignmentAdded(json: Map<*,*>) = AssignmentAdded().apply {
         courseName = json["course_name"] as String?
-        assignment = parseAssignment(json["assignment"] as JSONObject)
+        assignment = parseAssignment(json["assignment"] as Map<*,*>)
         assignmentAvg = json["assignment_avg"] as Double?
         overallBefore = json["overall_before"] as Double?
         overallAfter = json["overall_after"] as Double
         time = (json["time"] as String).toZonedDateTime()
     }
 
-    private fun parseAssignmentUpdated(json: JSONObject) = AssignmentUpdated().apply {
+    private fun parseAssignmentUpdated(json: Map<*,*>) = AssignmentUpdated().apply {
         courseName = json["course_name"] as String?
         assignmentName = json["assignment_name"] as String
-        assignmentBefore = parseAssignment(json["assignment_before"] as JSONObject)
-        assignmentAfter = parseAssignment(json["assignment_after"] as JSONObject)
+        assignmentBefore = parseAssignment(json["assignment_before"] as Map<*,*>)
+        assignmentAfter = parseAssignment(json["assignment_after"] as Map<*,*>)
         time = (json["time"] as String).toZonedDateTime()
     }
 
-    private fun parseCourseAdded(json: JSONObject) = CourseAdded().apply {
+    private fun parseCourseAdded(json: Map<*,*>) = CourseAdded().apply {
         courseName = json["course_name"] as String
         courseBlock = json["course_block"] as String?
         time = (json["time"] as String).toZonedDateTime()
     }
 
-    private fun parseCourseRemoved(json: JSONObject) = CourseRemoved().apply {
+    private fun parseCourseRemoved(json: Map<*,*>) = CourseRemoved().apply {
         courseName = json["course_name"] as String
         courseBlock = json["course_block"] as String?
         time = (json["time"] as String).toZonedDateTime()
     }
 
-    fun parseTimeLine(json: JSONArray) = TimeLine().apply {
+    fun parseTimeLine(json: List<*>) = TimeLine().apply {
         json.forEach { taUpdate ->
-            val taUpdateJSON = taUpdate as JSONObject
+            val taUpdateJSON = taUpdate as Map<*,*>
             add(
                 when (taUpdateJSON["category"]) {
                     "assignment_added" -> parseAssignmentAdded(taUpdateJSON)

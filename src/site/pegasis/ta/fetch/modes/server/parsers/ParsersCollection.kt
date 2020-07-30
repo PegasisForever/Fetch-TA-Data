@@ -1,6 +1,5 @@
 package site.pegasis.ta.fetch.modes.server.parsers
 
-import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.TimeLine
@@ -13,13 +12,13 @@ import site.pegasis.ta.fetch.modes.server.parsers.TimeLineParserV4.parseTimeLine
 import site.pegasis.ta.fetch.modes.server.parsers.TimeLineParserV6.parseTimeLine as TimeLineParserV6
 import site.pegasis.ta.fetch.modes.server.parsers.TimeLineParserV9.parseTimeLine as TimeLineParserV9
 
-class UnwrappedData(val data: JSONArray, val version: Int)
+class UnwrappedData(val data: List<*>, val version: Int)
 
-fun unwrapVersion(obj: JSONObject): UnwrappedData {
-    return UnwrappedData(obj["data"] as JSONArray, (obj["version"] as Number).toInt())
+fun unwrapVersion(obj: Map<*,*>): UnwrappedData {
+    return UnwrappedData(obj["data"] as List<*>, (obj["version"] as Number).toInt())
 }
 
-val CourseListParsers = mapOf<Int, (JSONArray) -> CourseList>(
+val CourseListParsers = mapOf<Int, (List<*>) -> CourseList>(
     4 to ::CourseListParserV4,
     5 to ::CourseListParserV4,
     6 to ::CourseListParserV4,
@@ -31,8 +30,7 @@ val CourseListParsers = mapOf<Int, (JSONArray) -> CourseList>(
     12 to ::CourseListParserV12
 )
 
-fun Any.toCourseList(): CourseList {
-    if (this !is JSONObject) error("Not called on a JSONObject")
+fun Map<*,*>.toCourseList(): CourseList {
     val unwrappedData = unwrapVersion(this)
     val version = unwrappedData.version
     val data = unwrappedData.data
@@ -42,7 +40,7 @@ fun Any.toCourseList(): CourseList {
 }
 
 
-val TimeLineParsers = mapOf<Int, (JSONArray) -> TimeLine>(
+val TimeLineParsers = mapOf<Int, (List<*>) -> TimeLine>(
     4 to ::TimeLineParserV4,
     5 to ::TimeLineParserV4,
     6 to ::TimeLineParserV6,
