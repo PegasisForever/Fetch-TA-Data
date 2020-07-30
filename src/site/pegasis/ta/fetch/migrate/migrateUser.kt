@@ -55,7 +55,7 @@ class User() {
     }
 
     fun toBSONObject(): Document {
-        return Document("number", number)
+        return Document("_id", number)
             .append("password", password)
             .append("devices", devices.map { it.toBSONObject() })
     }

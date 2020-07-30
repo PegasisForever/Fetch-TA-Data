@@ -47,7 +47,7 @@ class User() {
     var devices = HashSet<Device>()
 
     constructor(bson: Document) : this() {
-        number = bson["number"] as String
+        number = bson["_id"] as String
         password = bson["password"] as String
 
         (bson["devices"] as Iterable<*>).forEach { deviceBSON ->
@@ -56,7 +56,7 @@ class User() {
     }
 
     fun toBSONObject(): Document {
-        return Document("number", number)
+        return Document("_id", number)
             .append("password", password)
             .append("devices", devices.map { it.toBSONObject() })
     }

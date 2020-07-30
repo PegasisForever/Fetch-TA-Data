@@ -1,6 +1,5 @@
 package site.pegasis.ta.fetch.modes.server.parsers
 
-import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.TimeLine
 import site.pegasis.ta.fetch.modes.server.parsers.CourseListParserV10.parseCourseList as CourseListParserV10
@@ -52,8 +51,7 @@ val TimeLineParsers = mapOf<Int, (List<*>) -> TimeLine>(
     12 to ::TimeLineParserV9
 )
 
-fun Any.toTimeLine(): TimeLine {
-    if (this !is JSONObject) error("Not called on a JSONObject")
+fun Map<*,*>.toTimeLine(): TimeLine {
     val unwrappedData = unwrapVersion(this)
     val version = unwrappedData.version
     val data = unwrappedData.data

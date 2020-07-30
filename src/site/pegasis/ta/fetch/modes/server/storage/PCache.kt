@@ -17,8 +17,10 @@ import kotlin.collections.HashMap
 
 object PCache {
     private val archivedCourseListCacheMap = HashMap<String, CourseList>()
-    private val timeLineCacheMap = HashMap<String, TimeLine>()
     private var announcementCache: String? = null
+
+    const val timeLineCollectionName = "timeline"
+    lateinit var timeLineCollection: MongoCollection<Document>
 
     const val courseListCollectionName = "courselists"
     lateinit var courseListCollection: MongoCollection<Document>
@@ -29,15 +31,14 @@ object PCache {
     fun init(db: MongoDatabase) {
         courseListCollection = db.getCollection(courseListCollectionName)
         courseListHistoryCollection = db.getCollection(courseListHistoryCollectionName)
+        timeLineCollection = db.getCollection(timeLineCollectionName)
     }
 
     fun clearCache() {
         archivedCourseListCacheMap.clear()
-        timeLineCacheMap.clear()
         announcementCache = null
     }
 
-    @Synchronized
     suspend fun save(number: String, courseList: CourseList) {
         val bson = courseList.serialize().toBSON()
         courseListCollection.updateOne(eq("_id", number), Document("\$set", bson), UpdateOptions().apply { upsert(true) })
@@ -59,10 +60,9 @@ object PCache {
         courseList.serialize().toJSONString().writeToFile("data/courselists-archived/$number.json")
     }
 
-    @Synchronized
     suspend fun save(number: String, timeLine: TimeLine) {
-        timeLineCacheMap[number] = timeLine
-        timeLine.serialize().toJSONString().writeToFile("data/timelines/$number.json")
+        val bson = timeLine.serialize().toBSON()
+        timeLineCollection.updateOne(eq("_id", number), Document("\$set", bson), UpdateOptions().apply { upsert(true) })
     }
 
     suspend fun getAnnouncement(): String {
@@ -104,25 +104,8 @@ object PCache {
     }
 
     suspend fun readTimeLine(number: String): TimeLine {
-        return if (timeLineCacheMap.containsKey(number)) {
-            timeLineCacheMap[number]!!
-        } else {
-            try {
-                val text = readFile("data/timelines/$number.json")
-                val timeLine = (jsonParser.parse(text) as JSONObject).toTimeLine()
-                timeLineCacheMap[number] = timeLine
-                timeLine
-            } catch (e: java.nio.file.NoSuchFileException) {
-                TimeLine()
-            } catch (e: Throwable) {
-                log(
-                    LogLevel.ERROR,
-                    "Error when reading time line of $number",
-                    e
-                )
-                TimeLine()
-            }
-        }
+        val bson = timeLineCollection.find(eq("_id", number)).limit(1).firstOrNull()
+        return bson?.toTimeLine() ?: TimeLine()
     }
 
 }
