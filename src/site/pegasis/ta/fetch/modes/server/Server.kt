@@ -1,7 +1,5 @@
 package site.pegasis.ta.fetch.modes.server
 
-import com.mongodb.MongoClient
-import com.mongodb.MongoClientURI
 import io.ktor.routing.Routing
 import io.ktor.routing.options
 import io.ktor.routing.post
@@ -22,6 +20,7 @@ import site.pegasis.ta.fetch.modes.server.storage.LastUpdateDoneTime
 import site.pegasis.ta.fetch.modes.server.storage.LastUserUpdateTime
 import site.pegasis.ta.fetch.modes.server.timeline.stopAutoUpdateThread
 import site.pegasis.ta.fetch.modes.server.timeline.updateAutoUpdateThread
+import site.pegasis.ta.fetch.tools.getMongoClient
 import site.pegasis.ta.fetch.tools.logInfo
 import site.pegasis.ta.fetch.tools.logUnhandled
 import site.pegasis.ta.fetch.tools.toUrlEncoded
@@ -30,6 +29,7 @@ import java.lang.Thread.setDefaultUncaughtExceptionHandler
 const val minApiVersion = 4
 const val latestApiVersion = 12
 const val latestPublicApiVersion = 2
+const val dbName = "ta"
 
 fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publicPort: Int, dbHost: String, dbPort: Int, dbUSer: String, dbPassword: String) {
     val timing = Timing()
@@ -64,7 +64,8 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
     })
 
     logInfo("Connecting to mongodb.....")
-    val mongoClient = MongoClient(MongoClientURI("mongodb://${dbUSer.toUrlEncoded()}:${dbPassword.toUrlEncoded()}@$dbHost:$dbPort"))
+    val mongoClient = getMongoClient("mongodb://${dbUSer.toUrlEncoded()}:${dbPassword.toUrlEncoded()}@$dbHost:$dbPort")
+    val mongoDB = mongoClient.getDatabase(dbName)
     timing("connect to mongodb")
 
     logInfo("Loading data.....")
@@ -72,7 +73,7 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
         LastUserUpdateTime.load()
         LastUpdateDoneTime.load()
         LastCleanDoneTime.load()
-        User.load()
+        User.init(mongoDB)
         CalendarData.load()
         updateAutoUpdateThread()
     }

@@ -67,7 +67,7 @@ suspend fun sendNotifications(user: User, updateList: TimeLine) {
     updateList.forEach { taUpdate ->
         availableDevices.forEach { device ->
             NotificationStrings.getNoti(device.language, taUpdate)?.let { notification ->
-                if (!sendFCM(device.token, notification)) User.removeToken(device.token)
+                if (!sendFCM(device.token, notification)) User.removeDevice(user.number, device)
             }
         }
     }
@@ -101,7 +101,7 @@ fun startAutoUpdateThread() {
         try {
             while (isActive) {
                 val startTime = System.currentTimeMillis()
-                User.allUsers.forEach { user ->
+                User.forEach { user ->
                     if (!isActive) throw error("cancelled")
                     val updates = performUpdate(user)
                     logInfo("Auto performed update for user ${user.number}, ${updates.size} updates")

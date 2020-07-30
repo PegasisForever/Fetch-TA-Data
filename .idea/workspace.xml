@@ -27,16 +27,15 @@
     </select>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="90fa7a66-5d3e-4fe9-98ea-b0485a795cdb" name="Default Changelist" comment="remove debug env in docker file">
-      <change afterPath="$PROJECT_DIR$/build-docker.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/run-dev-mongo.sh" afterDir="false" />
+    <list default="true" id="90fa7a66-5d3e-4fe9-98ea-b0485a795cdb" name="Default Changelist" comment="add docker compose file, test connection to mongo db">
+      <change afterPath="$PROJECT_DIR$/src/site/pegasis/ta/fetch/migrate/migrateUser.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/site/pegasis/ta/fetch/tools/mongo.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/site/pegasis/ta/fetch/main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/site/pegasis/ta/fetch/main.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/site/pegasis/ta/fetch/models/User.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/site/pegasis/ta/fetch/models/User.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/site/pegasis/ta/fetch/modes/server/Server.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/site/pegasis/ta/fetch/modes/server/Server.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/site/pegasis/ta/fetch/tools/string.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/site/pegasis/ta/fetch/tools/string.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/site/pegasis/ta/fetch/modes/server/controller/Reload.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/site/pegasis/ta/fetch/modes/server/controller/Reload.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/site/pegasis/ta/fetch/modes/server/timeline/autoUpdater.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/site/pegasis/ta/fetch/modes/server/timeline/autoUpdater.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,20 +44,6 @@
   </component>
   <component name="ComposerSettings">
     <execution />
-  </component>
-  <component name="DatabaseView">
-    <option name="SHOW_INTERMEDIATE" value="true" />
-    <option name="GROUP_DATA_SOURCES" value="true" />
-    <option name="GROUP_SCHEMA" value="true" />
-    <option name="GROUP_CONTENTS" value="false" />
-    <option name="SORT_POSITIONED" value="false" />
-    <option name="SHOW_EMPTY_GROUPS" value="false" />
-    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
-    <option name="HIDDEN_KINDS">
-      <set />
-    </option>
-    <expand />
-    <select />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -82,12 +67,13 @@
     </option>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="query" />
+        <entry key="$PROJECT_DIR$" value="master" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RESET_MODE" value="HARD" />
   </component>
+  <component name="JupyterTrust" id="0e295f15-78f4-40c3-93cf-be50d1ec36de" />
   <component name="KonanWorkspace">
     <executables />
   </component>
@@ -115,6 +101,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="DatabaseDriversLRU" value="mongo" />
     <property name="DefaultHtmlFileTemplate" value="HTML4 File" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
@@ -129,7 +116,7 @@
     <property name="aspect.path.notification.shown" value="true" />
     <property name="com.intellij.ide.scratch.LRUPopupBuilder$1/New Scratch File" value="kotlin" />
     <property name="dart.analysis.tool.window.visible" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/build-docker.sh" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../FlutterProjects/yrdsb_teach_assist/ta" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -146,30 +133,42 @@
     <property name="two.files.diff.last.used.file" value="$APPLICATION_CONFIG_DIR$/scratches/temp.json" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/src/site/pegasis/ta/fetch/modes/server/session" />
-      <recent name="$PROJECT_DIR$/src/site/pegasis/ta/fetch/modes/server/wsproxy" />
-      <recent name="C:\Users\Pegasis\Projects\IdeaProjects\Fetch-TA-Data\src\site\pegasis\ta\fetch\modes" />
-      <recent name="C:\Users\Pegasis\Projects\IdeaProjects\Fetch-TA-Data\src\site\pegasis\ta\fetch\modes\rawpoll" />
-    </key>
     <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
       <recent name="site.pegasis.ta.fetch.fetchdata" />
       <recent name="site.pegasis.ta.fetch.modes.server.session" />
       <recent name="site.pegasis.ta.fetch.modes.server" />
       <recent name="site.pegasis.ta.fetch.webpage.chrome" />
     </key>
-    <key name="CopyKotlinDeclarationDialog.RECENTS_KEY">
-      <recent name="site.pegasis.ta.fetch.modes.server.parsers" />
-      <recent name="site.pegasis.ta.fetch.modes.server.serializers" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/site/pegasis/ta/fetch/migrate" />
       <recent name="$PROJECT_DIR$/data" />
       <recent name="C:\Users\Pegasis\Projects\IdeaProjects\Fetch-TA-Data\data" />
       <recent name="C:\Users\Pegasis\Temp\Fetch-TA-Data" />
     </key>
+    <key name="CopyKotlinDeclarationDialog.RECENTS_KEY">
+      <recent name="site.pegasis.ta.fetch.modes.server.parsers" />
+      <recent name="site.pegasis.ta.fetch.modes.server.serializers" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/site/pegasis/ta/fetch/tools" />
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/src/site/pegasis/ta/fetch/modes/server/session" />
+      <recent name="$PROJECT_DIR$/src/site/pegasis/ta/fetch/modes/server/wsproxy" />
+      <recent name="C:\Users\Pegasis\Projects\IdeaProjects\Fetch-TA-Data\src\site\pegasis\ta\fetch\modes" />
+    </key>
   </component>
   <component name="RunManager" selected="Kotlin.Server">
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="GetMark -i" type="JetRunConfigurationType">
       <module name="Fetch-TA-Data" />
       <option name="VM_PARAMETERS" value="" />
@@ -192,6 +191,19 @@
       <option name="PASS_PARENT_ENVS" value="true" />
       <option name="MAIN_CLASS_NAME" value="site.pegasis.ta.fetch.MainKt" />
       <option name="WORKING_DIRECTORY" value="" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MigrateUserKt" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
+      <module name="Fetch-TA-Data" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="MAIN_CLASS_NAME" value="site.pegasis.ta.fetch.migrate.MigrateUserKt" />
+      <option name="WORKING_DIRECTORY" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -250,7 +262,13 @@
       <item itemvalue="Kotlin.GetMark" />
       <item itemvalue="Kotlin.GetMark -i" />
       <item itemvalue="Shell Script.build docker" />
+      <item itemvalue="Kotlin.MigrateUserKt" />
     </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Kotlin.MigrateUserKt" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="project-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
@@ -340,14 +358,8 @@
       <workItem from="1595351264528" duration="2121000" />
       <workItem from="1595829695179" duration="13631000" />
       <workItem from="1595906881565" duration="2676000" />
-      <workItem from="1596012704372" duration="3674000" />
-    </task>
-    <task id="LOCAL-00098" summary="+ use coroutine instead of thread for auto updating">
-      <created>1586340782319</created>
-      <option name="number" value="00098" />
-      <option name="presentableId" value="LOCAL-00098" />
-      <option name="project" value="LOCAL" />
-      <updated>1586340782320</updated>
+      <workItem from="1596012704372" duration="5009000" />
+      <workItem from="1596105277905" duration="1659000" />
     </task>
     <task id="LOCAL-00099" summary="+ faster server stop speed">
       <created>1586341438794</created>
@@ -685,7 +697,14 @@
       <option name="project" value="LOCAL" />
       <updated>1595836373635</updated>
     </task>
-    <option name="localTasksCounter" value="147" />
+    <task id="LOCAL-00147" summary="add docker compose file, test connection to mongo db">
+      <created>1596016481706</created>
+      <option name="number" value="00147" />
+      <option name="presentableId" value="LOCAL-00147" />
+      <option name="project" value="LOCAL" />
+      <updated>1596016481706</updated>
+    </task>
+    <option name="localTasksCounter" value="148" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -714,7 +733,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="catch exceptions" />
     <MESSAGE value="added auto update job queue" />
     <MESSAGE value="implemented remote fetch ws route" />
     <MESSAGE value="fixed some socket hang, added some log, handle exceptions better" />
@@ -739,7 +757,8 @@
     <MESSAGE value="commit" />
     <MESSAGE value="dockerize" />
     <MESSAGE value="remove debug env in docker file" />
-    <option name="LAST_COMMIT_MESSAGE" value="remove debug env in docker file" />
+    <MESSAGE value="add docker compose file, test connection to mongo db" />
+    <option name="LAST_COMMIT_MESSAGE" value="add docker compose file, test connection to mongo db" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="WindowStateProjectService">
@@ -755,10 +774,10 @@
       <screen x="883" y="803" width="1366" height="768" />
     </state>
     <state x="1385" y="865" width="624" height="622" key="#Remote_with_compose/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1595907028845" />
-    <state x="2483" y="764" width="1084" height="710" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1596015966929">
-      <screen x="2249" y="491" width="1920" height="1080" />
+    <state x="883" y="803" width="1366" height="728" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1596105883051">
+      <screen x="883" y="803" width="1366" height="768" />
     </state>
-    <state x="2483" y="764" width="1084" height="710" key="#com.intellij.execution.impl.EditConfigurationsDialog/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1596015966929" />
+    <state x="883" y="803" width="1366" height="728" key="#com.intellij.execution.impl.EditConfigurationsDialog/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1596105883051" />
     <state x="1141" y="929" width="768" height="521" key="#com.intellij.execution.impl.EditConfigurationsDialog/2249.491.1920.1080/883.803.1366.768/0.0.883.1513@883.803.1366.768" timestamp="1591111266272" />
     <state x="1292" y="969" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1595248867103">
       <screen x="883" y="803" width="1366" height="768" />
@@ -784,40 +803,44 @@
       <screen x="883" y="803" width="1366" height="768" />
     </state>
     <state x="1399" y="984" key="EnvironmentVariablesDialog/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1595905715409" />
-    <state x="1371" y="962" key="FileChooserDialogImpl" timestamp="1595905245653">
+    <state x="1371" y="962" key="FileChooserDialogImpl" timestamp="1596106888164">
       <screen x="883" y="803" width="1366" height="768" />
     </state>
     <state x="686" y="224" key="FileChooserDialogImpl/0.0.1920.1080/1920.0.2400.1350@0.0.1920.1080" timestamp="1588477291836" />
-    <state x="1371" y="962" key="FileChooserDialogImpl/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1595905245653" />
+    <state x="1371" y="962" key="FileChooserDialogImpl/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1596106888164" />
     <state x="2935" y="715" key="FileChooserDialogImpl/2249.491.1920.1080/883.803.1366.768/0.0.883.1513@2249.491.1920.1080" timestamp="1590703048928" />
-    <state width="1031" height="794" key="GridCell.Tab.0.bottom" timestamp="1596016149793">
+    <state width="1565" height="987" key="GridCell.Tab.0.bottom" timestamp="1596106768678">
       <screen x="883" y="803" width="1366" height="768" />
     </state>
     <state width="1664" height="1034" key="GridCell.Tab.0.bottom/0.0.1920.1080/1920.0.2400.1350@0.0.1920.1080" timestamp="1588479165163" />
-    <state width="1031" height="794" key="GridCell.Tab.0.bottom/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1596016149793" />
+    <state width="1565" height="987" key="GridCell.Tab.0.bottom/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1596106768678" />
     <state width="1874" height="275" key="GridCell.Tab.0.bottom/2249.491.1920.1080/883.803.1366.768/0.0.883.1513@2249.491.1920.1080" timestamp="1590758412932" />
     <state width="1320" height="131" key="GridCell.Tab.0.bottom/2249.491.1920.1080/883.803.1366.768/0.0.883.1513@883.803.1366.768" timestamp="1591113719255" />
-    <state width="1031" height="794" key="GridCell.Tab.0.center" timestamp="1596016149793">
+    <state width="1565" height="987" key="GridCell.Tab.0.center" timestamp="1596106768678">
       <screen x="883" y="803" width="1366" height="768" />
     </state>
     <state width="1664" height="1034" key="GridCell.Tab.0.center/0.0.1920.1080/1920.0.2400.1350@0.0.1920.1080" timestamp="1588479165163" />
-    <state width="1031" height="794" key="GridCell.Tab.0.center/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1596016149793" />
+    <state width="1565" height="987" key="GridCell.Tab.0.center/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1596106768678" />
     <state width="1874" height="275" key="GridCell.Tab.0.center/2249.491.1920.1080/883.803.1366.768/0.0.883.1513@2249.491.1920.1080" timestamp="1590758412932" />
     <state width="1320" height="131" key="GridCell.Tab.0.center/2249.491.1920.1080/883.803.1366.768/0.0.883.1513@883.803.1366.768" timestamp="1591113719254" />
-    <state width="1031" height="794" key="GridCell.Tab.0.left" timestamp="1596016149792">
+    <state width="1565" height="987" key="GridCell.Tab.0.left" timestamp="1596106768678">
       <screen x="883" y="803" width="1366" height="768" />
     </state>
     <state width="1664" height="1034" key="GridCell.Tab.0.left/0.0.1920.1080/1920.0.2400.1350@0.0.1920.1080" timestamp="1588479165163" />
-    <state width="1031" height="794" key="GridCell.Tab.0.left/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1596016149792" />
+    <state width="1565" height="987" key="GridCell.Tab.0.left/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1596106768678" />
     <state width="1874" height="275" key="GridCell.Tab.0.left/2249.491.1920.1080/883.803.1366.768/0.0.883.1513@2249.491.1920.1080" timestamp="1590758412932" />
     <state width="1320" height="131" key="GridCell.Tab.0.left/2249.491.1920.1080/883.803.1366.768/0.0.883.1513@883.803.1366.768" timestamp="1591113719254" />
-    <state width="1031" height="794" key="GridCell.Tab.0.right" timestamp="1596016149793">
+    <state width="1565" height="987" key="GridCell.Tab.0.right" timestamp="1596106768678">
       <screen x="883" y="803" width="1366" height="768" />
     </state>
     <state width="1664" height="1034" key="GridCell.Tab.0.right/0.0.1920.1080/1920.0.2400.1350@0.0.1920.1080" timestamp="1588479165163" />
-    <state width="1031" height="794" key="GridCell.Tab.0.right/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1596016149793" />
+    <state width="1565" height="987" key="GridCell.Tab.0.right/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1596106768678" />
     <state width="1874" height="275" key="GridCell.Tab.0.right/2249.491.1920.1080/883.803.1366.768/0.0.883.1513@2249.491.1920.1080" timestamp="1590758412932" />
     <state width="1320" height="131" key="GridCell.Tab.0.right/2249.491.1920.1080/883.803.1366.768/0.0.883.1513@883.803.1366.768" timestamp="1591113719255" />
+    <state width="235" height="500" key="HiddenNamespacesPopup" timestamp="1596106006143">
+      <screen x="883" y="803" width="1366" height="768" />
+    </state>
+    <state width="235" height="500" key="HiddenNamespacesPopup/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1596106006143" />
     <state x="1154" y="913" width="824" height="519" key="IDE.errors.dialog" timestamp="1593095864318">
       <screen x="883" y="803" width="1366" height="768" />
     </state>
@@ -862,10 +885,10 @@
       <screen x="883" y="803" width="1366" height="768" />
     </state>
     <state x="1337" y="895" key="git4idea.branch.GitSmartOperationDialog/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1595247000029" />
-    <state x="938" y="843" width="1239" height="668" key="new project wizard" timestamp="1593228826997">
+    <state x="938" y="843" width="1239" height="668" key="new project wizard" timestamp="1596092812949">
       <screen x="883" y="803" width="1366" height="768" />
     </state>
-    <state x="938" y="843" width="1239" height="668" key="new project wizard/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1593228826997" />
+    <state x="938" y="843" width="1239" height="668" key="new project wizard/2249.491.1920.1080/883.803.1366.768/0.0.883.1511@883.803.1366.768" timestamp="1596092812949" />
     <state x="2490" y="683" key="new project wizard/2249.491.1920.1080/883.803.1366.768/0.0.883.1513@2249.491.1920.1080" timestamp="1590703050438" />
     <state x="1266" y="876" width="672" height="633" key="search.everywhere.popup" timestamp="1593112644182">
       <screen x="883" y="803" width="1366" height="768" />

@@ -1,13 +1,13 @@
 package site.pegasis.ta.fetch.models
 
-import org.json.simple.JSONArray
+import com.mongodb.client.model.Filters.eq
+import io.fluidsonic.mongo.MongoCollection
+import io.fluidsonic.mongo.MongoDatabase
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
+import org.bson.Document
 import org.json.simple.JSONObject
-import site.pegasis.ta.fetch.exceptions.UserParseException
-import site.pegasis.ta.fetch.tools.jsonParser
-import site.pegasis.ta.fetch.tools.readFile
-import site.pegasis.ta.fetch.tools.writeToFile
 import java.util.*
-import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.collections.HashSet
 
 class Device() {
@@ -16,21 +16,18 @@ class Device() {
     var language = "en"
     var receive = true
 
-    constructor(json: JSONObject) : this() {
-        token = json["token"] as String
-        name = json["name"] as String
-        language = json["language"] as String
-        receive = json["receive"] as Boolean
+    constructor(bson: Document) : this() {
+        token = bson["token"] as String
+        name = bson["name"] as String
+        language = bson["language"] as String
+        receive = bson["receive"] as Boolean
     }
 
-    fun toJSONObject(): JSONObject {
-        val obj = JSONObject()
-        obj["token"] = token
-        obj["name"] = name
-        obj["language"] = language
-        obj["receive"] = receive
-
-        return obj
+    fun toBSONObject(): Document {
+        return Document("token", token)
+            .append("name", name)
+            .append("language", language)
+            .append("receive", receive)
     }
 
     override fun hashCode(): Int {
@@ -38,10 +35,10 @@ class Device() {
     }
 
     override fun equals(other: Any?) = other is Device &&
-            other.token === token &&
-            other.name == name &&
-            other.language == language &&
-            other.receive == receive
+        other.token == token &&
+        other.name == name &&
+        other.language == language &&
+        other.receive == receive
 }
 
 class User() {
@@ -49,28 +46,19 @@ class User() {
     var password = ""
     var devices = HashSet<Device>()
 
-    constructor(json: JSONObject) : this() {
-        number = json["number"] as String
-        password = json["password"] as String
+    constructor(bson: Document) : this() {
+        number = bson["number"] as String
+        password = bson["password"] as String
 
-        (json["devices"] as JSONArray).forEach { deviceJSON ->
-            devices.add(Device(deviceJSON as JSONObject))
+        (bson["devices"] as Iterable<*>).forEach { deviceBSON ->
+            devices.add(Device(deviceBSON as Document))
         }
     }
 
-    fun toJSONObject(): JSONObject {
-        val obj = JSONObject()
-
-        obj["number"] = number
-        obj["password"] = password
-
-        val devicesArray = JSONArray()
-        devices.forEach {
-            devicesArray.add(it.toJSONObject())
-        }
-        obj["devices"] = devicesArray
-
-        return obj
+    fun toBSONObject(): Document {
+        return Document("number", number)
+            .append("password", password)
+            .append("devices", devices.map { it.toBSONObject() })
     }
 
     companion object {
@@ -95,75 +83,67 @@ class User() {
                 user.devices.add(device)
                 return user
             } catch (e: Exception) {
-                throw UserParseException()
+                error("")
             }
         }
 
-        val allUsers = CopyOnWriteArrayList<User>()
-        private const val fileName = "data/users.json"
+        const val collectionName = "users"
+        lateinit var collection: MongoCollection<Document>
 
-        suspend fun load() {
-            allUsers.clear()
-            val users = jsonParser.parse(
-                readFile(fileName)
-            ) as JSONArray
-            users.forEach { userJSON ->
-                allUsers.add(User(userJSON as JSONObject))
-            }
+        fun init(db: MongoDatabase) {
+            collection = db.getCollection(collectionName)
         }
 
-        suspend fun save() {
-            val array = JSONArray()
-            allUsers.forEach { user ->
-                array.add(user.toJSONObject())
-            }
-            array.toJSONString().writeToFile(fileName)
+        suspend inline fun forEach(crossinline action: suspend (User) -> Unit) {
+            collection.find().map { User(it) }.collect(action)
         }
 
         suspend fun add(newUser: User) {
-            get(newUser.number)?.run {
+            val oldUser = get(newUser.number)
+            if (oldUser == null) {
+                collection.insertOne(newUser.toBSONObject())
+            } else {
                 newUser.devices.forEach { newDevice ->
-                    //If non device of existing user have this token, then add it, else, update language
-                    val existingDevice = devices.find { it.token == newDevice.token }
+                    val existingDevice = oldUser.devices.find { it.token == newDevice.token }
                     if (existingDevice == null) {
-                        devices.add(newDevice)
+                        oldUser.devices.add(newDevice)
                     } else {
-                        existingDevice.language = newDevice.language
+                        existingDevice.apply {
+                            language = newDevice.language
+                            receive = newDevice.receive
+                            name = newDevice.name
+                        }
                     }
                 }
-                password = newUser.password
-                save()
-                return
+                collection.updateOne(eq("number", oldUser.number), Document("\$set", oldUser.toBSONObject()))
             }
-            allUsers += newUser
-            save()
         }
 
         suspend fun remove(removedUser: User) {
-            get(removedUser.number)?.run {
-                removedUser.devices.forEach { deviceRemoved ->
-                    devices.removeIf {
-                        it.token == deviceRemoved.token
-                    }
-                }
+            val oldUser = get(removedUser.number)
+            if (oldUser != null) {
+                oldUser.devices.removeAll(removedUser.devices)
+                collection.updateOne(eq("number", oldUser.number), Document("\$set", oldUser.toBSONObject()))
             }
-            save()
         }
 
-        suspend fun removeToken(token: String) {
-            allUsers.forEach { user ->
-                user.devices.removeIf {
-                    it.token == token
-                }
-            }
-            save()
+        suspend fun removeDevice(number: String, device: Device) {
+            remove(User().apply {
+                this.number = number
+                devices = hashSetOf(device)
+            })
         }
 
-        fun get(number: String) = allUsers.find { it.number == number }
+        suspend fun get(number: String): User? {
+            return collection
+                .find(eq("number", number))
+                .firstOrNull()
+                ?.let { User(it) }
+        }
 
-        fun validate(number: String, password: String): Boolean {
+        suspend fun validate(number: String, password: String): Boolean {
             val user = get(number)
-            return user != null && user.password == password
+            return user?.password == password
         }
     }
 }
