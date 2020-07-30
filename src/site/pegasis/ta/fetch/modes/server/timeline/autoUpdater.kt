@@ -36,6 +36,7 @@ suspend fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
             timeLine.save(studentNumber)
 
             //append new archived courses to file
+            //todo use one operation
             val archivedCourseList = PCache.readArchivedCourseList(studentNumber)
             archivedCourseList += compareResult.archivedCourseList
             archivedCourseList.saveArchive(studentNumber)
