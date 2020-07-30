@@ -62,7 +62,7 @@ object Feedback {
         } catch (e: Throwable) {
             statusCode = when (e) {
                 is ParseRequestException -> {
-                    logInfo("Request #$hash :: Can't parse request")
+                    logWarn("Request #$hash :: Can't parse request: $reqString")
                     400
                 }
                 else -> {

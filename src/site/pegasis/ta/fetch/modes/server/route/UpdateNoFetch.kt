@@ -8,10 +8,7 @@ import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.serializers.serialize
 import site.pegasis.ta.fetch.modes.server.storage.LastUserUpdateTime
 import site.pegasis.ta.fetch.modes.server.storage.PCache
-import site.pegasis.ta.fetch.tools.jsonParser
-import site.pegasis.ta.fetch.tools.logError
-import site.pegasis.ta.fetch.tools.logInfo
-import site.pegasis.ta.fetch.tools.toJSONString
+import site.pegasis.ta.fetch.tools.*
 
 object UpdateNoFetch {
     private class ReqData(req: String, version: Int) {
@@ -62,7 +59,7 @@ object UpdateNoFetch {
         } catch (e: Throwable) {
             statusCode = when (e) {
                 is ParseRequestException -> {
-                    logInfo("Request #$hash :: Can't parse request")
+                    logWarn("Request #$hash :: Can't parse request: $reqString")
                     400
                 }
                 is LoginException ->{

@@ -70,7 +70,7 @@ object Regi {
                     401
                 }
                 e is ParseRequestException -> {
-                    logInfo("Request #$hash :: Can't parse request")
+                    logWarn("Request #$hash :: Can't parse request: $reqString")
                     400
                 }
                 e is UserParseException -> {

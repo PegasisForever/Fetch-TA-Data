@@ -34,7 +34,7 @@ object GetmarkTimeLine {
         }
     }
 
-    suspend fun route(session: HttpSession){
+    suspend fun route(session: HttpSession) {
         val timing = Timing()
         var statusCode = 200  //200:success  400:bad request  401:pwd incorrect  500:internal error
         var res = ""
@@ -59,6 +59,7 @@ object GetmarkTimeLine {
                 val courses = fetchUserCourseList(number, password, timing = timing)
 
                 user?.let { User.add(it) }
+                timing("add user")
                 runFollowUpUpdate(number, courses)
                 timing("update")
 
@@ -75,7 +76,7 @@ object GetmarkTimeLine {
                     401
                 }
                 e is ParseRequestException -> {
-                    logInfo("Request #$hash :: Can't parse request")
+                    logWarn("Request #$hash :: Can't parse request: $reqString")
                     400
                 }
                 e.isConnectionException() -> {

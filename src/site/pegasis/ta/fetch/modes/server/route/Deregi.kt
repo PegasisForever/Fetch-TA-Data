@@ -7,6 +7,7 @@ import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.tools.jsonParser
 import site.pegasis.ta.fetch.tools.logError
 import site.pegasis.ta.fetch.tools.logInfo
+import site.pegasis.ta.fetch.tools.logWarn
 
 object Deregi {
     private class ReqData(req: String, version: Int) {
@@ -47,7 +48,7 @@ object Deregi {
         } catch (e: Throwable) {
             statusCode = when (e) {
                 is ParseRequestException -> {
-                    logInfo("Request #$hash :: Can't parse request")
+                    logWarn("Request #$hash :: Can't parse request: $reqString")
                     400
                 }
                 else -> {
