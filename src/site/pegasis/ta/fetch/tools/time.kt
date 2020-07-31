@@ -5,6 +5,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.util.*
 import kotlin.math.abs
 
 val defaultZoneID = ZoneId.of("America/Toronto")
@@ -29,3 +30,5 @@ fun ZonedDateTime.isCloseTo(other: ZonedDateTime): Boolean {
 }
 
 fun ZonedDateTimeEpoch() = ZonedDateTime.ofInstant(Instant.EPOCH, defaultZoneID)
+
+fun Date.toZonedDateTime(): ZonedDateTime = ZonedDateTime.ofInstant(toInstant(), defaultZoneID)

@@ -69,7 +69,7 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
     logInfo("Loading data.....")
     runBlocking {
         PCache.init(mongoDB)
-        LastUserUpdateTime.load()
+        LastUserUpdateTime.init(mongoDB)
         LastUpdateDoneTime.load()
         LastCleanDoneTime.load()
         User.init(mongoDB)

@@ -4,7 +4,6 @@ import kotlinx.coroutines.runBlocking
 import picocli.CommandLine.Command
 import site.pegasis.ta.fetch.modes.server.storage.Config
 import site.pegasis.ta.fetch.modes.server.storage.LastUpdateDoneTime
-import site.pegasis.ta.fetch.modes.server.storage.LastUserUpdateTime
 import site.pegasis.ta.fetch.modes.server.timeline.updateAutoUpdateThread
 import site.pegasis.ta.fetch.tools.serverBuildNumber
 import java.io.PrintWriter
@@ -20,7 +19,6 @@ class Reload(private val printWriter: PrintWriter): Callable<Unit> {
     override fun call() {
         runBlocking {
             Config.load()
-            LastUserUpdateTime.load()
             LastUpdateDoneTime.load()
             updateAutoUpdateThread()
         }

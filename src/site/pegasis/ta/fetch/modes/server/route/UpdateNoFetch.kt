@@ -49,7 +49,7 @@ object UpdateNoFetch {
                     res = JSONObject().apply {
                         this["time_line"] = PCache.readTimeLine(number).serialize(reqApiVersion)
                         this["course_list"] = PCache.readCourseList(number).serialize(reqApiVersion)
-                        this["update_time"] = LastUserUpdateTime[number]?.toJSONString()
+                        this["update_time"] = LastUserUpdateTime.get(number)?.toJSONString()
                     }.toJSONString()
                     timing("join")
                 } else {

@@ -2,6 +2,7 @@ package site.pegasis.ta.fetch.tools
 
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
+import com.mongodb.client.model.UpdateOptions
 import io.fluidsonic.mongo.MongoClient
 import io.fluidsonic.mongo.MongoClients
 import org.bson.Document
@@ -63,3 +64,5 @@ fun List<*>.toJSON(): JSONArray {
     }
     return array
 }
+
+val enableUpsert=UpdateOptions().apply { upsert(true) }
