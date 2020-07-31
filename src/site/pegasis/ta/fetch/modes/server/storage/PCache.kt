@@ -14,23 +14,23 @@ import site.pegasis.ta.fetch.tools.toBSON
 import java.util.*
 
 object PCache {
-    const val timeLineCollectionName = "timelines"
+    const val TIME_LINE_COLLECTION_NAME = "timelines"
     private lateinit var timeLineCollection: MongoCollection<Document>
 
-    const val courseListCollectionName = "courselists"
+    const val COURSE_LIST_COLLECTION_NAME = "course-lists"
     private lateinit var courseListCollection: MongoCollection<Document>
 
-    const val archivedCourseListCollectionName = "courselists-archived"
+    const val ARCHIVED_COURSE_LIST_COLLECTION_NAME = "history-course-lists"
     private lateinit var archivedCourseListCollection: MongoCollection<Document>
 
-    const val courseListHistoryCollectionName = "courselists-history"
+    const val HISTORY_COURSE_LIST_COLLECTION_NAME = "history-course-lists"
     private lateinit var courseListHistoryCollection: MongoCollection<Document>
 
     fun init(db: MongoDatabase) {
-        courseListCollection = db.getCollection(courseListCollectionName)
-        courseListHistoryCollection = db.getCollection(courseListHistoryCollectionName)
-        archivedCourseListCollection = db.getCollection(archivedCourseListCollectionName)
-        timeLineCollection = db.getCollection(timeLineCollectionName)
+        courseListCollection = db.getCollection(COURSE_LIST_COLLECTION_NAME)
+        courseListHistoryCollection = db.getCollection(HISTORY_COURSE_LIST_COLLECTION_NAME)
+        archivedCourseListCollection = db.getCollection(ARCHIVED_COURSE_LIST_COLLECTION_NAME)
+        timeLineCollection = db.getCollection(TIME_LINE_COLLECTION_NAME)
     }
 
     suspend fun save(number: String, courseList: CourseList) {

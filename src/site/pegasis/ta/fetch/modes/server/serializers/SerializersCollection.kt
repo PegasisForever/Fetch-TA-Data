@@ -4,8 +4,8 @@ import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.TimeLine
-import site.pegasis.ta.fetch.modes.server.latestApiVersion
-import site.pegasis.ta.fetch.modes.server.latestPublicApiVersion
+import site.pegasis.ta.fetch.modes.server.LATEST_API_VERSION
+import site.pegasis.ta.fetch.modes.server.LATEST_PUBLIC_API_VERSION
 import site.pegasis.ta.fetch.modes.server.serializers.CourseListPublicSerializerV1.serializeCourseList as serializePublicCourseListV1
 import site.pegasis.ta.fetch.modes.server.serializers.CourseListPublicSerializerV2.serializeCourseList as serializePublicCourseListV2
 import site.pegasis.ta.fetch.modes.server.serializers.CourseListSerializerV10.serializeCourseList as serializeCourseListV10
@@ -38,7 +38,7 @@ private val CourseListSerializers = mapOf<Int, (CourseList) -> JSONArray>(
     12 to ::serializeCourseListV12
 )
 
-fun CourseList.serialize(version: Int = latestApiVersion): JSONObject {
+fun CourseList.serialize(version: Int = LATEST_API_VERSION): JSONObject {
     val serializer = CourseListSerializers[version] ?: error("Cannot get course list serializer for API V$version")
     val json = serializer(this)
     return json.wrapVersion(version)
@@ -49,7 +49,7 @@ private val CourseListPublicSerializers = mapOf<Int, (CourseList) -> JSONArray>(
     2 to ::serializePublicCourseListV2
 )
 
-fun CourseList.serializePublic(version: Int = latestPublicApiVersion): JSONArray {
+fun CourseList.serializePublic(version: Int = LATEST_PUBLIC_API_VERSION): JSONArray {
     val serializer = CourseListPublicSerializers[version] ?: error("Cannot get course list public serializer for API V$version")
     return serializer(this)
 }
@@ -67,7 +67,7 @@ private val TimeLineSerializers = mapOf<Int, (TimeLine) -> JSONArray>(
     12 to ::serializeTimeLineV9
 )
 
-fun TimeLine.serialize(version: Int = latestApiVersion): JSONObject {
+fun TimeLine.serialize(version: Int = LATEST_API_VERSION): JSONObject {
     val serializer = TimeLineSerializers[version] ?: error("Cannot get time line serializer for API V$version")
     val json = serializer(this)
     return json.wrapVersion(version)

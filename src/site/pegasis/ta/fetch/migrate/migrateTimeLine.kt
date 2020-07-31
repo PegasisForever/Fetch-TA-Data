@@ -2,6 +2,7 @@ package site.pegasis.ta.fetch.migrate
 
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
+import site.pegasis.ta.fetch.modes.server.storage.PCache
 import site.pegasis.ta.fetch.tools.getMongoClient
 import site.pegasis.ta.fetch.tools.toBSON
 import java.io.File
@@ -26,5 +27,5 @@ suspend fun main() {
         }
         .toList()
 
-    db.getCollection("timelines").insertMany(list)
+    db.getCollection(PCache.TIME_LINE_COLLECTION_NAME).insertMany(list)
 }

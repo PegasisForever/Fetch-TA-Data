@@ -65,4 +65,7 @@ fun List<*>.toJSON(): JSONArray {
     return array
 }
 
-val enableUpsert=UpdateOptions().apply { upsert(true) }
+val enableUpsert = UpdateOptions().apply { upsert(true) }
+
+const val DATABASE_NAME = "ta"
+const val VALUE = "value"

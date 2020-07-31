@@ -4,6 +4,8 @@ import com.mongodb.client.model.Filters.eq
 import io.fluidsonic.mongo.MongoCollection
 import io.fluidsonic.mongo.MongoDatabase
 import org.bson.Document
+import site.pegasis.ta.fetch.modes.server.storage.UserUpdateStatusDB.IS_AUTO_UPDATING
+import site.pegasis.ta.fetch.modes.server.storage.UserUpdateStatusDB.LAST_UPDATE_TIME
 import site.pegasis.ta.fetch.tools.enableUpsert
 import site.pegasis.ta.fetch.tools.toZonedDateTime
 import java.time.ZonedDateTime
@@ -16,18 +18,20 @@ data class UserUpdateStatus(
 ) {
     constructor(bson: Document) : this(
         bson["_id"] as String,
-        (bson["last_update_time"] as Date?)?.toZonedDateTime(),
-        (bson["is_auto_updating"] as Boolean?) ?: false
+        (bson[IS_AUTO_UPDATING] as Date?)?.toZonedDateTime(),
+        (bson[LAST_UPDATE_TIME] as Boolean?) ?: false
     )
 }
 
 object UserUpdateStatusDB {
-    const val collectionName = "user-update-status"
+    const val COLLECTION_NAME = "user-update-status"
+    const val IS_AUTO_UPDATING = "is_auto_updating"
+    const val LAST_UPDATE_TIME = "last_update_time"
 
     lateinit var collection: MongoCollection<Document>
 
     fun init(db: MongoDatabase) {
-        collection = db.getCollection(collectionName)
+        collection = db.getCollection(COLLECTION_NAME)
     }
 
     suspend fun get(number: String): UserUpdateStatus {
@@ -41,15 +45,15 @@ object UserUpdateStatusDB {
     suspend fun <R> lockAutoUpdate(number: String, action: suspend () -> R): R {
         collection.updateOne(
             eq("_id", number),
-            Document("\$set", Document("is_auto_updating", true)),
+            Document("\$set", Document(IS_AUTO_UPDATING, true)),
             enableUpsert
         )
         val result = action()
         collection.updateOne(
             eq("_id", number),
             Document("\$set",
-                Document("is_auto_updating", false)
-                    .append("last_update_time", Date())
+                Document(IS_AUTO_UPDATING, false)
+                    .append(LAST_UPDATE_TIME, Date())
             ),
             enableUpsert
         )

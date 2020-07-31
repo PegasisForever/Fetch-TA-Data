@@ -16,6 +16,7 @@ import java.util.concurrent.Callable
     mixinStandardHelpOptions = true,
     version = ["BN$serverBuildNumber"]
 )
+//TODO
 class Regen(private val printWriter: PrintWriter) : Callable<Unit> {
     @CommandLine.Parameters(index = "0", description = ["Use all to regen for all users."])
     private var studentNumber = ""

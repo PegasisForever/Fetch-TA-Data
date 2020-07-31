@@ -15,9 +15,8 @@ import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.controller.Controller
 import site.pegasis.ta.fetch.modes.server.route.*
-import site.pegasis.ta.fetch.modes.server.storage.Announcement
-import site.pegasis.ta.fetch.modes.server.storage.CalendarData
 import site.pegasis.ta.fetch.modes.server.storage.PCache
+import site.pegasis.ta.fetch.modes.server.storage.StaticData
 import site.pegasis.ta.fetch.modes.server.storage.UserUpdateStatusDB
 import site.pegasis.ta.fetch.modes.server.timeline.stopAutoUpdateThread
 import site.pegasis.ta.fetch.modes.server.timeline.updateAutoUpdateThread
@@ -27,10 +26,10 @@ import site.pegasis.ta.fetch.tools.logUnhandled
 import site.pegasis.ta.fetch.tools.toUrlEncoded
 import java.lang.Thread.setDefaultUncaughtExceptionHandler
 
-const val minApiVersion = 4
-const val latestApiVersion = 12
-const val latestPublicApiVersion = 2
-const val dbName = "ta"
+const val MIN_API_VERSION = 4
+const val LATEST_API_VERSION = 12
+const val LATEST_PUBLIC_API_VERSION = 2
+const val DB_NAME = "ta"
 
 fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publicPort: Int, dbHost: String, dbPort: Int, dbUSer: String, dbPassword: String) {
     val timing = Timing()
@@ -66,20 +65,19 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
 
     logInfo("Connecting to mongodb.....")
     val mongoClient = getMongoClient("mongodb://${dbUSer.toUrlEncoded()}:${dbPassword.toUrlEncoded()}@$dbHost:$dbPort")
-    val mongoDB = mongoClient.getDatabase(dbName)
+    val mongoDB = mongoClient.getDatabase(DB_NAME)
     timing("connect to mongodb")
 
-    logInfo("Loading data.....")
+    logInfo("Initiating.....")
     runBlocking {
         PCache.init(mongoDB)
         UserUpdateStatusDB.init(mongoDB)
         User.init(mongoDB)
         FeedbackDB.init(mongoDB)
-        CalendarData.init(mongoDB)
-        Announcement.init(mongoDB)
+        StaticData.init(mongoDB)
         updateAutoUpdateThread()
     }
-    timing("load data")
+    timing("initiate")
 
     logInfo("Starting server.....")
     //private server

@@ -87,11 +87,11 @@ class User() {
             }
         }
 
-        const val collectionName = "users"
+        const val COLLECTION_NAME = "users"
         lateinit var collection: MongoCollection<Document>
 
         fun init(db: MongoDatabase) {
-            collection = db.getCollection(collectionName)
+            collection = db.getCollection(COLLECTION_NAME)
         }
 
         suspend inline fun forEach(crossinline action: suspend (User) -> Unit) {

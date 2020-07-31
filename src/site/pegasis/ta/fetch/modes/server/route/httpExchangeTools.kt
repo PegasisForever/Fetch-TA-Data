@@ -11,8 +11,8 @@ import io.ktor.response.header
 import io.ktor.response.respond
 import io.ktor.response.respondBytes
 import io.ktor.util.pipeline.PipelineContext
-import site.pegasis.ta.fetch.modes.server.latestApiVersion
-import site.pegasis.ta.fetch.modes.server.minApiVersion
+import site.pegasis.ta.fetch.modes.server.LATEST_API_VERSION
+import site.pegasis.ta.fetch.modes.server.MIN_API_VERSION
 import site.pegasis.ta.fetch.tools.gzip
 import kotlin.math.max
 
@@ -27,11 +27,11 @@ fun PipelineContext<Unit, ApplicationCall>.toHttpSession() = object : HttpSessio
 
     override fun getApiVersion(): Int {
         return (call.request.header("api-version")?.toInt() ?: 1)
-            .coerceAtMost(latestApiVersion)
+            .coerceAtMost(LATEST_API_VERSION)
     }
 
     override fun isApiVersionInsufficient(minApi: Int): Boolean {
-        return getApiVersion() < max(minApi, minApiVersion)
+        return getApiVersion() < max(minApi, MIN_API_VERSION)
     }
 
     override suspend fun send(status: Int, res: String, isGzip: Boolean) {

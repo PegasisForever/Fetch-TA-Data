@@ -3,8 +3,8 @@ package site.pegasis.ta.fetch
 import picocli.CommandLine
 import picocli.CommandLine.*
 import site.pegasis.ta.fetch.modes.getMark
-import site.pegasis.ta.fetch.modes.server.latestApiVersion
-import site.pegasis.ta.fetch.modes.server.minApiVersion
+import site.pegasis.ta.fetch.modes.server.LATEST_API_VERSION
+import site.pegasis.ta.fetch.modes.server.MIN_API_VERSION
 import site.pegasis.ta.fetch.modes.server.startServer
 import site.pegasis.ta.fetch.modes.server.storage.Config
 import site.pegasis.ta.fetch.modes.server.storage.initFiles
@@ -33,8 +33,8 @@ class FetchTa : Callable<Unit> {
 class ApiVersionConverter : ITypeConverter<Int> {
     override fun convert(p0: String): Int {
         val apiVersion = p0.toInt()
-        if (apiVersion < minApiVersion || apiVersion > latestApiVersion) {
-            error("Api version must between $minApiVersion and $latestApiVersion.")
+        if (apiVersion < MIN_API_VERSION || apiVersion > LATEST_API_VERSION) {
+            error("Api version must between $MIN_API_VERSION and $LATEST_API_VERSION.")
         }
         return apiVersion
     }
@@ -56,10 +56,10 @@ class GetMark : Callable<Unit> {
 
     @Option(
         names = ["--api", "-a"],
-        description = ["API Level of the output JSON, default to $latestApiVersion."],
+        description = ["API Level of the output JSON, default to $LATEST_API_VERSION."],
         converter = [ApiVersionConverter::class]
     )
-    private var apiLevel = latestApiVersion
+    private var apiLevel = LATEST_API_VERSION
 
     @CommandLine.Option(
         names = ["--quiet", "-q"],

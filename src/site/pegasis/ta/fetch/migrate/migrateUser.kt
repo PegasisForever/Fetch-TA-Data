@@ -13,7 +13,8 @@ suspend fun main() {
 
     val mongoClient = getMongoClient("mongodb://root:password@localhost:27017")
     val db = mongoClient.getDatabase("ta")
-    val collection = db.getCollection("users")
+
+    val collection = db.getCollection(site.pegasis.ta.fetch.models.User.COLLECTION_NAME)
     collection.insertMany(User.allUsers.map { it.toBSONObject() })
 }
 
