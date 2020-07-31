@@ -2,9 +2,11 @@ package site.pegasis.ta.fetch.migrate
 
 import org.bson.Document
 import org.json.simple.JSONObject
+import site.pegasis.ta.fetch.modes.server.controller.Clean
 import site.pegasis.ta.fetch.tools.getMongoClient
 import site.pegasis.ta.fetch.tools.toBSON
 import java.io.File
+import java.io.PrintWriter
 import java.time.Instant
 import java.util.*
 
@@ -45,6 +47,7 @@ suspend fun main() {
     db.getCollection("courselists-archived").insertMany(list)
 
     ////
+    Clean(PrintWriter(System.out)).call()
     list = File("data/courselists-history")
         .walk()
         .filter { it.isDirectory && it.name.toIntOrNull() != null }

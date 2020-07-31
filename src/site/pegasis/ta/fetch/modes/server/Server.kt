@@ -71,7 +71,6 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
         PCache.init(mongoDB)
         LastUserUpdateTime.init(mongoDB)
         LastUpdateDoneTime.load()
-        LastCleanDoneTime.load()
         User.init(mongoDB)
         FeedbackDB.init(mongoDB)
         CalendarData.init(mongoDB)

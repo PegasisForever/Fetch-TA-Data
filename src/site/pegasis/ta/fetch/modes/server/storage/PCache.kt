@@ -15,16 +15,16 @@ import java.util.*
 
 object PCache {
     const val timeLineCollectionName = "timelines"
-    lateinit var timeLineCollection: MongoCollection<Document>
+    private lateinit var timeLineCollection: MongoCollection<Document>
 
     const val courseListCollectionName = "courselists"
-    lateinit var courseListCollection: MongoCollection<Document>
+    private lateinit var courseListCollection: MongoCollection<Document>
 
     const val archivedCourseListCollectionName = "courselists-archived"
-    lateinit var archivedCourseListCollection: MongoCollection<Document>
+    private lateinit var archivedCourseListCollection: MongoCollection<Document>
 
     const val courseListHistoryCollectionName = "courselists-history"
-    lateinit var courseListHistoryCollection: MongoCollection<Document>
+    private lateinit var courseListHistoryCollection: MongoCollection<Document>
 
     fun init(db: MongoDatabase) {
         courseListCollection = db.getCollection(courseListCollectionName)
