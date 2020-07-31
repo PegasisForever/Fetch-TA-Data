@@ -1,21 +1,22 @@
 package site.pegasis.ta.fetch.migrate
 
+import io.fluidsonic.mongo.MongoDatabase
 import org.bson.Document
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
-import site.pegasis.ta.fetch.tools.getMongoClient
+import site.pegasis.ta.fetch.tools.logInfo
 import site.pegasis.ta.fetch.tools.readFile
 import java.util.concurrent.CopyOnWriteArrayList
 
-suspend fun main() {
+suspend fun migrateUser(db: MongoDatabase) {
     User.load()
 
-    val mongoClient = getMongoClient("mongodb://root:password@localhost:27017")
-    val db = mongoClient.getDatabase("ta")
+    val list = User.allUsers.map { it.toBSONObject() }
 
     val collection = db.getCollection(site.pegasis.ta.fetch.models.User.COLLECTION_NAME)
-    collection.insertMany(User.allUsers.map { it.toBSONObject() })
+    collection.insertMany(list)
+    logInfo("Migrated users, ${list.size} items.")
 }
 
 val jsonParser = JSONParser()

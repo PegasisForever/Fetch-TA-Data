@@ -14,13 +14,13 @@ import site.pegasis.ta.fetch.tools.toBSON
 import java.util.*
 
 object PCache {
-    const val TIME_LINE_COLLECTION_NAME = "timelines"
+    const val TIME_LINE_COLLECTION_NAME = "time-lines"
     private lateinit var timeLineCollection: MongoCollection<Document>
 
     const val COURSE_LIST_COLLECTION_NAME = "course-lists"
     private lateinit var courseListCollection: MongoCollection<Document>
 
-    const val ARCHIVED_COURSE_LIST_COLLECTION_NAME = "history-course-lists"
+    const val ARCHIVED_COURSE_LIST_COLLECTION_NAME = "archived-course-lists"
     private lateinit var archivedCourseListCollection: MongoCollection<Document>
 
     const val HISTORY_COURSE_LIST_COLLECTION_NAME = "history-course-lists"

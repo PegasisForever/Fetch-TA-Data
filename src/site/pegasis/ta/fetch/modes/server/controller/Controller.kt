@@ -47,6 +47,7 @@ object Controller {
                 .addSubcommand(Reload(printWriter))
                 .addSubcommand(Clean(printWriter))
                 .addSubcommand(Regen(printWriter))
+                .addSubcommand(Migrate(printWriter))
             commandLine.out = printWriter
             commandLine.err = errPrintWriter
             commandLine.execute(*args)

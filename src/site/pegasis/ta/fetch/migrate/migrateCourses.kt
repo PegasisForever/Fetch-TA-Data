@@ -7,7 +7,7 @@ import site.pegasis.ta.fetch.modes.server.controller.Clean
 import site.pegasis.ta.fetch.modes.server.storage.PCache.ARCHIVED_COURSE_LIST_COLLECTION_NAME
 import site.pegasis.ta.fetch.modes.server.storage.PCache.COURSE_LIST_COLLECTION_NAME
 import site.pegasis.ta.fetch.modes.server.storage.PCache.HISTORY_COURSE_LIST_COLLECTION_NAME
-import site.pegasis.ta.fetch.tools.getMongoClient
+import site.pegasis.ta.fetch.tools.logInfo
 import site.pegasis.ta.fetch.tools.toBSON
 import java.io.File
 import java.io.PrintWriter
@@ -30,6 +30,7 @@ suspend fun migrateCourseLists(db: MongoDatabase) {
         .toList()
 
     db.getCollection(COURSE_LIST_COLLECTION_NAME).insertMany(list)
+    logInfo("Migrated course lists, ${list.size} items.")
 }
 
 suspend fun migrateArchivedCourseLists(db: MongoDatabase) {
@@ -48,6 +49,7 @@ suspend fun migrateArchivedCourseLists(db: MongoDatabase) {
         .toList()
 
     db.getCollection(ARCHIVED_COURSE_LIST_COLLECTION_NAME).insertMany(list)
+    logInfo("Migrated archived course lists, ${list.size} items.")
 }
 
 suspend fun migrateHistoryCourseLists(db: MongoDatabase) {
@@ -73,13 +75,5 @@ suspend fun migrateHistoryCourseLists(db: MongoDatabase) {
         .toList()
 
     db.getCollection(HISTORY_COURSE_LIST_COLLECTION_NAME).insertMany(list)
-}
-
-suspend fun main() {
-    val mongoClient = getMongoClient("mongodb://root:password@localhost:27017")
-    val db = mongoClient.getDatabase("ta")
-
-    migrateCourseLists(db)
-    migrateArchivedCourseLists(db)
-    migrateHistoryCourseLists(db)
+    logInfo("Migrated history course lists, ${list.size} items.")
 }

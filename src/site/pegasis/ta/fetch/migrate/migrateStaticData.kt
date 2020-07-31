@@ -1,16 +1,14 @@
 package site.pegasis.ta.fetch.migrate
 
+import io.fluidsonic.mongo.MongoDatabase
 import org.bson.Document
 import org.json.simple.JSONArray
 import org.json.simple.parser.JSONParser
 import site.pegasis.ta.fetch.modes.server.storage.StaticData
-import site.pegasis.ta.fetch.tools.getMongoClient
+import site.pegasis.ta.fetch.tools.logInfo
 import java.io.File
 
-suspend fun main() {
-    val mongoClient = getMongoClient("mongodb://root:password@localhost:27017")
-    val db = mongoClient.getDatabase("ta")
-
+suspend fun migrateStaticData(db: MongoDatabase) {
     val collection = db.getCollection(StaticData.COLLECTION_NAME)
 
     val jsonParser = JSONParser()
@@ -20,4 +18,6 @@ suspend fun main() {
 
     val calendar = jsonParser.parse(File("data/calendar.json").readText()) as JSONArray
     collection.insertOne(Document("_id", StaticData.CALENDAR_KEY).append("data", calendar))
+
+    logInfo("Migrated static data.")
 }

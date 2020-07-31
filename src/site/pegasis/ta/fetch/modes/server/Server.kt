@@ -1,6 +1,7 @@
 package site.pegasis.ta.fetch.modes.server
 
 import FeedbackDB
+import io.fluidsonic.mongo.MongoDatabase
 import io.ktor.routing.Routing
 import io.ktor.routing.options
 import io.ktor.routing.post
@@ -30,6 +31,8 @@ const val MIN_API_VERSION = 4
 const val LATEST_API_VERSION = 12
 const val LATEST_PUBLIC_API_VERSION = 2
 const val DB_NAME = "ta"
+
+lateinit var database: MongoDatabase
 
 fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publicPort: Int, dbHost: String, dbPort: Int, dbUSer: String, dbPassword: String) {
     val timing = Timing()
@@ -119,6 +122,7 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
     logInfo("Public server started on port $publicPort")
     timing("start public")
 
+    database = mongoDB
     logInfo("Server fully started", timing = timing)
 }
 
