@@ -14,7 +14,7 @@ import site.pegasis.ta.fetch.tools.toBSON
 import java.util.*
 
 object PCache {
-    const val timeLineCollectionName = "timeline"
+    const val timeLineCollectionName = "timelines"
     lateinit var timeLineCollection: MongoCollection<Document>
 
     const val courseListCollectionName = "courselists"
