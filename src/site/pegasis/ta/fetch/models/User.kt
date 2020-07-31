@@ -136,7 +136,7 @@ class User() {
 
         suspend fun get(number: String): User? {
             return collection
-                .find(eq("number", number))
+                .find(eq("_id", number))
                 .firstOrNull()
                 ?.let { User(it) }
         }
