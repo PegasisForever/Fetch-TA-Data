@@ -36,16 +36,47 @@ object PCache {
     suspend fun save(number: String, courseList: CourseList) {
         val bson = courseList.serialize().toBSON()
         courseListCollection.updateOne(eq("_id", number), Document("\$set", bson), UpdateOptions().apply { upsert(true) })
-        courseListHistoryCollection
-            .updateOne(eq("_id", number),
-                Document(
-                    "\$push",
-                    Document("history",
-                        bson.append("time", Date())
+
+        val lastCourseList = courseListHistoryCollection
+            .aggregate(
+                listOf(
+                    // match this student number
+                    Document(
+                        "\$match",
+                        Document("_id", number)
+                    ),
+                    // get last element in the history array
+                    Document(
+                        "\$project",
+                        Document(
+                            "last",
+                            Document(
+                                "\$arrayElemAt",
+                                listOf("\$history", -1)
+                            )
+                        )
+                    ),
+                    // get data in the last element
+                    Document(
+                        "\$project",
+                        Document("data", "\$last.data")
                     )
                 )
-                , UpdateOptions().apply { upsert(true) }
             )
+            .firstOrNull()
+
+        if (bson["data"] != lastCourseList?.get("data")) {
+            courseListHistoryCollection
+                .updateOne(eq("_id", number),
+                    Document(
+                        "\$push",
+                        Document("history",
+                            bson.append("time", Date())
+                        )
+                    )
+                    , UpdateOptions().apply { upsert(true) }
+                )
+        }
     }
 
     suspend fun saveArchive(number: String, courseList: CourseList) {
