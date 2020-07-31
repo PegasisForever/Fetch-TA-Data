@@ -13,7 +13,7 @@ import site.pegasis.ta.fetch.modes.server.serializers.serialize
 import site.pegasis.ta.fetch.tools.toBSON
 import java.util.*
 
-object PCache {
+object CourseListDB {
     const val TIME_LINE_COLLECTION_NAME = "time-lines"
     private lateinit var timeLineCollection: MongoCollection<Document>
 
@@ -111,13 +111,13 @@ object PCache {
 }
 
 suspend fun CourseList.save(number: String) {
-    PCache.save(number, this)
+    CourseListDB.save(number, this)
 }
 
 suspend fun CourseList.saveArchive(number: String) {
-    PCache.saveArchive(number, this)
+    CourseListDB.saveArchive(number, this)
 }
 
 suspend fun TimeLine.save(number: String) {
-    PCache.save(number, this)
+    CourseListDB.save(number, this)
 }

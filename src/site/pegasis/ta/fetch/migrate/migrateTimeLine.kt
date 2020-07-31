@@ -3,7 +3,7 @@ package site.pegasis.ta.fetch.migrate
 import io.fluidsonic.mongo.MongoDatabase
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
-import site.pegasis.ta.fetch.modes.server.storage.PCache
+import site.pegasis.ta.fetch.modes.server.storage.CourseListDB
 import site.pegasis.ta.fetch.tools.logInfo
 import site.pegasis.ta.fetch.tools.toBSON
 import java.io.File
@@ -25,7 +25,7 @@ suspend fun migrateTimeLine(db: MongoDatabase) {
         }
         .toList()
 
-    db.getCollection(PCache.TIME_LINE_COLLECTION_NAME).insertMany(list)
+    db.getCollection(CourseListDB.TIME_LINE_COLLECTION_NAME).insertMany(list)
 
     logInfo("Migrated time line, ${list.size} items.")
 }

@@ -6,7 +6,7 @@ import site.pegasis.ta.fetch.exceptions.ParseRequestException
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.serializers.serialize
-import site.pegasis.ta.fetch.modes.server.storage.PCache
+import site.pegasis.ta.fetch.modes.server.storage.CourseListDB
 import site.pegasis.ta.fetch.modes.server.storage.UserDB
 import site.pegasis.ta.fetch.modes.server.storage.UserUpdateStatusDB
 import site.pegasis.ta.fetch.tools.*
@@ -48,8 +48,8 @@ object UpdateNoFetch {
             with(ReqData(reqString, reqApiVersion).user) {
                 if (UserDB.validate(number, password)) {
                     res = JSONObject().apply {
-                        this["time_line"] = PCache.readTimeLine(number).serialize(reqApiVersion)
-                        this["course_list"] = PCache.readCourseList(number).serialize(reqApiVersion)
+                        this["time_line"] = CourseListDB.readTimeLine(number).serialize(reqApiVersion)
+                        this["course_list"] = CourseListDB.readCourseList(number).serialize(reqApiVersion)
                         this["update_time"] = UserUpdateStatusDB.get(number).lastUpdateTime?.toJSONString()
                     }.toJSONString()
                     timing("join")

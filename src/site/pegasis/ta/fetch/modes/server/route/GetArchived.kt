@@ -6,7 +6,7 @@ import site.pegasis.ta.fetch.exceptions.ParseRequestException
 import site.pegasis.ta.fetch.models.CourseList
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.modes.server.serializers.serialize
-import site.pegasis.ta.fetch.modes.server.storage.PCache
+import site.pegasis.ta.fetch.modes.server.storage.CourseListDB
 import site.pegasis.ta.fetch.modes.server.storage.UserDB
 import site.pegasis.ta.fetch.tools.jsonParser
 import site.pegasis.ta.fetch.tools.logError
@@ -51,9 +51,9 @@ object GetArchived {
             with(ReqData(reqString, reqApiVersion)) {
                 if (UserDB.validate(number, password)) {
                     res = if (reqApiVersion == 6) {
-                        CourseList(PCache.readArchivedCourseList(number).filter { it.overallMark != null }).serialize(reqApiVersion).toJSONString()
+                        CourseList(CourseListDB.readArchivedCourseList(number).filter { it.overallMark != null }).serialize(reqApiVersion).toJSONString()
                     } else {
-                        PCache.readArchivedCourseList(number).serialize(reqApiVersion).toJSONString()
+                        CourseListDB.readArchivedCourseList(number).serialize(reqApiVersion).toJSONString()
                     }
                     timing("join")
                 } else {

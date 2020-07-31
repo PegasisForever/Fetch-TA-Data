@@ -4,9 +4,9 @@ import io.fluidsonic.mongo.MongoDatabase
 import org.bson.Document
 import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.modes.server.controller.Clean
-import site.pegasis.ta.fetch.modes.server.storage.PCache.ARCHIVED_COURSE_LIST_COLLECTION_NAME
-import site.pegasis.ta.fetch.modes.server.storage.PCache.COURSE_LIST_COLLECTION_NAME
-import site.pegasis.ta.fetch.modes.server.storage.PCache.HISTORY_COURSE_LIST_COLLECTION_NAME
+import site.pegasis.ta.fetch.modes.server.storage.CourseListDB.ARCHIVED_COURSE_LIST_COLLECTION_NAME
+import site.pegasis.ta.fetch.modes.server.storage.CourseListDB.COURSE_LIST_COLLECTION_NAME
+import site.pegasis.ta.fetch.modes.server.storage.CourseListDB.HISTORY_COURSE_LIST_COLLECTION_NAME
 import site.pegasis.ta.fetch.tools.logInfo
 import site.pegasis.ta.fetch.tools.toBSON
 import java.io.File

@@ -15,7 +15,7 @@ import kotlinx.coroutines.runBlocking
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.modes.server.controller.Controller
 import site.pegasis.ta.fetch.modes.server.route.*
-import site.pegasis.ta.fetch.modes.server.storage.PCache
+import site.pegasis.ta.fetch.modes.server.storage.CourseListDB
 import site.pegasis.ta.fetch.modes.server.storage.StaticData
 import site.pegasis.ta.fetch.modes.server.storage.UserDB
 import site.pegasis.ta.fetch.modes.server.storage.UserUpdateStatusDB
@@ -73,7 +73,7 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
 
     logInfo("Initiating.....")
     runBlocking {
-        PCache.init(mongoDB)
+        CourseListDB.init(mongoDB)
         UserUpdateStatusDB.init(mongoDB)
         UserDB.init(mongoDB)
         FeedbackDB.init(mongoDB)

@@ -18,13 +18,13 @@ suspend fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
     try {
         UserUpdateStatusDB.lockAutoUpdate(studentNumber) {
             val compareResult = compareCourses(
-                oldIn = PCache.readCourseList(studentNumber),
+                oldIn = CourseListDB.readCourseList(studentNumber),
                 newIn = newData ?: fetchUserCourseList(studentNumber, password, useProxy = true)
             )
             updates = compareResult.updates
             //When a user login for the first time, there will be 4 "course added" update,
             //this prevents sending 4 notifications to the user.
-            val isExistsBefore = PCache.isExistsBefore(studentNumber)
+            val isExistsBefore = CourseListDB.isExistsBefore(studentNumber)
 
             //save new course list
             compareResult.courseList.save(studentNumber)
@@ -32,7 +32,7 @@ suspend fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
             if (isExistsBefore) {
                 //append updates to timeline
                 if (updates.isNotEmpty()){
-                    val timeLine = PCache.readTimeLine(studentNumber)
+                    val timeLine = CourseListDB.readTimeLine(studentNumber)
                     timeLine += updates
                     timeLine.removeUpdateContainsRemovedCourses()
                     timeLine.save(studentNumber)
@@ -40,7 +40,7 @@ suspend fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
 
                 //append new archived courses to file
                 if (compareResult.archivedCourseList.isNotEmpty()){
-                    val archivedCourseList = PCache.readArchivedCourseList(studentNumber)
+                    val archivedCourseList = CourseListDB.readArchivedCourseList(studentNumber)
                     archivedCourseList += compareResult.archivedCourseList
                     archivedCourseList.saveArchive(studentNumber)
                 }
