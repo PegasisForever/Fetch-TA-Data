@@ -31,16 +31,19 @@ suspend fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
 
             if (isExistsBefore) {
                 //append updates to timeline
-                val timeLine = PCache.readTimeLine(studentNumber)
-                timeLine += updates
-                timeLine.removeUpdateContainsRemovedCourses()
-                timeLine.save(studentNumber)
+                if (updates.isNotEmpty()){
+                    val timeLine = PCache.readTimeLine(studentNumber)
+                    timeLine += updates
+                    timeLine.removeUpdateContainsRemovedCourses()
+                    timeLine.save(studentNumber)
+                }
 
                 //append new archived courses to file
-                //todo use one operation
-                val archivedCourseList = PCache.readArchivedCourseList(studentNumber)
-                archivedCourseList += compareResult.archivedCourseList
-                archivedCourseList.saveArchive(studentNumber)
+                if (compareResult.archivedCourseList.isNotEmpty()){
+                    val archivedCourseList = PCache.readArchivedCourseList(studentNumber)
+                    archivedCourseList += compareResult.archivedCourseList
+                    archivedCourseList.saveArchive(studentNumber)
+                }
 
                 sendNotifications(user, updates)
             }
