@@ -58,6 +58,6 @@ operator fun String.times(time: Int): String {
     return builder.toString()
 }
 
-fun String.capitalizeWord() = split(" ").map { it.toLowerCase().capitalize() }.joinToString(" ")
+fun String.capitalizeWord() = split(" ").joinToString(" ") { it.toLowerCase().capitalize() }
 
 fun String.toUrlEncoded(): String = URLEncoder.encode(this, "UTF-8")
