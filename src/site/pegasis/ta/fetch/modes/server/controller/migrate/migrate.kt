@@ -1,4 +1,4 @@
-package site.pegasis.ta.fetch.migrate
+package site.pegasis.ta.fetch.modes.server.controller.migrate
 
 import io.fluidsonic.mongo.MongoDatabase
 import site.pegasis.ta.fetch.modes.server.DB_NAME

@@ -3,7 +3,7 @@ package site.pegasis.ta.fetch.modes.server.controller
 import kotlinx.coroutines.runBlocking
 import picocli.CommandLine
 import picocli.CommandLine.Command
-import site.pegasis.ta.fetch.migrate.migrate
+import site.pegasis.ta.fetch.modes.server.controller.migrate.migrate
 import site.pegasis.ta.fetch.modes.server.database
 import site.pegasis.ta.fetch.tools.serverBuildNumber
 import java.io.PrintWriter
