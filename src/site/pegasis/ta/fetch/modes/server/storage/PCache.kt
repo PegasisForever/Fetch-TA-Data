@@ -10,13 +10,10 @@ import site.pegasis.ta.fetch.models.TimeLine
 import site.pegasis.ta.fetch.modes.server.parsers.toCourseList
 import site.pegasis.ta.fetch.modes.server.parsers.toTimeLine
 import site.pegasis.ta.fetch.modes.server.serializers.serialize
-import site.pegasis.ta.fetch.tools.readFile
 import site.pegasis.ta.fetch.tools.toBSON
 import java.util.*
 
 object PCache {
-    private var announcementCache: String? = null
-
     const val timeLineCollectionName = "timeline"
     lateinit var timeLineCollection: MongoCollection<Document>
 
@@ -36,10 +33,6 @@ object PCache {
         timeLineCollection = db.getCollection(timeLineCollectionName)
     }
 
-    fun clearCache() {
-        announcementCache = null
-    }
-
     suspend fun save(number: String, courseList: CourseList) {
         val bson = courseList.serialize().toBSON()
         courseListCollection.updateOne(eq("_id", number), Document("\$set", bson), UpdateOptions().apply { upsert(true) })
@@ -55,7 +48,6 @@ object PCache {
             )
     }
 
-    @Synchronized
     suspend fun saveArchive(number: String, courseList: CourseList) {
         val bson = courseList.serialize().toBSON()
         archivedCourseListCollection.updateOne(eq("_id", number), Document("\$set", bson), UpdateOptions().apply { upsert(true) })
@@ -64,13 +56,6 @@ object PCache {
     suspend fun save(number: String, timeLine: TimeLine) {
         val bson = timeLine.serialize().toBSON()
         timeLineCollection.updateOne(eq("_id", number), Document("\$set", bson), UpdateOptions().apply { upsert(true) })
-    }
-
-    suspend fun getAnnouncement(): String {
-        if (announcementCache == null) {
-            announcementCache = readFile("data/announcement.txt")
-        }
-        return announcementCache!!
     }
 
     suspend fun isExistsBefore(number: String): Boolean {

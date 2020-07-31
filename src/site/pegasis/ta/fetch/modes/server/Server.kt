@@ -72,7 +72,8 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
         LastUpdateDoneTime.load()
         LastCleanDoneTime.load()
         User.init(mongoDB)
-        CalendarData.load()
+        CalendarData.init(mongoDB)
+        Announcement.init(mongoDB)
         updateAutoUpdateThread()
     }
     timing("load data")
