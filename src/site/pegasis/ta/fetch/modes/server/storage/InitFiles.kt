@@ -7,11 +7,11 @@ suspend fun initFiles() {
     if (fileExists("data/config.json")) return
 
     """
-    {
-      "notification": false,
-      "auto_update": false,
-      "auto_update_interval_minute": 40,
-      "auto_update_interval_exceptions": [
+        {
+          "notification": false,
+          "auto_update": false,
+          "auto_update_interval_minute": 40,
+          "auto_update_interval_exceptions":[
           {
             "start": "00:00:00",
             "end": "06:00:00",
@@ -23,17 +23,17 @@ suspend fun initFiles() {
             "interval": 120
           }
         ],
-      "ignore_last_update_done": false,
-      "fetch_timeout_second": 100,
-      "disable_course_related_actions": [
-          {
-            "start": "2020-02-28T14:00:00-05:00",
-            "end": "2020-02-28T16:00:00-05:00"
-          }
-      ]
-      "proxy": "",
-      "proxy_port": 80
-    }
+          "ignore_last_update_done": true,
+          "fetch_timeout_second": 100,
+          "disable_course_related_actions": [
+            {
+              "start": "2020-02-28T14:00:00-05:00",
+              "end": "2020-02-28T16:00:00-05:00"
+            }
+          ],
+          "ta_certificate_path": "data/ta.yrdsb.ca.cer",
+          "proxies": []
+        }
     """.trimIndent().writeToFile("data/config.json")
     "[]".writeToFile("data/users.json")
     "{}".writeToFile("data/lastUserUpdateTime.json")

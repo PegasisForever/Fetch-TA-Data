@@ -9,6 +9,8 @@ import java.time.LocalTime
 import java.time.ZonedDateTime
 
 object Config {
+    data class Proxy(val host: String, val port: Int)
+
     var notificationEnabled = false
     var autoUpdateEnabled = false
     var autoUpdateIntervalMinute = 40
@@ -16,8 +18,7 @@ object Config {
     var fetchTimeoutSecond = 100
     var disableCourseRelatedActions = ArrayList<ClosedRange<ZonedDateTime>>()
     var ignoreLastUpdateDone = false
-    var proxy = ""
-    var proxyPort = 80
+    var proxies = emptyList<Proxy>()
 
     suspend fun load() {
         val configJSON = jsonParser.parse(readFile("data/config.json")) as JSONObject
@@ -37,8 +38,11 @@ object Config {
                     (obj["interval"] as Long).toInt()
             }
         }
-        proxy = configJSON["proxy"] as String
-        proxyPort = (configJSON["proxy_port"] as Long).toInt()
+        proxies = (configJSON["proxies"] as JSONArray)
+            .filterIsInstance<JSONObject>()
+            .map { json ->
+                Proxy(json["host"] as String, (json["port"] as Long).toInt())
+            }
     }
 
     fun isEnableCourseActions(time: ZonedDateTime = ZonedDateTime.now()): Boolean {
@@ -53,5 +57,11 @@ object Config {
             if (time in range) return interval
         }
         return autoUpdateIntervalMinute
+    }
+
+    fun hasProxy() = proxies.isNotEmpty()
+
+    fun getRandomProxy(): Proxy? {
+        return if (proxies.isEmpty()) null else proxies.random()
     }
 }
