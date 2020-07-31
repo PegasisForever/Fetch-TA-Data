@@ -44,7 +44,7 @@ suspend fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
             sendNotifications(user, updates)
         }
 
-        LastUserUpdateTime.set(studentNumber, ZonedDateTime.now())
+        UserUpdateStatusDB.set(studentNumber, ZonedDateTime.now())
     } catch (e: LoginException) {
         logInfo("Error while performing update for user ${studentNumber}: Login error")
     } catch (e: Exception) {

@@ -17,8 +17,8 @@ import site.pegasis.ta.fetch.modes.server.controller.Controller
 import site.pegasis.ta.fetch.modes.server.route.*
 import site.pegasis.ta.fetch.modes.server.storage.Announcement
 import site.pegasis.ta.fetch.modes.server.storage.CalendarData
-import site.pegasis.ta.fetch.modes.server.storage.LastUserUpdateTime
 import site.pegasis.ta.fetch.modes.server.storage.PCache
+import site.pegasis.ta.fetch.modes.server.storage.UserUpdateStatusDB
 import site.pegasis.ta.fetch.modes.server.timeline.stopAutoUpdateThread
 import site.pegasis.ta.fetch.modes.server.timeline.updateAutoUpdateThread
 import site.pegasis.ta.fetch.tools.getMongoClient
@@ -72,7 +72,7 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
     logInfo("Loading data.....")
     runBlocking {
         PCache.init(mongoDB)
-        LastUserUpdateTime.init(mongoDB)
+        UserUpdateStatusDB.init(mongoDB)
         User.init(mongoDB)
         FeedbackDB.init(mongoDB)
         CalendarData.init(mongoDB)

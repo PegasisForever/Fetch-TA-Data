@@ -14,11 +14,11 @@ suspend fun main() {
     val jsonObject = jsonParser.parse(File("data/lastUserUpdateTime.json").readText()) as JSONObject
     val list = jsonObject.map { (jsonNumber, jsonTime) ->
         Document("_id", jsonNumber as String)
-            .append("time", (jsonTime as String).toZonedDateTime().toDate())
+            .append("last_update_time", (jsonTime as String).toZonedDateTime().toDate())
     }
 
     val mongoClient = getMongoClient("mongodb://root:password@localhost:27017")
     val db = mongoClient.getDatabase("ta")
 
-    db.getCollection("last-user-update-time").insertMany(list)
+    db.getCollection("user-update-status").insertMany(list)
 }
