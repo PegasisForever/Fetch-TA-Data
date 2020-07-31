@@ -5,6 +5,7 @@ import io.fluidsonic.mongo.MongoCollection
 import io.fluidsonic.mongo.MongoDatabase
 import org.bson.Document
 import site.pegasis.ta.fetch.tools.enableUpsert
+import site.pegasis.ta.fetch.tools.toDate
 import site.pegasis.ta.fetch.tools.toZonedDateTime
 import java.time.ZonedDateTime
 import java.util.*
@@ -39,7 +40,7 @@ object LastUserUpdateTime {
     suspend fun set(number: String, updateTime: ZonedDateTime) {
         collection.updateOne(
             eq("_id", number),
-            Document("\$set", Document("time", Date(updateTime.toEpochSecond() * 1000))),
+            Document("\$set", Document("time",updateTime.toDate())),
             enableUpsert
         )
     }

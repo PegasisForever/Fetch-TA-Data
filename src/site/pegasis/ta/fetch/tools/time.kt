@@ -29,6 +29,8 @@ fun ZonedDateTime.isCloseTo(other: ZonedDateTime): Boolean {
     return abs(this.toEpochSecond() - other.toEpochSecond()) <= 1
 }
 
-fun ZonedDateTimeEpoch() = ZonedDateTime.ofInstant(Instant.EPOCH, defaultZoneID)
+fun zonedDateTimeEpoch(): ZonedDateTime = ZonedDateTime.ofInstant(Instant.EPOCH, defaultZoneID)
 
 fun Date.toZonedDateTime(): ZonedDateTime = ZonedDateTime.ofInstant(toInstant(), defaultZoneID)
+
+fun ZonedDateTime.toDate(): Date = Date(toEpochSecond() * 1000)

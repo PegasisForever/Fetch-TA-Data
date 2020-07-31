@@ -4,7 +4,7 @@ import site.pegasis.ta.fetch.tools.*
 import java.time.ZonedDateTime
 
 object LastCleanDoneTime {
-    private var time = ZonedDateTimeEpoch()
+    private var time = zonedDateTimeEpoch()
 
     suspend fun load() {
         noThrowSuspend  {
