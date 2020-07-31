@@ -5,7 +5,6 @@ import io.fluidsonic.mongo.MongoCollection
 import io.fluidsonic.mongo.MongoDatabase
 import org.bson.Document
 import site.pegasis.ta.fetch.tools.enableUpsert
-import site.pegasis.ta.fetch.tools.toDate
 import site.pegasis.ta.fetch.tools.toZonedDateTime
 import java.time.ZonedDateTime
 import java.util.*
@@ -39,11 +38,22 @@ object UserUpdateStatusDB {
         return bson?.let { UserUpdateStatus(it) } ?: UserUpdateStatus(number)
     }
 
-    suspend fun set(number: String, lastUpdateTime: ZonedDateTime? = null, isAutoUpdating: Boolean? = null) {
-        val bson = Document()
-        if (lastUpdateTime != null) bson.append("last_update_time", lastUpdateTime.toDate())
-        if (isAutoUpdating != null) bson.append("is_auto_updating", isAutoUpdating)
+    suspend fun <R> lockAutoUpdate(number: String, action: suspend () -> R): R {
+        collection.updateOne(
+            eq("_id", number),
+            Document("\$set", Document("is_auto_updating", true)),
+            enableUpsert
+        )
+        val result = action()
+        collection.updateOne(
+            eq("_id", number),
+            Document("\$set",
+                Document("is_auto_updating", false)
+                    .append("last_update_time", Date())
+            ),
+            enableUpsert
+        )
 
-        collection.updateOne(eq("_id", number), Document("\$set", bson), enableUpsert)
+        return result
     }
 }

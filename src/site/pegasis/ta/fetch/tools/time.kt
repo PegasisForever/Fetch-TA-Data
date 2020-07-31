@@ -34,3 +34,5 @@ fun zonedDateTimeEpoch(): ZonedDateTime = ZonedDateTime.ofInstant(Instant.EPOCH,
 fun Date.toZonedDateTime(): ZonedDateTime = ZonedDateTime.ofInstant(toInstant(), defaultZoneID)
 
 fun ZonedDateTime.toDate(): Date = Date(toEpochSecond() * 1000)
+
+fun ZonedDateTime.fromNowSeconds(): Long = abs(ZonedDateTime.now().toEpochSecond() - toEpochSecond())

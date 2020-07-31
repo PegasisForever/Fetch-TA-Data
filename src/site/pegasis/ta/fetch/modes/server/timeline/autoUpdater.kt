@@ -16,35 +16,35 @@ suspend fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
     var updates = TimeLine()
 
     try {
-        val compareResult = compareCourses(
-            oldIn = PCache.readCourseList(studentNumber),
-            newIn = newData ?: fetchUserCourseList(studentNumber, password, useProxy = true)
-        )
-        updates = compareResult.updates
-        //When a user login for the first time, there will be 4 "course added" update,
-        //this prevents sending 4 notifications to the user.
-        val isExistsBefore = PCache.isExistsBefore(studentNumber)
+        UserUpdateStatusDB.lockAutoUpdate(studentNumber) {
+            val compareResult = compareCourses(
+                oldIn = PCache.readCourseList(studentNumber),
+                newIn = newData ?: fetchUserCourseList(studentNumber, password, useProxy = true)
+            )
+            updates = compareResult.updates
+            //When a user login for the first time, there will be 4 "course added" update,
+            //this prevents sending 4 notifications to the user.
+            val isExistsBefore = PCache.isExistsBefore(studentNumber)
 
-        //save new course list
-        compareResult.courseList.save(studentNumber)
+            //save new course list
+            compareResult.courseList.save(studentNumber)
 
-        if (isExistsBefore) {
-            //append updates to timeline
-            val timeLine = PCache.readTimeLine(studentNumber)
-            timeLine += updates
-            timeLine.removeUpdateContainsRemovedCourses()
-            timeLine.save(studentNumber)
+            if (isExistsBefore) {
+                //append updates to timeline
+                val timeLine = PCache.readTimeLine(studentNumber)
+                timeLine += updates
+                timeLine.removeUpdateContainsRemovedCourses()
+                timeLine.save(studentNumber)
 
-            //append new archived courses to file
-            //todo use one operation
-            val archivedCourseList = PCache.readArchivedCourseList(studentNumber)
-            archivedCourseList += compareResult.archivedCourseList
-            archivedCourseList.saveArchive(studentNumber)
+                //append new archived courses to file
+                //todo use one operation
+                val archivedCourseList = PCache.readArchivedCourseList(studentNumber)
+                archivedCourseList += compareResult.archivedCourseList
+                archivedCourseList.saveArchive(studentNumber)
 
-            sendNotifications(user, updates)
+                sendNotifications(user, updates)
+            }
         }
-
-        UserUpdateStatusDB.set(studentNumber, ZonedDateTime.now())
     } catch (e: LoginException) {
         logInfo("Error while performing update for user ${studentNumber}: Login error")
     } catch (e: Exception) {
@@ -98,8 +98,19 @@ fun startAutoUpdateThread() {
                 val startTime = System.currentTimeMillis()
                 User.forEach { user ->
                     if (!isActive) throw error("cancelled")
-                    val updates = performUpdate(user)
-                    logInfo("Auto performed update for user ${user.number}, ${updates.size} updates")
+                    val userUpdateStatus = UserUpdateStatusDB.get(user.number)
+                    when {
+                        userUpdateStatus.isAutoUpdating -> {
+                            logInfo("User ${user.number} is locked for auto updating, skipping")
+                        }
+                        userUpdateStatus.lastUpdateTime?.fromNowSeconds() ?: Long.MAX_VALUE < Config.getUpdateInterval() * 60 -> {
+                            logInfo("User ${user.number} is recently updated, skipping")
+                        }
+                        else -> {
+                            val updates = performUpdate(user)
+                            logInfo("Auto performed update for user ${user.number}, ${updates.size} updates")
+                        }
+                    }
                 }
 
                 val interval = Config.getUpdateInterval() * 60 * 1000
