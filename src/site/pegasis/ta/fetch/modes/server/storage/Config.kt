@@ -17,7 +17,6 @@ object Config {
     var autoUpdateIntervalExceptions = HashMap<ClosedRange<LocalTime>, Int>()
     var fetchTimeoutSecond = 100
     var disableCourseRelatedActions = ArrayList<ClosedRange<ZonedDateTime>>()
-    var ignoreLastUpdateDone = false
     var proxies = emptyList<Proxy>()
 
     suspend fun load() {
@@ -25,7 +24,6 @@ object Config {
         notificationEnabled = configJSON["notification"] as Boolean
         autoUpdateEnabled = configJSON["auto_update"] as Boolean
         autoUpdateIntervalMinute = (configJSON["auto_update_interval_minute"] as Long).toInt()
-        ignoreLastUpdateDone = configJSON["ignore_last_update_done"] as Boolean
         fetchTimeoutSecond = (configJSON["fetch_timeout_second"] as Long).toInt()
         (configJSON["disable_course_related_actions"] as JSONArray).forEach { obj ->
             if (obj is JSONObject) {

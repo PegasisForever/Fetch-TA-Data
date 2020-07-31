@@ -19,14 +19,6 @@ object LastUserUpdateTime {
         collection = db.getCollection(collectionName)
     }
 
-//    suspend fun load() {
-//        updateTimeMap.clear()
-//        val jsonObject = jsonParser.parse(readFile("data/lastUserUpdateTime.json")) as JSONObject
-//        jsonObject.forEach { (jsonNumber, jsonTime) ->
-//            this.set(jsonNumber as String, (jsonTime as String).toZonedDateTime())
-//        }
-//    }
-
     suspend fun get(number: String): ZonedDateTime? {
         val time = collection.find(eq("_id", number))
             .limit(1)

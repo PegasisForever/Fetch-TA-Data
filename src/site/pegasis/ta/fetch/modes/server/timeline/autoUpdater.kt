@@ -93,12 +93,6 @@ fun startAutoUpdateThread() {
     autoUpdateJob = GlobalScope.launch {
         log(LogLevel.INFO, "Auto update job started")
 
-        val timeBeforeStart = (LastUpdateDoneTime.getMillis() + Config.getUpdateInterval() * 60 * 1000) - System.currentTimeMillis()
-        if (timeBeforeStart > 0 && !Config.ignoreLastUpdateDone) {
-            logInfo("Auto update will be started at ${ZonedDateTime.now().plusSeconds(timeBeforeStart / 1000).toJSONString()}.")
-            delay(timeBeforeStart)
-        }
-
         try {
             while (isActive) {
                 val startTime = System.currentTimeMillis()
@@ -110,7 +104,6 @@ fun startAutoUpdateThread() {
 
                 val interval = Config.getUpdateInterval() * 60 * 1000
                 val remainTime = interval - (System.currentTimeMillis() - startTime)
-                LastUpdateDoneTime.set()
                 logInfo("Auto update done, ${(System.currentTimeMillis() - startTime) / 1000 / 60} minutes.")
                 if (remainTime > 0) {
                     logInfo("Next auto update will be ${ZonedDateTime.now().plusSeconds(remainTime / 1000).toJSONString()}.")

@@ -15,7 +15,10 @@ import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.controller.Controller
 import site.pegasis.ta.fetch.modes.server.route.*
-import site.pegasis.ta.fetch.modes.server.storage.*
+import site.pegasis.ta.fetch.modes.server.storage.Announcement
+import site.pegasis.ta.fetch.modes.server.storage.CalendarData
+import site.pegasis.ta.fetch.modes.server.storage.LastUserUpdateTime
+import site.pegasis.ta.fetch.modes.server.storage.PCache
 import site.pegasis.ta.fetch.modes.server.timeline.stopAutoUpdateThread
 import site.pegasis.ta.fetch.modes.server.timeline.updateAutoUpdateThread
 import site.pegasis.ta.fetch.tools.getMongoClient
@@ -70,7 +73,6 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
     runBlocking {
         PCache.init(mongoDB)
         LastUserUpdateTime.init(mongoDB)
-        LastUpdateDoneTime.load()
         User.init(mongoDB)
         FeedbackDB.init(mongoDB)
         CalendarData.init(mongoDB)
