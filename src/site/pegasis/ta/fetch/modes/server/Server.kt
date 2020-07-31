@@ -1,5 +1,6 @@
 package site.pegasis.ta.fetch.modes.server
 
+import FeedbackDB
 import io.ktor.routing.Routing
 import io.ktor.routing.options
 import io.ktor.routing.post
@@ -72,6 +73,7 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
         LastUpdateDoneTime.load()
         LastCleanDoneTime.load()
         User.init(mongoDB)
+        FeedbackDB.init(mongoDB)
         CalendarData.init(mongoDB)
         Announcement.init(mongoDB)
         updateAutoUpdateThread()

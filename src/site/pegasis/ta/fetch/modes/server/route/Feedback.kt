@@ -1,10 +1,13 @@
 package site.pegasis.ta.fetch.modes.server.route
 
+import FeedbackDB
 import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.exceptions.ParseRequestException
 import site.pegasis.ta.fetch.models.Timing
-import site.pegasis.ta.fetch.tools.*
-import java.util.*
+import site.pegasis.ta.fetch.tools.jsonParser
+import site.pegasis.ta.fetch.tools.logError
+import site.pegasis.ta.fetch.tools.logInfo
+import site.pegasis.ta.fetch.tools.logWarn
 
 object Feedback {
     private class ReqData(req: String) {
@@ -26,7 +29,7 @@ object Feedback {
         }
     }
 
-    suspend fun route(session: HttpSession){
+    suspend fun route(session: HttpSession) {
         val timing = Timing()
         var statusCode = 200  //200:success  400:bad request  500:internal error
 
@@ -46,19 +49,9 @@ object Feedback {
 
         try {
             with(ReqData(reqString)) {
-                """
-                    ${fileDateFormat.format(Date())}
-                    Contact Info: $contactInfo
-                    Feedback: $feedback
-                    Platform: $platform
-                    Version: $version
-                    ----------------------------------------------
-                    
-                    
-                """.trimIndent()
-                    .appendToFile("data/feedback.txt")
-                timing("write file")
+                FeedbackDB.add(contactInfo, feedback, platform, version)
             }
+            timing("save feedback")
         } catch (e: Throwable) {
             statusCode = when (e) {
                 is ParseRequestException -> {
