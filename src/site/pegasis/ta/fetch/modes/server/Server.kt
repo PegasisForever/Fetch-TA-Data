@@ -13,11 +13,11 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import site.pegasis.ta.fetch.models.Timing
-import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.controller.Controller
 import site.pegasis.ta.fetch.modes.server.route.*
 import site.pegasis.ta.fetch.modes.server.storage.PCache
 import site.pegasis.ta.fetch.modes.server.storage.StaticData
+import site.pegasis.ta.fetch.modes.server.storage.UserDB
 import site.pegasis.ta.fetch.modes.server.storage.UserUpdateStatusDB
 import site.pegasis.ta.fetch.modes.server.timeline.stopAutoUpdateThread
 import site.pegasis.ta.fetch.modes.server.timeline.updateAutoUpdateThread
@@ -75,7 +75,7 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
     runBlocking {
         PCache.init(mongoDB)
         UserUpdateStatusDB.init(mongoDB)
-        User.init(mongoDB)
+        UserDB.init(mongoDB)
         FeedbackDB.init(mongoDB)
         StaticData.init(mongoDB)
         updateAutoUpdateThread()

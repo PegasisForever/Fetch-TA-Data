@@ -4,6 +4,7 @@ import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.exceptions.ParseRequestException
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.User
+import site.pegasis.ta.fetch.modes.server.storage.UserDB
 import site.pegasis.ta.fetch.tools.jsonParser
 import site.pegasis.ta.fetch.tools.logError
 import site.pegasis.ta.fetch.tools.logInfo
@@ -43,7 +44,7 @@ object Deregi {
 
         try {
             val user = ReqData(reqString, reqApiVersion).user
-            User.remove(user)
+            UserDB.remove(user)
             timing("remove user")
         } catch (e: Throwable) {
             statusCode = when (e) {

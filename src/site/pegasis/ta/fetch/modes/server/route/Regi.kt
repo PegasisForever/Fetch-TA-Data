@@ -9,6 +9,7 @@ import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.models.User
 import site.pegasis.ta.fetch.modes.server.serializers.serialize
 import site.pegasis.ta.fetch.modes.server.storage.PCache
+import site.pegasis.ta.fetch.modes.server.storage.UserDB
 import site.pegasis.ta.fetch.modes.server.timeline.runFollowUpUpdate
 import site.pegasis.ta.fetch.tools.*
 
@@ -53,7 +54,7 @@ object Regi {
                     timing = timing
                 )
 
-                User.add(this)
+                UserDB.add(this)
                 runFollowUpUpdate(number, courses)
                 timing("update")
 

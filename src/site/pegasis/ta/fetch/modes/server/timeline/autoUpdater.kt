@@ -61,7 +61,7 @@ suspend fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
 }
 
 suspend fun runFollowUpUpdate(number: String, newData: CourseList) {
-    User.get(number)?.let {
+    UserDB.get(number)?.let {
         performUpdate(it, newData)
     }
 }
@@ -71,7 +71,7 @@ suspend fun sendNotifications(user: User, updateList: TimeLine) {
     updateList.forEach { taUpdate ->
         availableDevices.forEach { device ->
             NotificationStrings.getNoti(device.language, taUpdate)?.let { notification ->
-                if (!sendFCM(device.token, notification)) User.removeDevice(user.number, device)
+                if (!sendFCM(device.token, notification)) UserDB.removeDevice(user.number, device)
             }
         }
     }
@@ -99,7 +99,7 @@ fun startAutoUpdateThread() {
         try {
             while (isActive) {
                 val startTime = System.currentTimeMillis()
-                User.forEach { user ->
+                UserDB.forEach { user ->
                     if (!isActive) throw error("cancelled")
                     val userUpdateStatus = UserUpdateStatusDB.get(user.number)
                     when {

@@ -5,6 +5,7 @@ import org.bson.Document
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
+import site.pegasis.ta.fetch.modes.server.storage.UserDB
 import site.pegasis.ta.fetch.tools.logInfo
 import site.pegasis.ta.fetch.tools.readFile
 import java.util.concurrent.CopyOnWriteArrayList
@@ -14,7 +15,7 @@ suspend fun migrateUser(db: MongoDatabase) {
 
     val list = User.allUsers.map { it.toBSONObject() }
 
-    val collection = db.getCollection(site.pegasis.ta.fetch.models.User.COLLECTION_NAME)
+    val collection = db.getCollection(UserDB.COLLECTION_NAME)
     collection.insertMany(list)
     logInfo("Migrated users, ${list.size} items.")
 }
