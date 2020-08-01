@@ -35,37 +35,29 @@ object CourseListDB {
 
     suspend fun save(number: String, courseList: CourseList) {
         val bson = courseList.serialize().toBSON()
-        courseListCollection.updateOne(eq("_id", number), Document("\$set", bson), UpdateOptions().apply { upsert(true) })
 
-        val lastCourseList = courseListHistoryCollection
-            .aggregate(
-                listOf(
-                    // match this student number
-                    Document(
-                        "\$match",
-                        Document("_id", number)
-                    ),
-                    // get last element in the history array
-                    Document(
-                        "\$project",
-                        Document(
-                            "last",
-                            Document(
-                                "\$arrayElemAt",
-                                listOf("\$history", -1)
-                            )
-                        )
-                    ),
-                    // get data in the last element
-                    Document(
-                        "\$project",
-                        Document("data", "\$last.data")
-                    )
+        val notSameAsLast = courseListHistoryCollection
+            .find(Document("\$and", listOf(
+                Document("_id", number),
+                Document("\$expr",
+                    Document("\$eq", listOf(
+                        Document("\$arrayElemAt", listOf(
+                            "\$history.data",
+                            -1
+                        )),
+                        bson["data"]
+                    ))
                 )
-            )
-            .firstOrNull()
+            )))
+            .projection(Document("_id", 1))
+            .limit(1)
+            .firstOrNull() == null
 
-        if (bson["data"] != lastCourseList?.get("data")) {
+        println("notSameAsLast: $notSameAsLast")
+
+        if (notSameAsLast) {
+            courseListCollection.updateOne(eq("_id", number), Document("\$set", bson), UpdateOptions().apply { upsert(true) })
+
             courseListHistoryCollection
                 .updateOne(eq("_id", number),
                     Document(
