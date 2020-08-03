@@ -18,8 +18,8 @@ data class UserUpdateStatus(
 ) {
     constructor(bson: Document) : this(
         bson["_id"] as String,
-        (bson[IS_AUTO_UPDATING] as Date?)?.toZonedDateTime(),
-        (bson[LAST_UPDATE_TIME] as Boolean?) ?: false
+        (bson[LAST_UPDATE_TIME] as Date?)?.toZonedDateTime(),
+        (bson[IS_AUTO_UPDATING] as Boolean?) ?: false
     )
 }
 
