@@ -188,6 +188,118 @@ suspend fun initMongoDB(db: MongoDatabase) {
             "zh": "教研日"
         },
         "start_date": "2020-6-26"
+    },
+    {
+        "end_date": null,
+        "name": {
+            "en": "Labour Day",
+            "zh": "劳动节"
+        },
+        "start_date": "2020-9-7"
+    },
+    {
+        "end_date": null,
+        "name": {
+            "en": "First Day of Classes",
+            "zh": "学期开始"
+        },
+        "start_date": "2020-9-8"
+    },
+    {
+        "end_date": null,
+        "name": {
+            "en": "Thanksgiving Day",
+            "zh": "感恩节"
+        },
+        "start_date": "2020-10-12"
+    },
+    {
+        "end_date": null,
+        "name": {
+            "en": "PA Day",
+            "zh": "教研日"
+        },
+        "start_date": "2019-11-13"
+    },
+    {
+        "end_date": "2021-1-1",
+        "name": {
+            "en": "Winter Break",
+            "zh": "寒假"
+        },
+        "start_date": "2020-12-21"
+    },
+    {
+        "end_date": null,
+        "name": {
+            "en": "PA Day",
+            "zh": "教研日"
+        },
+        "start_date": "2021-2-1"
+    },
+    {
+        "end_date": null,
+        "name": {
+            "en": "Family Day",
+            "zh": "家庭日"
+        },
+        "start_date": "2021-2-15"
+    },
+    {
+        "end_date": "2021-3-19",
+        "name": {
+            "en": "Mid-Winter Break",
+            "zh": "冬假"
+        },
+        "start_date": "2021-3-15"
+    },
+    {
+        "end_date": null,
+        "name": {
+            "en": "Good Friday",
+            "zh": "圣周五"
+        },
+        "start_date": "2021-4-2"
+    },
+    {
+        "end_date": null,
+        "name": {
+            "en": "Easter Monday",
+            "zh": "复活节星期一"
+        },
+        "start_date": "2021-4-5"
+    },
+    {
+        "end_date": null,
+        "name": {
+            "en": "PA Day",
+            "zh": "教研日"
+        },
+        "start_date": "2021-5-7"
+    },
+    {
+        "end_date": null,
+        "name": {
+            "en": "Victoria Day",
+            "zh": "维多利亚日"
+        },
+        "start_date": "2021-5-24"
+    },
+    {
+        "end_date": null,
+        "name": {
+            "en": "Last Day of Classes",
+            "zh": "学期结束"
+        },
+        "start_date": "2021-6-28"
+    },
+    {
+        "end_date": null,
+        "name": {
+            "en": "PA Day",
+            "zh": "教研日"
+        },
+        "start_date": "2021-6-29"
     }
 ]""") as JSONArray).toBSON()
             insertOne(Document("_id", StaticData.CALENDAR_KEY).append(VALUE, calendarData))
