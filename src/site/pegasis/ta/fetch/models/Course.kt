@@ -527,6 +527,19 @@ class CourseList() : ArrayList<Course>() {
         addAll(list)
     }
 
+    fun removeDuplicate() {
+        val courseSet = HashSet<Course>()
+
+        removeIf { course ->
+            if (course !in courseSet) {
+                courseSet += course
+                false
+            } else {
+                true
+            }
+        }
+    }
+
     fun copy() = CourseList().apply {
         this@CourseList.forEach { course ->
             add(course.copy())

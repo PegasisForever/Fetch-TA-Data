@@ -66,6 +66,8 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
         }
     })
 
+    logInfo("Java info: ${System.getProperty("java.runtime.version")} ${System.getProperty("java.vm.name")}")
+
     logInfo("Connecting to mongodb.....")
     val mongoClient = getMongoClient("mongodb://${dbUSer.toUrlEncoded()}:${dbPassword.toUrlEncoded()}@$dbHost:$dbPort")
     val mongoDB = mongoClient.getDatabase(DB_NAME)

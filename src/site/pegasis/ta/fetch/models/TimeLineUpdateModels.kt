@@ -10,22 +10,22 @@ open class TAUpdate {
 }
 
 class TimeLine : ArrayList<TAUpdate>() {
-    fun removeUpdateContainsRemovedCourses() {
-        val removedCourseNames = ArrayList<String>()
-        this.forEach {
+    fun removeUpdateContainsRemovedCourses(timeLineWithCourseRemovedUpdate: TimeLine = this) {
+        val removedCourseNames = HashSet<String>()
+        timeLineWithCourseRemovedUpdate.forEach {
             if (it is CourseRemoved) {
                 removedCourseNames.add(it.courseName)
             }
         }
 
-        removedCourseNames.forEach { courseName ->
-            this.removeIf {
-                when (it) {
-                    is AssignmentAdded -> it.courseName == courseName
-                    is AssignmentUpdated -> it.courseName == courseName
-                    is CourseAdded -> it.courseName == courseName
-                    is CourseRemoved -> it.courseName == courseName
-                    else -> error("Impossible. $it")
+        if(removedCourseNames.isNotEmpty()){
+            removeIf { update ->
+                when (update) {
+                    is AssignmentAdded -> update.courseName in removedCourseNames
+                    is AssignmentUpdated -> update.courseName in removedCourseNames
+                    is CourseAdded -> update.courseName in removedCourseNames
+                    is CourseRemoved -> update.courseName in removedCourseNames
+                    else -> error("Impossible. $update")
                 }
             }
         }
@@ -75,10 +75,10 @@ class AssignmentUpdated : TAUpdate() {
             time.isCloseTo(other.time) &&
             courseName == other.courseName &&
             assignmentName == other.assignmentName &&
-            assignmentBefore==other.assignmentBefore &&
+            assignmentBefore == other.assignmentBefore &&
             assignmentAvgBefore near other.assignmentAvgBefore threshold 0.0001 &&
             overallBefore near other.overallBefore threshold 0.0001 &&
-            assignmentAfter==other.assignmentAfter &&
+            assignmentAfter == other.assignmentAfter &&
             assignmentAvgAfter near other.assignmentAvgAfter threshold 0.0001 &&
             overallAfter near other.overallAfter threshold 0.0001
     }

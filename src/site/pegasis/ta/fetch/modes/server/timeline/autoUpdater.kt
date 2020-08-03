@@ -34,7 +34,7 @@ suspend fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
                 if (updates.isNotEmpty()){
                     val timeLine = CourseListDB.readTimeLine(studentNumber)
                     timeLine += updates
-                    timeLine.removeUpdateContainsRemovedCourses()
+                    timeLine.removeUpdateContainsRemovedCourses(updates)
                     timeLine.save(studentNumber)
                 }
 

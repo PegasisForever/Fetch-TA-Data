@@ -53,8 +53,6 @@ object CourseListDB {
             .limit(1)
             .firstOrNull() == null
 
-        println("notSameAsLast: $notSameAsLast")
-
         if (notSameAsLast) {
             courseListCollection.updateOne(eq("_id", number), Document("\$set", bson), UpdateOptions().apply { upsert(true) })
 
