@@ -5,6 +5,7 @@ import org.bson.Document
 import org.json.simple.JSONArray
 import org.json.simple.parser.JSONParser
 import site.pegasis.ta.fetch.modes.server.storage.StaticData
+import site.pegasis.ta.fetch.tools.VALUE
 import site.pegasis.ta.fetch.tools.logInfo
 import java.io.File
 
@@ -14,10 +15,10 @@ suspend fun migrateStaticData(db: MongoDatabase) {
     val jsonParser = JSONParser()
 
     val announcement = File("data/announcement.txt").readText().trim()
-    collection.insertOne(Document("_id", StaticData.ANNOUNCEMENT_KEY).append("data", announcement))
+    collection.insertOne(Document("_id", StaticData.ANNOUNCEMENT_KEY).append(VALUE, announcement))
 
     val calendar = jsonParser.parse(File("data/calendar.json").readText()) as JSONArray
-    collection.insertOne(Document("_id", StaticData.CALENDAR_KEY).append("data", calendar))
+    collection.insertOne(Document("_id", StaticData.CALENDAR_KEY).append(VALUE, calendar))
 
     logInfo("Migrated static data.")
 }

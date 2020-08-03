@@ -43,7 +43,7 @@ suspend fun initMongoDB(db: MongoDatabase) {
     if (db.listCollectionNames().toList().isEmpty()) {
         logInfo("Creating database.....")
         with(db.getCollection(StaticData.COLLECTION_NAME)) {
-            insertOne(Document("_id", StaticData.ANNOUNCEMENT_KEY).append("data", ""))
+            insertOne(Document("_id", StaticData.ANNOUNCEMENT_KEY).append(VALUE, ""))
             val calendarData = (jsonParser.parse("""[
     {
         "end_date": null,
@@ -190,7 +190,7 @@ suspend fun initMongoDB(db: MongoDatabase) {
         "start_date": "2020-6-26"
     }
 ]""") as JSONArray).toBSON()
-            insertOne(Document("_id", StaticData.CALENDAR_KEY).append("data", calendarData))
+            insertOne(Document("_id", StaticData.CALENDAR_KEY).append(VALUE, calendarData))
         }
         db.createCollection(CourseListDB.ARCHIVED_COURSE_LIST_COLLECTION_NAME)
         db.createCollection(CourseListDB.COURSE_LIST_COLLECTION_NAME)
