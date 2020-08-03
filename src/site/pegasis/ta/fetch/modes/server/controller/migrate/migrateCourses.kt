@@ -65,6 +65,7 @@ suspend fun migrateHistoryCourseLists(db: MongoDatabase) {
                     Date.from(Instant.ofEpochMilli(time.toLong())) to
                         (jsonParser.parse(text) as JSONObject).toBSON()
                 }
+                .sortedBy { (time, _) -> time }
                 .map { (time, bson) ->
                     bson.append("time", time)
                 }
