@@ -1,192 +1,202 @@
 package site.pegasis.ta.fetch.modes.server.storage
 
-import site.pegasis.ta.fetch.tools.fileExists
-import site.pegasis.ta.fetch.tools.writeToFile
+import io.fluidsonic.mongo.MongoDatabase
+import kotlinx.coroutines.flow.toList
+import org.bson.Document
+import org.json.simple.JSONArray
+import site.pegasis.ta.fetch.tools.*
 
-//TODO
 suspend fun initFiles() {
-    if (fileExists("data/config.json")) return
-
-    """
+    if (!fileExists("data/config.json")){
+        logInfo("Creating config files.....")
+        """{
+    "notification": false,
+    "auto_update": false,
+    "auto_update_interval_minute": 40,
+    "auto_update_interval_exceptions": [
         {
-          "notification": false,
-          "auto_update": false,
-          "auto_update_interval_minute": 40,
-          "auto_update_interval_exceptions":[
-          {
             "start": "00:00:00",
             "end": "06:00:00",
             "interval": 120
-          },
-          {
+        },
+        {
             "start": "18:00:00",
             "end": "23:59:59",
             "interval": 120
-          }
-        ],
-          "ignore_last_update_done": true,
-          "fetch_timeout_second": 100,
-          "disable_course_related_actions": [
-            {
-              "start": "2020-02-28T14:00:00-05:00",
-              "end": "2020-02-28T16:00:00-05:00"
-            }
-          ],
-          "ta_certificate_path": "data/ta.yrdsb.ca.cer",
-          "proxies": []
         }
-    """.trimIndent().writeToFile("data/config.json")
-    "[]".writeToFile("data/users.json")
-    "{}".writeToFile("data/lastUserUpdateTime.json")
-    "".writeToFile("data/announcement.txt")
-    "".writeToFile("data/lastUpdateDoneTime.time")
-    "".writeToFile("data/lastCleanDoneTime.time")
-    """
-    [
-      {
+    ],
+    "ignore_last_update_done": true,
+    "fetch_timeout_second": 100,
+    "disable_course_related_actions": [
+        {
+            "start": "2020-02-28T14:00:00-05:00",
+            "end": "2020-02-28T16:00:00-05:00"
+        }
+    ],
+    "ta_certificate_path": "data/ta.yrdsb.ca.cer",
+    "proxies": []
+}""".writeToFile("data/config.json")
+    }
+}
+
+suspend fun initMongoDB(db: MongoDatabase) {
+    if (db.listCollectionNames().toList().isEmpty()) {
+        logInfo("Creating database.....")
+        with(db.getCollection(StaticData.COLLECTION_NAME)) {
+            insertOne(Document("_id", StaticData.ANNOUNCEMENT_KEY).append("data", ""))
+            val calendarData = (jsonParser.parse("""[
+    {
+        "end_date": null,
         "name": {
-          "zh": "劳动节",
-          "en": "Labour Day"
+            "en": "Labour Day",
+            "zh": "劳动节"
         },
-        "start_date": "2019-9-2",
-        "end_date": null
-      },
-      {
+        "start_date": "2019-9-2"
+    },
+    {
+        "end_date": null,
         "name": {
-          "zh": "学期开始",
-          "en": "First Day of Classes"
+            "en": "First Day of Classes",
+            "zh": "学期开始"
         },
-        "start_date": "2019-9-3",
-        "end_date": null
-      },
-      {
+        "start_date": "2019-9-3"
+    },
+    {
+        "end_date": null,
         "name": {
-          "zh": "教研日",
-          "en": "PA Day"
+            "en": "PA Day",
+            "zh": "教研日"
         },
-        "start_date": "2019-9-23",
-        "end_date": null
-      },
-      {
+        "start_date": "2019-9-23"
+    },
+    {
+        "end_date": null,
         "name": {
-          "zh": "感恩节",
-          "en": "Thanksgiving Day"
+            "en": "Thanksgiving Day",
+            "zh": "感恩节"
         },
-        "start_date": "2019-10-14",
-        "end_date": null
-      },
-      {
+        "start_date": "2019-10-14"
+    },
+    {
+        "end_date": null,
         "name": {
-          "zh": "教研日",
-          "en": "PA Day"
+            "en": "PA Day",
+            "zh": "教研日"
         },
-        "start_date": "2019-10-21",
-        "end_date": null
-      },
-      {
+        "start_date": "2019-10-21"
+    },
+    {
+        "end_date": null,
         "name": {
-          "zh": "教研日",
-          "en": "PA Day"
+            "en": "PA Day",
+            "zh": "教研日"
         },
-        "start_date": "2019-11-15",
-        "end_date": null
-      },
-      {
+        "start_date": "2019-11-15"
+    },
+    {
+        "end_date": "2020-1-3",
         "name": {
-          "zh": "寒假",
-          "en": "Winter Break"
+            "en": "Winter Break",
+            "zh": "寒假"
         },
-        "start_date": "2019-12-23",
-        "end_date": "2020-1-3"
-      },
-      {
+        "start_date": "2019-12-23"
+    },
+    {
+        "end_date": null,
         "name": {
-          "zh": "教研日",
-          "en": "PA Day"
+            "en": "PA Day",
+            "zh": "教研日"
         },
-        "start_date": "2020-1-31",
-        "end_date": null
-      },
-      {
+        "start_date": "2020-1-31"
+    },
+    {
+        "end_date": null,
         "name": {
-          "zh": "家庭日",
-          "en": "Family Day"
+            "en": "Family Day",
+            "zh": "家庭日"
         },
-        "start_date": "2020-2-17",
-        "end_date": null
-      },
-      {
+        "start_date": "2020-2-17"
+    },
+    {
+        "end_date": "2020-3-20",
         "name": {
-          "zh": "冬假",
-          "en": "Mid-Winter Break"
+            "en": "Mid-Winter Break",
+            "zh": "冬假"
         },
-        "start_date": "2020-3-16",
-        "end_date": "2020-3-20"
-      },
-      {
+        "start_date": "2020-3-16"
+    },
+    {
+        "end_date": "2020-4-5",
         "name": {
-          "zh": "School Closure (COVID-19)",
-          "en": "School Closure (COVID-19)"
+            "en": "School Closure (COVID-19)",
+            "zh": "School Closure (COVID-19)"
         },
-        "start_date": "2020-3-21",
-        "end_date": "2020-4-5"
-      },
-      {
+        "start_date": "2020-3-21"
+    },
+    {
+        "end_date": null,
         "name": {
-          "zh": "圣周五",
-          "en": "Good Friday"
+            "en": "Good Friday",
+            "zh": "圣周五"
         },
-        "start_date": "2020-4-10",
-        "end_date": null
-      },
-      {
+        "start_date": "2020-4-10"
+    },
+    {
+        "end_date": null,
         "name": {
-          "zh": "复活节星期一",
-          "en": "Easter Monday"
+            "en": "Easter Monday",
+            "zh": "复活节星期一"
         },
-        "start_date": "2020-4-13",
-        "end_date": null
-      },
-      {
+        "start_date": "2020-4-13"
+    },
+    {
+        "end_date": null,
         "name": {
-          "zh": "教研日",
-          "en": "PA Day"
+            "en": "PA Day",
+            "zh": "教研日"
         },
-        "start_date": "2020-5-1",
-        "end_date": null
-      },
-      {
+        "start_date": "2020-5-1"
+    },
+    {
+        "end_date": null,
         "name": {
-          "zh": "维多利亚日",
-          "en": "Victoria Day"
+            "en": "Victoria Day",
+            "zh": "维多利亚日"
         },
-        "start_date": "2020-5-18",
-        "end_date": null
-      },
-      {
+        "start_date": "2020-5-18"
+    },
+    {
+        "end_date": null,
         "name": {
-          "zh": "学期结束",
-          "en": "Last Day of Classes"
+            "en": "Last Day of Classes",
+            "zh": "学期结束"
         },
-        "start_date": "2020-6-24",
-        "end_date": null
-      },
-      {
+        "start_date": "2020-6-24"
+    },
+    {
+        "end_date": null,
         "name": {
-          "zh": "教研日",
-          "en": "PA Day"
+            "en": "PA Day",
+            "zh": "教研日"
         },
-        "start_date": "2020-6-25",
-        "end_date": null
-      },
-      {
+        "start_date": "2020-6-25"
+    },
+    {
+        "end_date": null,
         "name": {
-          "zh": "教研日",
-          "en": "PA Day"
+            "en": "PA Day",
+            "zh": "教研日"
         },
-        "start_date": "2020-6-26",
-        "end_date": null
-      }
-    ]
-    """.trimIndent().writeToFile("data/calendar.json")
+        "start_date": "2020-6-26"
+    }
+]""") as JSONArray).toBSON()
+            insertOne(Document("_id", StaticData.CALENDAR_KEY).append("data", calendarData))
+        }
+        db.createCollection(CourseListDB.ARCHIVED_COURSE_LIST_COLLECTION_NAME)
+        db.createCollection(CourseListDB.COURSE_LIST_COLLECTION_NAME)
+        db.createCollection(CourseListDB.HISTORY_COURSE_LIST_COLLECTION_NAME)
+        db.createCollection(CourseListDB.TIME_LINE_COLLECTION_NAME)
+        db.createCollection(UserUpdateStatusDB.COLLECTION_NAME)
+        db.createCollection(UserDB.COLLECTION_NAME)
+    }
 }

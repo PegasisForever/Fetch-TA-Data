@@ -15,10 +15,7 @@ import kotlinx.coroutines.runBlocking
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.modes.server.controller.Controller
 import site.pegasis.ta.fetch.modes.server.route.*
-import site.pegasis.ta.fetch.modes.server.storage.CourseListDB
-import site.pegasis.ta.fetch.modes.server.storage.StaticData
-import site.pegasis.ta.fetch.modes.server.storage.UserDB
-import site.pegasis.ta.fetch.modes.server.storage.UserUpdateStatusDB
+import site.pegasis.ta.fetch.modes.server.storage.*
 import site.pegasis.ta.fetch.modes.server.timeline.stopAutoUpdateThread
 import site.pegasis.ta.fetch.modes.server.timeline.updateAutoUpdateThread
 import site.pegasis.ta.fetch.tools.getMongoClient
@@ -71,6 +68,7 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
     logInfo("Connecting to mongodb.....")
     val mongoClient = getMongoClient("mongodb://${dbUSer.toUrlEncoded()}:${dbPassword.toUrlEncoded()}@$dbHost:$dbPort")
     val mongoDB = mongoClient.getDatabase(DB_NAME)
+    runBlocking { initMongoDB(mongoDB) }
     timing("connect to mongodb")
 
     logInfo("Initiating.....")
