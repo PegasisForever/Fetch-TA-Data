@@ -5,6 +5,7 @@ import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
 import site.pegasis.ta.fetch.modes.server.storage.CourseListDB
 import site.pegasis.ta.fetch.tools.logInfo
+import site.pegasis.ta.fetch.tools.logWarn
 import site.pegasis.ta.fetch.tools.toBSON
 import java.io.File
 
@@ -18,8 +19,14 @@ suspend fun migrateTimeLine(db: MongoDatabase) {
             file.nameWithoutExtension to file.readText()
         }
         .map { (number, text) ->
-            number to (jsonParser.parse(text) as JSONObject).toBSON()
+            try {
+                number to (jsonParser.parse(text) as JSONObject).toBSON()
+            } catch (e: Throwable) {
+                logWarn("Failed to parse time line for student $number.")
+                null
+            }
         }
+        .filterNotNull()
         .map { (number, bson) ->
             bson.append("_id", number)
         }

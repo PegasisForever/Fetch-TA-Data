@@ -8,6 +8,7 @@ import site.pegasis.ta.fetch.modes.server.storage.CourseListDB.ARCHIVED_COURSE_L
 import site.pegasis.ta.fetch.modes.server.storage.CourseListDB.COURSE_LIST_COLLECTION_NAME
 import site.pegasis.ta.fetch.modes.server.storage.CourseListDB.HISTORY_COURSE_LIST_COLLECTION_NAME
 import site.pegasis.ta.fetch.tools.logInfo
+import site.pegasis.ta.fetch.tools.logWarn
 import site.pegasis.ta.fetch.tools.toBSON
 import java.io.File
 import java.io.PrintWriter
@@ -22,8 +23,14 @@ suspend fun migrateCourseLists(db: MongoDatabase) {
             file.nameWithoutExtension to file.readText()
         }
         .map { (number, text) ->
-            number to (jsonParser.parse(text) as JSONObject).toBSON()
+            try{
+                number to (jsonParser.parse(text) as JSONObject).toBSON()
+            }catch (e:Throwable){
+                logWarn("Failed to parse course list for student $number.")
+                null
+            }
         }
+        .filterNotNull()
         .map { (number, bson) ->
             bson.append("_id", number)
         }
@@ -41,8 +48,14 @@ suspend fun migrateArchivedCourseLists(db: MongoDatabase) {
             file.nameWithoutExtension to file.readText()
         }
         .map { (number, text) ->
-            number to (jsonParser.parse(text) as JSONObject).toBSON()
+            try{
+                number to (jsonParser.parse(text) as JSONObject).toBSON()
+            }catch (e:Throwable){
+                logWarn("Failed to parse archived course lists for student $number.")
+                null
+            }
         }
+        .filterNotNull()
         .map { (number, bson) ->
             bson.append("_id", number)
         }
@@ -58,19 +71,26 @@ suspend fun migrateHistoryCourseLists(db: MongoDatabase) {
         .walk()
         .filter { it.isDirectory && it.name.toIntOrNull() != null }
         .map { dir ->
+            val number = dir.name
             val historyList = dir.walk()
                 .filter { it.isFile }
                 .map { file -> file.nameWithoutExtension to file.readText() }
                 .map { (time, text) ->
-                    Date.from(Instant.ofEpochMilli(time.toLong())) to
-                        (jsonParser.parse(text) as JSONObject).toBSON()
+                    try{
+                        Date.from(Instant.ofEpochMilli(time.toLong())) to
+                            (jsonParser.parse(text) as JSONObject).toBSON()
+                    }catch (e:Throwable){
+                        logWarn("Failed to parse history course lists for student $number.")
+                        null
+                    }
                 }
+                .filterNotNull()
                 .sortedBy { (time, _) -> time }
                 .map { (time, bson) ->
                     bson.append("time", time)
                 }
                 .toList()
-            val number = dir.name
+
             Document("_id", number).append("history", historyList)
         }
         .toList()
