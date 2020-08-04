@@ -545,16 +545,15 @@ class CourseList() : ArrayList<Course>() {
     }
 
     fun removeDuplicate() {
-        val courseSet = HashSet<Course>()
-
-        removeIf { course ->
-            if (course !in courseSet) {
-                courseSet += course
-                false
-            } else {
-                true
+        val removeSet = HashSet<Course>()
+        forEachIndexed { index, course ->
+            for (i in lastIndex downTo index + 1) {
+                if (course.isSameName(this[i])) {
+                    removeSet += course
+                }
             }
         }
+        removeAll(removeSet)
     }
 
     fun copy() = CourseList().apply {
