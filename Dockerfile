@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:debian-jre
+FROM adoptopenjdk/openjdk14:debian-jre
 WORKDIR /server
 COPY target/fetch_ta_data.jar /server/fetch_ta_data.jar
 
