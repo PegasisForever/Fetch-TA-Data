@@ -472,7 +472,24 @@ class Course {
     //only things like name need to be the same
     fun isSameName(other: Course): Boolean {
         if (this.id nne other.id) return true
-        return (name noe other.name) && (code noe other.code) && (block noe other.block) && (room noe other.room)
+        var sameCount = 0
+        if (name != null && other.name != null) {
+            if (name != other.name) return false
+            sameCount++
+        }
+        if (code != null && other.code != null) {
+            if (code != other.code) return false
+            sameCount++
+        }
+        if (block != null && other.block != null) {
+            if (block != other.block) return false
+            sameCount++
+        }
+        if (room != null && other.room != null) {
+            if (room != other.room) return false
+            sameCount++
+        }
+        return sameCount > 0
     }
 
     fun copy() = Course().apply {

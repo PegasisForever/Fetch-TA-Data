@@ -4,18 +4,18 @@ import com.mongodb.client.model.Filters
 import kotlinx.coroutines.runBlocking
 import org.bson.Document
 import picocli.CommandLine
-import site.pegasis.ta.fetch.models.CourseAdded
-import site.pegasis.ta.fetch.models.CourseList
-import site.pegasis.ta.fetch.models.CourseRemoved
-import site.pegasis.ta.fetch.models.TimeLine
+import site.pegasis.ta.fetch.models.*
 import site.pegasis.ta.fetch.modes.server.database
 import site.pegasis.ta.fetch.modes.server.parsers.toCourseList
+import site.pegasis.ta.fetch.modes.server.serializers.serialize
 import site.pegasis.ta.fetch.modes.server.storage.Config
 import site.pegasis.ta.fetch.modes.server.storage.CourseListDB
 import site.pegasis.ta.fetch.modes.server.storage.UserDB
 import site.pegasis.ta.fetch.modes.server.timeline.compareCourses
+import site.pegasis.ta.fetch.tools.logWarn
 import site.pegasis.ta.fetch.tools.serverBuildNumber
 import site.pegasis.ta.fetch.tools.toZonedDateTime
+import site.pegasis.ta.fetch.tools.writeToFile
 import java.io.PrintWriter
 import java.util.*
 import java.util.concurrent.Callable
@@ -35,6 +35,12 @@ class Regen(private val printWriter: PrintWriter) : Callable<Unit> {
         description = ["Override files when contents are different."]
     )
     private var override = false
+
+    @CommandLine.Option(
+        names = ["--save-diff", "-d"],
+        description = ["Save old version and new version of the data if they are different."]
+    )
+    private var saveDiff = false
 
     private var courseListHistoryCollection = database.getCollection(CourseListDB.HISTORY_COURSE_LIST_COLLECTION_NAME)
 
@@ -91,12 +97,20 @@ class Regen(private val printWriter: PrintWriter) : Callable<Unit> {
         val storedTimeLine = CourseListDB.readTimeLine(number)
         if (!storedTimeLine.containsAll(newTimeLine)) {
             printWriter.println("Generated timeline for $number is not same as stored timeline, use -o to override.")
+            if (saveDiff) {
+                storedTimeLine.serialize().toJSONString().writeToFile("data/diff/timeline/$number/old.json")
+                newTimeLine.serialize().toJSONString().writeToFile("data/diff/timeline/$number/new.json")
+            }
             return false
         }
 
         val storedArchivedCourseList = CourseListDB.readArchivedCourseList(number)
         if (storedArchivedCourseList != newArchivedCourseList) {
             printWriter.println("Generated archived course list for $number is not same as stored timeline, use -o to override.")
+            if (saveDiff) {
+                storedArchivedCourseList.serialize().toJSONString().writeToFile("data/diff/archived/$number/old.json")
+                newArchivedCourseList.serialize().toJSONString().writeToFile("data/diff/archived/$number/new.json")
+            }
             return false
         }
 
