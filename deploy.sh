@@ -1,15 +1,14 @@
 #!/usr/bin/env bash
 
-echo "Copying file....."
-rsync -z ./target/fetch_ta_data.jar pegasis@j.pegasis.site:/home/pegasis/yrdsb_ta_server/fetch_ta_data.jar.temp || exit
-echo "File copied"
+echo "Deploying server....."
 
-ssh j.pegasis.site '
+docker push pegasis0/fetch-ta:latest
+
+ssh k.pegasis.site '
 cd /home/pegasis/yrdsb_ta_server/ || exit
-screen -S ta-server -p 0 -X stuff "^C"
-sleep 5
-rm ./fetch_ta_data.jar
-cp ./fetch_ta_data.jar.temp ./fetch_ta_data.jar
-screen -S ta-server -d -m java -XX:-OmitStackTraceInFastThrow -jar fetch_ta_data.jar server -p --control-port 5007
+sudo docker-compose down || exit
+sudo docker pull pegasis0/fetch-ta:latest || exit
+sudo docker-compose up -d || exit
 '
-echo "Server restarted"
+
+echo "Server deployed."
