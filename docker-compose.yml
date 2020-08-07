@@ -16,11 +16,29 @@ services:
   mongo:
     image: mongo:4.2-bionic
     restart: always
+    ports:
+    - 27017:27017
     volumes:
       - mongo:/data/db
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: password
+  backup:
+    image: pegasis0/mongodb_s3_backup:latest
+    restart: always
+    depends_on:
+      - "mongo"
+    environment:
+      ACCESS_ID: access_id
+      ACCESS_KEY: access_key
+      BUCKET: backup.pegasis
+      BACKUP_S3_DIR: ta-backup/
+      REGION_NAME: nyc3
+      ENDPOINT_URL: https://nyc3.digitaloceanspaces.com
+      MONGODB_URI: mongodb://root:password@mongo
+      BACKUP_LIST: daily,weekly
+      BACKUP_daily: 0 0 3|14
+      BACKUP_weekly: 0 30 3 * * 6|52
 
 volumes:
   data:
