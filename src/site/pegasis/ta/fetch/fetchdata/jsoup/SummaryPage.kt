@@ -11,7 +11,8 @@ class SummaryPage(private val session: JsoupSession, private val timing: Timing 
 
     init {
         timing("parse summary page") {
-            val summaryTable = session.currentPage!!.getElementsByTag("table")[1]
+            val summaryTable = session.currentPage!!.getElementsByTag("table")
+                .find { it.attr("width") == "85%" }!!
             val rows = summaryTable.getElementsByTag("tr")
             for (i in 1 until rows.size) {
                 try {
