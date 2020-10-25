@@ -18,6 +18,7 @@ object Config {
     var fetchTimeoutSecond = 100
     var disableCourseRelatedActions = ArrayList<ClosedRange<ZonedDateTime>>()
     var proxies = emptyList<Proxy>()
+    var forceProxy = false
 
     suspend fun load() {
         val configJSON = jsonParser.parse(readFile("data/config.json")) as JSONObject
@@ -41,6 +42,7 @@ object Config {
             .map { json ->
                 Proxy(json["host"] as String, (json["port"] as Long).toInt())
             }
+        forceProxy = configJSON["force_proxy"] as Boolean
     }
 
     fun isEnableCourseActions(time: ZonedDateTime = ZonedDateTime.now()): Boolean {

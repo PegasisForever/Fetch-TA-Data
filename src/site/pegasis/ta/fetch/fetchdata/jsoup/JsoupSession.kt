@@ -23,7 +23,7 @@ class JsoupSession(useProxy: Boolean) {
     val client = HttpClient(OkHttp) {
         engine {
             config {
-                if (useProxy && Config.hasProxy()) {
+                if ((useProxy || Config.forceProxy) && Config.hasProxy()) {
                     val proxy = Config.getRandomProxy()!!
                     proxy(Proxy(Proxy.Type.SOCKS, InetSocketAddress(proxy.host, proxy.port)))
                 }
