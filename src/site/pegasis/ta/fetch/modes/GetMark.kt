@@ -12,6 +12,7 @@ fun getMark(studentNumber: String, password: String, apiLevel: Int, quiet: Boole
         val courseList = runBlocking { fetchUserCourseList(studentNumber, password, raw) }
         println(courseList.serialize(apiLevel).toJSONString())
     } catch (e: LoginException) {
+        println(e.code)
         println("Student number or password error.")
     } catch (e: Throwable) {
         e.printStackTrace()

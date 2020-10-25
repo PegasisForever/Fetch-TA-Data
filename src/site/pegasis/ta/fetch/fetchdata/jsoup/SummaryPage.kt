@@ -81,7 +81,7 @@ class SummaryPage(private val session: JsoupSession, private val timing: Timing 
 
     }
 
-    suspend fun gotoDetailPage(course: Course, time: ZonedDateTime): DetailPage {
+    private suspend fun gotoDetailPage(course: Course, time: ZonedDateTime): DetailPage {
         val link = detailLinkMap[course]!!
         timing.suspend("get detail page ${course.code}") {
             session.get(link)

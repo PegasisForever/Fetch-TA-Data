@@ -15,6 +15,6 @@ suspend fun fetchUserCourseList(studentNumber: String,
                                 password: String,
                                 raw: Boolean = false,
                                 timing: Timing = Timing(),
-                                useProxy: Boolean = false): CourseList {
+                                useProxy: Boolean = true): CourseList {
     return jsoupFetchCourseList(studentNumber, password, raw, timing, useProxy)
 }
