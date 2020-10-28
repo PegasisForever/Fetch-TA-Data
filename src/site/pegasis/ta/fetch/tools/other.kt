@@ -1,6 +1,7 @@
 package site.pegasis.ta.fetch.tools
 
 import org.json.simple.parser.JSONParser
+import site.pegasis.ta.fetch.exceptions.RateLimitedException
 import java.io.PrintWriter
 import java.io.StringWriter
 
@@ -51,4 +52,5 @@ infix fun Any?.nne(b: Any?): Boolean {
 fun Throwable.isConnectionException() = this is java.net.SocketTimeoutException ||
     this is org.apache.http.conn.ConnectTimeoutException ||
     this is org.apache.http.conn.HttpHostConnectException ||
+    this is RateLimitedException ||
     (message ?: "").indexOf("SocketTimeoutException") != -1

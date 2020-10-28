@@ -11,6 +11,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.withTimeout
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import site.pegasis.ta.fetch.exceptions.RateLimitedException
 import site.pegasis.ta.fetch.modes.server.storage.Config
 import site.pegasis.ta.fetch.tools.noThrow
 import java.net.InetSocketAddress
@@ -33,12 +34,15 @@ class JsoupSession(useProxy: Boolean) {
 
     suspend fun connect(url: String, data: Map<String, String>, method: HttpMethod): Document {
         val response = client.request<HttpResponse> {
-            url(url)
+            this.url(url)
             this.method = method
             header("Accept-Encoding", "gzip,deflate,sdch")
             header("Connection", "keep-alive")
-            header("Cookie", cookies.map { (key, value) -> "$key=$value" }
-                .joinToString("; "))
+            header("Cookie",
+                cookies
+                    .map { (key, value) -> "$key=$value" }
+                    .joinToString("; ")
+            )
             userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36")
 
             if (data.isNotEmpty()) {
@@ -57,11 +61,13 @@ class JsoupSession(useProxy: Boolean) {
                 cookies[key] = value
             }
         }
-        return if (response.status == HttpStatusCode.Found) {
-            get(response.headers["Location"]!!)
-        } else {
-            currentPage = Jsoup.parse(response.readText())
-            currentPage!!
+        return when (response.status) {
+            HttpStatusCode.Found -> get(response.headers["Location"]!!)
+            HttpStatusCode.Unauthorized -> throw RateLimitedException()
+            else -> {
+                currentPage = Jsoup.parse(response.readText())
+                currentPage!!
+            }
         }
     }
 
