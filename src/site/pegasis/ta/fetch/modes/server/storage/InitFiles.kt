@@ -34,7 +34,8 @@ suspend fun initFiles() {
         }
     ],
     "ta_certificate_path": "data/ta.yrdsb.ca.cer",
-    "proxies": []
+    "proxies": [],
+    "force_proxy": false
 }""".writeToFile("data/config.json")
     }
 }
