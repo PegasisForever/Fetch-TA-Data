@@ -286,7 +286,7 @@ class OverallMark {
             mark!! near m threshold 0.1
         } else if (level != null) {
             when (level!!.toLowerCase()) {
-                "4+" -> m in 90..100
+                "4+" -> m >=90
                 "4" -> m in 80..100
                 "4-" -> m in 80..90
                 "3+" -> m in 75..80
