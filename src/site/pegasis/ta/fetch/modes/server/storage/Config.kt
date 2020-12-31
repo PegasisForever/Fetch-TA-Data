@@ -3,13 +3,16 @@ package site.pegasis.ta.fetch.modes.server.storage
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import site.pegasis.ta.fetch.tools.jsonParser
+import site.pegasis.ta.fetch.tools.logWarn
 import site.pegasis.ta.fetch.tools.readFile
 import site.pegasis.ta.fetch.tools.toZonedDateTime
 import java.time.LocalTime
 import java.time.ZonedDateTime
 
 object Config {
-    data class Proxy(val host: String, val port: Int)
+    interface Proxy
+    data class RemoteProxy(val host: String, val port: Int) : Proxy
+    object LocalProxy : Proxy
 
     var notificationEnabled = false
     var autoUpdateEnabled = false
@@ -17,8 +20,10 @@ object Config {
     var autoUpdateIntervalExceptions = HashMap<ClosedRange<LocalTime>, Int>()
     var fetchTimeoutSecond = 100
     var disableCourseRelatedActions = ArrayList<ClosedRange<ZonedDateTime>>()
+    var remoteProxies = emptyList<RemoteProxy>()
     var proxies = emptyList<Proxy>()
-    var forceProxy = false
+    var useProxy = false
+    var useLocalIP = false
 
     suspend fun load() {
         val configJSON = jsonParser.parse(readFile("data/config.json")) as JSONObject
@@ -37,12 +42,25 @@ object Config {
                     (obj["interval"] as Long).toInt()
             }
         }
-        proxies = (configJSON["proxies"] as JSONArray)
+        remoteProxies = (configJSON["proxies"] as JSONArray)
             .filterIsInstance<JSONObject>()
             .map { json ->
-                Proxy(json["host"] as String, (json["port"] as Long).toInt())
+                RemoteProxy(json["host"] as String, (json["port"] as Long).toInt())
             }
-        forceProxy = configJSON["force_proxy"] as Boolean
+        proxies = arrayListOf<Proxy>(LocalProxy).apply {
+            addAll(remoteProxies)
+        }
+        useProxy = configJSON["use_proxy"] as Boolean
+        useLocalIP = configJSON["use_local_ip"] as Boolean
+
+        if (useProxy && remoteProxies.isEmpty()) {
+            logWarn("useProxy is set to true but no proxy is provided, setting useProxy to false")
+            useProxy = false
+        }
+        if (!useProxy && !useLocalIP) {
+            logWarn("useProxy and useLocalIP are both false, setting useLocalIP to true")
+            useLocalIP = true
+        }
     }
 
     fun isEnableCourseActions(time: ZonedDateTime = ZonedDateTime.now()): Boolean {
@@ -59,9 +77,15 @@ object Config {
         return autoUpdateIntervalMinute
     }
 
-    fun hasProxy() = proxies.isNotEmpty()
+    fun getRandomProxy(): Proxy {
+        return proxies.random()
+    }
 
-    fun getRandomProxy(): Proxy? {
-        return if (proxies.isEmpty()) null else proxies.random()
+    fun getRandomRemoteProxy(): RemoteProxy? {
+        return if (remoteProxies.isEmpty()){
+            null
+        }else{
+            remoteProxies.random()
+        }
     }
 }

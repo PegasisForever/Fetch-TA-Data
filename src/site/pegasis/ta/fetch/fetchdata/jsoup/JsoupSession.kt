@@ -17,16 +17,23 @@ import site.pegasis.ta.fetch.tools.noThrow
 import java.net.InetSocketAddress
 import java.net.Proxy
 
-class JsoupSession(useProxy: Boolean) {
+class JsoupSession(forceUseProxy: Boolean) {
     var currentPage: Document? = null
     val cookies = hashMapOf<String, String>()
 
     val client = HttpClient(OkHttp) {
         engine {
             config {
-                if ((useProxy || Config.forceProxy) && Config.hasProxy()) {
-                    val proxy = Config.getRandomProxy()!!
+                if (forceUseProxy || (Config.useProxy && !Config.useLocalIP)) {
+                    // only use remote proxy
+                    val proxy = Config.getRandomRemoteProxy()!!
                     proxy(Proxy(Proxy.Type.SOCKS, InetSocketAddress(proxy.host, proxy.port)))
+                } else if (Config.useProxy && Config.useLocalIP) {
+                    // use remote proxy and local ip
+                    val proxy = Config.getRandomProxy()
+                    if (proxy is Config.RemoteProxy) {
+                        proxy(Proxy(Proxy.Type.SOCKS, InetSocketAddress(proxy.host, proxy.port)))
+                    }
                 }
             }
         }

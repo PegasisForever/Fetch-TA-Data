@@ -19,7 +19,7 @@ suspend fun performUpdate(user: User, newData: CourseList? = null): TimeLine {
         UserUpdateStatusDB.lockAutoUpdate(studentNumber) {
             val compareResult = compareCourses(
                 oldIn = CourseListDB.readCourseList(studentNumber),
-                newIn = newData ?: fetchUserCourseList(studentNumber, password, useProxy = true)
+                newIn = newData ?: fetchUserCourseList(studentNumber, password, forceUseProxy = true)
             )
             updates = compareResult.updates
             //When a user login for the first time, there will be 4 "course added" update,
