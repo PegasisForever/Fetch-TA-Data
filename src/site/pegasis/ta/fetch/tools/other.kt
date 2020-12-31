@@ -22,14 +22,6 @@ fun noThrow(action: () -> Unit) {
     }
 }
 
-suspend fun noThrowSuspend(action: suspend () -> Unit) {
-    try {
-        action()
-    } catch (ignored: Throwable) {
-
-    }
-}
-
 fun getInput(s: String, password: Boolean = false): String {
     print(s)
     return if (password) {
