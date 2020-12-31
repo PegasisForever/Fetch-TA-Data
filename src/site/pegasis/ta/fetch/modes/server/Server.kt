@@ -79,6 +79,7 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
         FeedbackDB.init(mongoDB)
         StaticData.init(mongoDB)
         updateAutoUpdateThread()
+        LoadManager.init()
     }
     timing("initiate")
 
