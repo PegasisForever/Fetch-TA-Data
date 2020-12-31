@@ -1,27 +1,26 @@
 package site.pegasis.ta.fetch.modes.server.route
 
-import io.ktor.application.ApplicationCall
-import io.ktor.application.call
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.request.header
-import io.ktor.request.httpMethod
-import io.ktor.request.receiveText
-import io.ktor.response.header
-import io.ktor.response.respond
-import io.ktor.response.respondBytes
-import io.ktor.util.pipeline.PipelineContext
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.request.*
+import io.ktor.response.*
+import io.ktor.util.pipeline.*
 import site.pegasis.ta.fetch.modes.server.LATEST_API_VERSION
 import site.pegasis.ta.fetch.modes.server.MIN_API_VERSION
 import site.pegasis.ta.fetch.tools.gzip
 import kotlin.math.max
 
-fun PipelineContext<Unit, ApplicationCall>.toHttpSession() = object : HttpSession {
+fun PipelineContext<Unit, ApplicationCall>.toHttpSession() = object : HttpSession() {
+    var receivedText: String? = null
+
     override suspend fun getReqString(): String {
-        return call.receiveText()
+        if (receivedText == null) {
+            receivedText = call.receiveText()
+        }
+        return receivedText!!
     }
 
-    override fun getIP(): String? {
+    override fun getIP(): String {
         return call.request.header("X-real-ip") ?: call.request.local.remoteHost
     }
 
@@ -45,8 +44,8 @@ fun PipelineContext<Unit, ApplicationCall>.toHttpSession() = object : HttpSessio
         )
     }
 
-    override suspend fun send(statusCode: Int, body: ByteArray) {
-        call.respondBytes(body, status = HttpStatusCode(statusCode, ""))
+    override suspend fun send(status: Int, body: ByteArray) {
+        call.respondBytes(body, status = HttpStatusCode(status, ""))
     }
 
     override suspend fun makePublic(): Boolean {

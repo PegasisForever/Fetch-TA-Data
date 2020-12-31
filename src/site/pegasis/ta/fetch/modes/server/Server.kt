@@ -24,6 +24,7 @@ import site.pegasis.ta.fetch.tools.logUnhandled
 import site.pegasis.ta.fetch.tools.toUrlEncoded
 import java.lang.Thread.setDefaultUncaughtExceptionHandler
 
+// inclusive
 const val MIN_API_VERSION = 4
 const val LATEST_API_VERSION = 12
 const val LATEST_PUBLIC_API_VERSION = 2
@@ -88,14 +89,14 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
     if (enablePrivate) {
         privateServer = embeddedServer(Netty, privatePort) {
             routing {
-                createContext("/getmark_timeline", GetmarkTimeLine::route)
-                createContext("/getcalendar", GetCalendar::route)
-                createContext("/getannouncement", GetAnnouncement::route)
-                createContext("/update_nofetch", UpdateNoFetch::route)
-                createContext("/getarchived", GetArchived::route)
-                createContext("/feedback", Feedback::route)
-                createContext("/regi", Regi::route)
-                createContext("/deregi", Deregi::route)
+                createRoute(GetmarkTimeLine())
+                createRoute("/getcalendar", GetCalendar::route)
+                createRoute("/getannouncement", GetAnnouncement::route)
+                createRoute("/update_nofetch", UpdateNoFetch::route)
+                createRoute("/getarchived", GetArchived::route)
+                createRoute("/feedback", Feedback::route)
+                createRoute("/regi", Regi::route)
+                createRoute("/deregi", Deregi::route)
             }
         }
         privateServer.start()
@@ -103,7 +104,7 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
 
         controlServer = embeddedServer(Netty, controlPort) {
             routing {
-                createContext("/", Controller::route)
+                createRoute("/", Controller::route)
             }
         }
         controlServer.start()
@@ -115,8 +116,8 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
     //public server
     publicServer = embeddedServer(Netty, publicPort) {
         routing {
-            createContext("/getmark", PublicGetMark::routeV1)
-            createContext("/getmark_v2", PublicGetMark::routeV2)
+            createRoute("/getmark", PublicGetMark::routeV1)
+            createRoute("/getmark_v2", PublicGetMark::routeV2)
         }
     }
     publicServer.start()
@@ -127,11 +128,4 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
     logInfo("Server fully started", timing = timing)
 }
 
-fun Routing.createContext(path: String, route: suspend (HttpSession) -> Unit) {
-    post(path) {
-        route(this.toHttpSession())
-    }
-    options(path) {
-        route(this.toHttpSession())
-    }
-}
+

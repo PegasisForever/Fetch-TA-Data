@@ -18,16 +18,16 @@ object LoadManager {
             // update maxLoad (based on core count) every 10 min
             GlobalScope.launch {
                 while (isActive) {
-                    delay(Duration.ofMinutes(10))
                     maxLoad = Runtime.getRuntime().availableProcessors() * 2
+                    delay(Duration.ofMinutes(10))
                 }
             }
 
             // update load every 5 sec
             GlobalScope.launch {
                 while (isActive) {
-                    delay(Duration.ofMinutes(1))
                     load = getLoad5()
+                    delay(Duration.ofMinutes(1))
                 }
             }
         } else {

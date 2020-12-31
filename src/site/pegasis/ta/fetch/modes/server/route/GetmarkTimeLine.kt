@@ -12,7 +12,7 @@ import site.pegasis.ta.fetch.modes.server.storage.UserDB
 import site.pegasis.ta.fetch.modes.server.timeline.runFollowUpUpdate
 import site.pegasis.ta.fetch.tools.*
 
-object GetmarkTimeLine {
+class GetmarkTimeLine : BaseRoute() {
     private class ReqData(req: String, version: Int) {
         val number: String
         val password: String
@@ -35,23 +35,15 @@ object GetmarkTimeLine {
         }
     }
 
-    suspend fun route(session: HttpSession) {
-        val timing = Timing()
-        var statusCode = 200  //200:success  400:bad request  401:pwd incorrect  500:internal error
+    override fun path() = "/getmark_timeline"
+
+    override suspend fun route(session: HttpSession, timing: Timing): Response {
+        var status = 200  //200:success  400:bad request  401:pwd incorrect  500:internal error
         var res = ""
 
         val hash = session.hashCode()
         val reqString = session.getReqString()
-        val ipAddress = session.getIP()
         val reqApiVersion = session.getApiVersion()
-
-        logInfo("Request #$hash /getmark_timeline <- $ipAddress, api version=$reqApiVersion, data=${reqString.removeBlank()}")
-
-        if (session.isApiVersionInsufficient()) {
-            session.send(426)
-            logInfo("Request #$hash -> Api version insufficient")
-            return
-        }
 
         timing("init")
 
@@ -71,7 +63,7 @@ object GetmarkTimeLine {
                 timing("join")
             }
         } catch (e: Throwable) {
-            statusCode = when {
+            status = when {
                 e is LoginException -> {
                     logInfo("Request #$hash :: Login error")
                     401
@@ -91,8 +83,6 @@ object GetmarkTimeLine {
             }
         }
 
-        session.send(statusCode, res)
-        timing("send")
-        logInfo("Request #$hash -> status=$statusCode", timing = timing)
+        return Response(status, res)
     }
 }
