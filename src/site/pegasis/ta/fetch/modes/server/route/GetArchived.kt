@@ -12,8 +12,8 @@ import site.pegasis.ta.fetch.tools.jsonParser
 import site.pegasis.ta.fetch.tools.logError
 import site.pegasis.ta.fetch.tools.logInfo
 
-object GetArchived {
-    private class ReqData(req: String, version: Int) {
+class GetArchived : BaseRoute() {
+    private class ReqData(req: String) {
         val number: String
         val password: String
 
@@ -28,32 +28,30 @@ object GetArchived {
         }
     }
 
-    suspend fun route(session: HttpSession){
-        val timing = Timing()
+    override fun path() = "/getarchived"
+
+    override suspend fun route(session: HttpSession, timing: Timing): Response {
         var statusCode = 200  //200:success  400:bad request  401:pwd incorrect  500:internal error
         var res = ""
 
         val hash = session.hashCode()
         val reqString = session.getReqString()
-        val ipAddress = session.getIP()
         val reqApiVersion = session.getApiVersion()
-        logInfo("Request #$hash /getarchived <- $ipAddress, api version=$reqApiVersion, data=$reqString")
-
-        if (session.isApiVersionInsufficient()) {
-            session.send(426)
-            logInfo("Request #$hash /getarchived -> $ipAddress, Api version insufficient")
-            return
-        }
 
         timing("init")
 
         try {
-            with(ReqData(reqString, reqApiVersion)) {
+            with(ReqData(reqString)) {
                 if (UserDB.validate(number, password)) {
                     res = if (reqApiVersion == 6) {
-                        CourseList(CourseListDB.readArchivedCourseList(number).filter { it.overallMark != null }).serialize(reqApiVersion).toJSONString()
+                        CourseList(CourseListDB.readArchivedCourseList(number)
+                            .filter { it.overallMark != null })
+                            .serialize(reqApiVersion)
+                            .toJSONString()
                     } else {
-                        CourseListDB.readArchivedCourseList(number).serialize(reqApiVersion).toJSONString()
+                        CourseListDB.readArchivedCourseList(number)
+                            .serialize(reqApiVersion)
+                            .toJSONString()
                     }
                     timing("join")
                 } else {
@@ -73,8 +71,6 @@ object GetArchived {
             }
         }
 
-        session.send(statusCode, res)
-        timing("send")
-        logInfo("Request #$hash -> status=$statusCode", timing = timing)
+        return Response(statusCode, res)
     }
 }

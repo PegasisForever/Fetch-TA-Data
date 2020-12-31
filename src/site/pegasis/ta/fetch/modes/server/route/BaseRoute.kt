@@ -8,15 +8,17 @@ import site.pegasis.ta.fetch.tools.logInfo
 import site.pegasis.ta.fetch.tools.logWarn
 import site.pegasis.ta.fetch.tools.removeBlank
 
-data class Response(val status: Int, val res: String, val isGzip: Boolean = true)
+data class Response(val status: Int, val res: String = "", val isGzip: Boolean = true)
 
 abstract class BaseRoute {
     open fun isPublic() = false
-    open fun bypassLoadManager() = false
+    open fun isController() = false
     open fun minApiVersion() = MIN_API_VERSION
     abstract fun path(): String
 
     abstract suspend fun route(session: HttpSession, timing: Timing): Response
+
+    private fun getLogHeader() = if (isController()) "Control" else "Request"
 
     fun createRoute(routing: Routing) {
         routing.post(path()) {
@@ -24,9 +26,9 @@ abstract class BaseRoute {
             val session = this.toHttpSession()
             val hash = session.hashCode()
 
-            logInfo("Request #$hash #${path()} <- ${session.getIP()}, api version=${session.getApiVersion()}, data=${session.getReqString().removeBlank()}")
+            logInfo("${getLogHeader()} #$hash ${path()} <- ${session.getIP()}, api version=${session.getApiVersion()}, data=${session.getReqString().removeBlank()}")
 
-            if (LoadManager.isOverLoad() && !bypassLoadManager()) {
+            if (LoadManager.isOverLoad() && !isController()) {
                 session.send(503)
                 logWarn("Request #$hash -> Server overload, ignoring request")
                 return@post
@@ -40,7 +42,7 @@ abstract class BaseRoute {
             val response = route(session, timing)
             session.send(response)
             timing("send")
-            logInfo("Request #$hash -> status=${response.status}", timing = timing)
+            logInfo("${getLogHeader()} #$hash -> status=${response.status}", timing = timing)
         }
 
         if (isPublic()) {

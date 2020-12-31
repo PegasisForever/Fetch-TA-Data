@@ -90,13 +90,13 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
         privateServer = embeddedServer(Netty, privatePort) {
             routing {
                 createRoute(GetmarkTimeLine())
-                createRoute("/getcalendar", GetCalendar::route)
-                createRoute("/getannouncement", GetAnnouncement::route)
-                createRoute("/update_nofetch", UpdateNoFetch::route)
-                createRoute("/getarchived", GetArchived::route)
-                createRoute("/feedback", Feedback::route)
-                createRoute("/regi", Regi::route)
-                createRoute("/deregi", Deregi::route)
+                createRoute(GetCalendar())
+                createRoute(GetAnnouncement())
+                createRoute(UpdateNoFetch())
+                createRoute(GetArchived())
+                createRoute(Feedback())
+                createRoute(Regi())
+                createRoute(Deregi())
             }
         }
         privateServer.start()
@@ -104,7 +104,7 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
 
         controlServer = embeddedServer(Netty, controlPort) {
             routing {
-                createRoute("/", Controller::route)
+                createRoute(Controller())
             }
         }
         controlServer.start()
@@ -116,8 +116,8 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
     //public server
     publicServer = embeddedServer(Netty, publicPort) {
         routing {
-            createRoute("/getmark", PublicGetMark::routeV1)
-            createRoute("/getmark_v2", PublicGetMark::routeV2)
+            createRoute(PublicGetMark(1))
+            createRoute(PublicGetMark(2))
         }
     }
     publicServer.start()
@@ -128,4 +128,6 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
     logInfo("Server fully started", timing = timing)
 }
 
-
+fun Routing.createRoute(route: BaseRoute) {
+    route.createRoute(this)
+}

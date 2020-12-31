@@ -3,7 +3,7 @@ package site.pegasis.ta.fetch.models
 class Timing {
     private val timeArray = ArrayList<TimingItem>()
     private var startTime = System.currentTimeMillis()
-    private var lastTime = startTime
+    var lastTime = startTime
 
     fun setPoint(name: String) {
         val currentTime = System.currentTimeMillis()
@@ -26,7 +26,7 @@ class Timing {
         setPoint(name)
     }
 
-    operator fun <T> invoke(name: String, action: () -> T): T {
+    inline operator fun <T> invoke(name: String, action: () -> T): T {
         lastTime = System.currentTimeMillis()
         val result = action()
         setPoint(name)

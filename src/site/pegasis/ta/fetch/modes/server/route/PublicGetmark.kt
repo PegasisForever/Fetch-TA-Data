@@ -9,7 +9,13 @@ import site.pegasis.ta.fetch.modes.server.serializers.serializePublic
 import site.pegasis.ta.fetch.modes.server.timeline.runFollowUpUpdate
 import site.pegasis.ta.fetch.tools.*
 
-object PublicGetMark {
+class PublicGetMark(private val publicApiVersion: Int) : BaseRoute() {
+    init {
+        if (publicApiVersion != 1 && publicApiVersion != 2) {
+            error("Unknown public api version: $publicApiVersion")
+        }
+    }
+
     private class ReqData(req: String) {
         val number: String
         val password: String
@@ -25,22 +31,20 @@ object PublicGetMark {
         }
     }
 
-    suspend fun routeV1(session: HttpSession) = route(1, session)
-    suspend fun routeV2(session: HttpSession) = route(2, session)
+    override fun path() = if (publicApiVersion == 1) {
+        "/getmark"
+    } else {
+        "/getmark_v2"
+    }
 
-    suspend fun route(publicApiVersion: Int, session: HttpSession) {
-        if (session.makePublic()) {
-            return
-        }
+    override fun isPublic() = true
 
-        val timing = Timing()
+    override suspend fun route(session: HttpSession, timing: Timing): Response {
         var statusCode = 200  //200:success  400:bad request  401:pwd incorrect  500:internal error
         var res = ""
 
         val hash = session.hashCode()
         val reqString = session.getReqString()
-        val ipAddress = session.getIP()
-        logInfo("Request #$hash /public/getmark <- $ipAddress, data=$reqString, api version=$publicApiVersion")
 
         timing("init")
 
@@ -75,8 +79,6 @@ object PublicGetMark {
             }
         }
 
-        session.send(statusCode, res, false)
-        timing("send")
-        logInfo("Request #$hash -> status=$statusCode", timing = timing)
+        return Response(statusCode, res, false)
     }
 }

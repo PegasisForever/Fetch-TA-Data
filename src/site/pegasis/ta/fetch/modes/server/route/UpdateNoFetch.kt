@@ -11,8 +11,8 @@ import site.pegasis.ta.fetch.modes.server.storage.UserDB
 import site.pegasis.ta.fetch.modes.server.storage.UserUpdateStatusDB
 import site.pegasis.ta.fetch.tools.*
 
-object UpdateNoFetch {
-    private class ReqData(req: String, version: Int) {
+class UpdateNoFetch : BaseRoute() {
+    private class ReqData(req: String) {
         var user: User
 
         init {
@@ -25,27 +25,22 @@ object UpdateNoFetch {
         }
     }
 
-    suspend fun route(session: HttpSession){
-        val timing = Timing()
+    override fun path() = "/update_nofetch"
+
+    override fun minApiVersion() = 7
+
+    override suspend fun route(session: HttpSession, timing: Timing): Response {
         var statusCode = 200  //200:success  400:bad request  401:pwd incorrect  500:internal error
         var res = ""
 
         val hash = session.hashCode()
         val reqString = session.getReqString()
-        val ipAddress = session.getIP()
         val reqApiVersion = session.getApiVersion()
-        logInfo("Request #$hash /update_nofetch <- $ipAddress, api version=$reqApiVersion, data=$reqString")
-
-        if (session.isApiVersionInsufficient(7)) {
-            session.send(426)
-            logInfo("Request #$hash /update_nofetch -> $ipAddress, Api version insufficient")
-            return
-        }
 
         timing("init")
 
         try {
-            with(ReqData(reqString, reqApiVersion).user) {
+            with(ReqData(reqString).user) {
                 if (UserDB.validate(number, password)) {
                     res = JSONObject().apply {
                         this["time_line"] = CourseListDB.readTimeLine(number).serialize(reqApiVersion)
@@ -63,7 +58,7 @@ object UpdateNoFetch {
                     logWarn("Request #$hash :: Can't parse request: $reqString")
                     400
                 }
-                is LoginException ->{
+                is LoginException -> {
                     logInfo("Request #$hash :: Student number or password incorrect")
                     401
                 }
@@ -74,8 +69,6 @@ object UpdateNoFetch {
             }
         }
 
-        session.send(statusCode, res)
-        timing("send")
-        logInfo("Request #$hash -> status=$statusCode", timing = timing)
+        return Response(statusCode, res)
     }
 }

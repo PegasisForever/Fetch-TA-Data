@@ -6,10 +6,9 @@ import site.pegasis.ta.fetch.exceptions.ParseRequestException
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.tools.jsonParser
 import site.pegasis.ta.fetch.tools.logError
-import site.pegasis.ta.fetch.tools.logInfo
 import site.pegasis.ta.fetch.tools.logWarn
 
-object Feedback {
+class Feedback : BaseRoute() {
     private class ReqData(req: String) {
         val contactInfo: String
         val feedback: String
@@ -29,21 +28,13 @@ object Feedback {
         }
     }
 
-    suspend fun route(session: HttpSession) {
-        val timing = Timing()
-        var statusCode = 200  //200:success  400:bad request  500:internal error
+    override fun path() = "/feedback"
+
+    override suspend fun route(session: HttpSession, timing: Timing): Response {
+        var status = 200  //200:success  400:bad request  500:internal error
 
         val hash = session.hashCode()
         val reqString = session.getReqString()
-        val ipAddress = session.getIP()
-        val reqApiVersion = session.getApiVersion()
-        logInfo("Request #$hash /feedback <- $ipAddress, api version=$reqApiVersion, data=$reqString")
-
-        if (session.isApiVersionInsufficient()) {
-            session.send(426)
-            logInfo("Request #$hash -> Api version insufficient")
-            return
-        }
 
         timing("init")
 
@@ -53,7 +44,7 @@ object Feedback {
             }
             timing("save feedback")
         } catch (e: Throwable) {
-            statusCode = when (e) {
+            status = when (e) {
                 is ParseRequestException -> {
                     logWarn("Request #$hash :: Can't parse request: $reqString")
                     400
@@ -65,7 +56,6 @@ object Feedback {
             }
         }
 
-        session.send(statusCode)
-        logInfo("Request #$hash -> status=$statusCode", timing = timing)
+        return Response(status)
     }
 }

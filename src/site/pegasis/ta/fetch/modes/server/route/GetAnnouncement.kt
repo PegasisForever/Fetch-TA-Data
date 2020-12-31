@@ -1,14 +1,16 @@
 package site.pegasis.ta.fetch.modes.server.route
 
+import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.modes.server.storage.StaticData
-import site.pegasis.ta.fetch.tools.logInfo
 
-object GetAnnouncement {
-    suspend fun route(session: HttpSession) {
-        val ipAddress = session.getIP()
-        val hash = session.hashCode()
-        logInfo("Request #$hash /getannouncement <-> $ipAddress")
+class GetAnnouncement : BaseRoute() {
+    override fun path() = "/getannouncement"
 
-        session.send(200, StaticData.getAnnouncement())
+    override suspend fun route(session: HttpSession, timing: Timing): Response {
+        val announcement = timing("get announcement") {
+            StaticData.getAnnouncement()
+        }
+
+        return Response(200, announcement)
     }
 }

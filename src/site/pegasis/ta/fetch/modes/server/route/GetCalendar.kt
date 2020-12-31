@@ -1,13 +1,15 @@
 package site.pegasis.ta.fetch.modes.server.route
 
+import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.modes.server.storage.StaticData
-import site.pegasis.ta.fetch.tools.logInfo
 
-object GetCalendar {
-    suspend fun route(session: HttpSession){
-        val ipAddress = session.getIP()
-        val hash = session.hashCode()
-        logInfo("Request #$hash /getcalendar <-> $ipAddress")
-        session.send(200, StaticData.getCalendar())
+class GetCalendar : BaseRoute() {
+    override fun path() = "/getcalendar"
+
+    override suspend fun route(session: HttpSession, timing: Timing): Response {
+        val calendar = timing("get calendar") {
+            StaticData.getCalendar()
+        }
+        return Response(200, calendar)
     }
 }
