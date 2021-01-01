@@ -42,7 +42,9 @@ infix fun Any?.nne(b: Any?): Boolean {
 }
 
 fun Throwable.isConnectionException() = this is java.net.SocketTimeoutException ||
+    this is java.net.ConnectException ||
+    this is io.ktor.client.features.HttpRequestTimeoutException ||
     this is org.apache.http.conn.ConnectTimeoutException ||
     this is org.apache.http.conn.HttpHostConnectException ||
     this is RateLimitedException ||
-    (message ?: "").indexOf("SocketTimeoutException") != -1
+    (message?.toLowerCase() ?: "").indexOf("timeout") != -1

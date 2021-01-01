@@ -10,33 +10,35 @@ suspend fun initFiles() {
     if (!fileExists("data/config.json")){
         logInfo("Creating config files.....")
         """{
-    "notification": false,
-    "auto_update": false,
-    "auto_update_interval_minute": 40,
-    "auto_update_interval_exceptions": [
-        {
-            "start": "00:00:00",
-            "end": "06:00:00",
-            "interval": 120
-        },
-        {
-            "start": "18:00:00",
-            "end": "23:59:59",
-            "interval": 120
-        }
-    ],
-    "ignore_last_update_done": true,
-    "fetch_timeout_second": 100,
-    "disable_course_related_actions": [
-        {
-            "start": "2020-02-28T14:00:00-05:00",
-            "end": "2020-02-28T16:00:00-05:00"
-        }
-    ],
-    "ta_certificate_path": "data/ta.yrdsb.ca.cer",
-    "proxies": [],
-    "force_proxy": false
-}""".writeToFile("data/config.json")
+  "notification": false,
+  "auto_update": false,
+  "auto_update_interval_minute": 120,
+  "auto_update_interval_exceptions": [
+    {
+      "start": "00:00:00",
+      "end": "06:00:00",
+      "interval": 240
+    },
+    {
+      "start": "18:00:00",
+      "end": "23:59:59",
+      "interval": 240
+    }
+  ],
+  "ignore_last_update_done": false,
+  "fetch_timeout_second": 5,
+  "disable_course_related_actions": [
+    {
+      "start": "2020-02-28T14:00:00-05:00",
+      "end": "2020-02-28T16:00:00-05:00"
+    }
+  ],
+  "proxies": [
+  ],
+  "use_proxy": false,
+  "use_local_ip": true
+}
+""".writeToFile("data/config.json")
     }
 }
 

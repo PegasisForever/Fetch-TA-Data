@@ -18,7 +18,7 @@ object Config {
     var autoUpdateEnabled = false
     var autoUpdateIntervalMinute = 40
     var autoUpdateIntervalExceptions = HashMap<ClosedRange<LocalTime>, Int>()
-    var fetchTimeoutSecond = 100
+    var fetchTimeoutSecond = 5L
     var disableCourseRelatedActions = ArrayList<ClosedRange<ZonedDateTime>>()
     var remoteProxies = emptyList<RemoteProxy>()
     var proxies = emptyList<Proxy>()
@@ -30,7 +30,7 @@ object Config {
         notificationEnabled = configJSON["notification"] as Boolean
         autoUpdateEnabled = configJSON["auto_update"] as Boolean
         autoUpdateIntervalMinute = (configJSON["auto_update_interval_minute"] as Long).toInt()
-        fetchTimeoutSecond = (configJSON["fetch_timeout_second"] as Long).toInt()
+        fetchTimeoutSecond = configJSON["fetch_timeout_second"] as Long
         (configJSON["disable_course_related_actions"] as JSONArray).forEach { obj ->
             if (obj is JSONObject) {
                 disableCourseRelatedActions.add(obj["start"].toString().toZonedDateTime()..obj["end"].toString().toZonedDateTime())
