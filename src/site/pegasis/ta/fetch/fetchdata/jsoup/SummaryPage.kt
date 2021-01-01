@@ -1,5 +1,7 @@
 package site.pegasis.ta.fetch.fetchdata.jsoup
 
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import site.pegasis.ta.fetch.models.*
 import site.pegasis.ta.fetch.tools.*
 import java.time.LocalDate
@@ -58,10 +60,12 @@ class SummaryPage(private val session: JsoupSession, private val timing: Timing 
                                 val extraMarkText = span.text()
                                 val (name, mark) = extraMarkText.split(": ")
                                 if (mark.matches("[\\d\\.]+%")) {
-                                    course.extraMarks!!.add(ExtraMark(
-                                        name.capitalizeWord(),
-                                        OverallMark(mark.substring(0, mark.lastIndex).toDouble())
-                                    ))
+                                    course.extraMarks!!.add(
+                                        ExtraMark(
+                                            name.capitalizeWord(),
+                                            OverallMark(mark.substring(0, mark.lastIndex).toDouble())
+                                        )
+                                    )
                                 } else if (mark.indexOf("No Credit") != -1) {
                                     course.noCredit = true
                                 }
@@ -91,19 +95,25 @@ class SummaryPage(private val session: JsoupSession, private val timing: Timing 
         return DetailPage(session, course.code, time, timing)
     }
 
-    suspend fun fillDetails(doCalculation: Boolean = true): SummaryPage {
+    suspend fun fillDetails(doCalculation: Boolean = true): SummaryPage = coroutineScope {
         val currentTime = ZonedDateTime.now(defaultZoneID)
         courses
             .filter { it.overallMark != null }
-            .forEach { course ->
-                val detailPage = gotoDetailPage(course, currentTime)
-                course.assignments = detailPage.assignments
-                course.weightTable = detailPage.weightTable
-                if (doCalculation) course.calculate()
+            .map { course ->
+                async {
+                    val detailPage = gotoDetailPage(course, currentTime)
+                    course.assignments = detailPage.assignments
+                    course.weightTable = detailPage.weightTable
+                    if (doCalculation) course.calculate()
+                }
+            }
+            .forEach {
+                it.await()
             }
 
-        return this
+        this@SummaryPage
     }
+
 
     suspend fun closeSession(): SummaryPage {
         session.close()
