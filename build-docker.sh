@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-mvn package
+./gradlew build
 docker build --rm -t pegasis0/fetch-ta:latest .
