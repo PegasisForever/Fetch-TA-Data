@@ -2,14 +2,11 @@ package site.pegasis.ta.fetch.modes.server
 
 import FeedbackDB
 import io.fluidsonic.mongo.MongoDatabase
-import io.ktor.routing.Routing
-import io.ktor.routing.options
-import io.ktor.routing.post
-import io.ktor.routing.routing
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
-import io.ktor.server.netty.NettyApplicationEngine
+import io.ktor.routing.*
+import io.ktor.server.cio.*
+import io.ktor.server.engine.*
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import site.pegasis.ta.fetch.models.Timing
@@ -35,9 +32,10 @@ lateinit var database: MongoDatabase
 fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publicPort: Int, dbHost: String, dbPort: Int, dbUSer: String, dbPassword: String) {
     val timing = Timing()
 
-    var privateServer: NettyApplicationEngine? = null
-    var controlServer: NettyApplicationEngine? = null
-    var publicServer: NettyApplicationEngine? = null
+    val serverJob = Job()
+    var privateServer: ApplicationEngine? = null
+    var controlServer: ApplicationEngine? = null
+    var publicServer: ApplicationEngine? = null
 
     setDefaultUncaughtExceptionHandler { thread: Thread?, e: Throwable ->
         logUnhandled(thread, e)
@@ -60,6 +58,7 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
                 job1.join();job2.join();job3.join();job4.join()
             }
 
+            serverJob.complete()
             logInfo("Server stopped")
         }
     })
@@ -87,7 +86,7 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
     logInfo("Starting server.....")
     //private server
     if (enablePrivate) {
-        privateServer = embeddedServer(Netty, privatePort) {
+        privateServer = embeddedServer(CIO, privatePort) {
             routing {
                 createRoute(GetmarkTimeLine())
                 createRoute(GetCalendar())
@@ -102,7 +101,7 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
         privateServer.start()
         logInfo("Private server started on port $privatePort")
 
-        controlServer = embeddedServer(Netty, controlPort) {
+        controlServer = embeddedServer(CIO, controlPort) {
             routing {
                 createRoute(Controller())
             }
@@ -114,7 +113,7 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
     }
 
     //public server
-    publicServer = embeddedServer(Netty, publicPort) {
+    publicServer = embeddedServer(CIO, publicPort) {
         routing {
             createRoute(PublicGetMark(1))
             createRoute(PublicGetMark(2))
@@ -126,6 +125,10 @@ fun startServer(enablePrivate: Boolean, privatePort: Int, controlPort: Int, publ
 
     database = mongoDB
     logInfo("Server fully started", timing = timing)
+
+    runBlocking {
+        serverJob.join()
+    }
 }
 
 fun Routing.createRoute(route: BaseRoute) {
