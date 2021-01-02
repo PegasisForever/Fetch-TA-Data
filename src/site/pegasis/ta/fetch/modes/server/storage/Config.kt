@@ -77,15 +77,16 @@ object Config {
         return autoUpdateIntervalMinute
     }
 
-    fun getRandomProxy(): Proxy {
-        return proxies.random()
-    }
-
-    fun getRandomRemoteProxy(): Proxy? {
-        return if (remoteProxies.isEmpty()) {
-            null
-        } else {
+    fun getRandomProxy(forceRemote: Boolean = false): Proxy {
+        return if (forceRemote || (useProxy && !useLocalIP)) {
+            // only use remote proxy
             remoteProxies.random()
+        } else if (useProxy && useLocalIP) {
+            // use remote proxy and local ip
+            proxies.random()
+        } else {
+            // only use local ip
+            Proxy.NO_PROXY
         }
     }
 }

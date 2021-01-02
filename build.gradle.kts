@@ -35,6 +35,7 @@ dependencies {
     implementation("com.googlecode.json-simple:json-simple:1.1.1")
     implementation("com.google.firebase:firebase-admin:6.12.1")
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlin_version")
+    implementation("net.sourceforge.htmlunit:htmlunit:2.45.0")
 }
 
 kotlin.sourceSets["main"].kotlin.srcDirs("src")

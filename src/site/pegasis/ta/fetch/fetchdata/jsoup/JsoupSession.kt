@@ -30,15 +30,7 @@ class JsoupSession(private val forceUseProxy: Boolean) {
                 .connectTimeout(Config.fetchTimeoutSecond, TimeUnit.SECONDS)
                 .readTimeout(Config.fetchTimeoutSecond, TimeUnit.SECONDS)
                 .writeTimeout(Config.fetchTimeoutSecond, TimeUnit.SECONDS)
-                .apply {
-                    if (forceUseProxy || (Config.useProxy && !Config.useLocalIP)) {
-                        // only use remote proxy
-                        proxy(Config.getRandomRemoteProxy()!!)
-                    } else if (Config.useProxy && Config.useLocalIP) {
-                        // use remote proxy and local ip
-                        proxy(Config.getRandomProxy())
-                    }
-                }
+                .proxy(Config.getRandomProxy(forceUseProxy))
                 .build()
         }
     }
