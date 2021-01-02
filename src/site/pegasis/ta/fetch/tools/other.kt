@@ -1,5 +1,6 @@
 package site.pegasis.ta.fetch.tools
 
+import kotlinx.coroutines.TimeoutCancellationException
 import org.json.simple.parser.JSONParser
 import site.pegasis.ta.fetch.exceptions.RateLimitedException
 import java.io.PrintWriter
@@ -41,7 +42,8 @@ infix fun Any?.nne(b: Any?): Boolean {
     return this != null && b != null && this == b
 }
 
-fun Throwable.isConnectionException() = this is java.net.SocketTimeoutException ||
+fun Throwable.isConnectionException() = this is TimeoutCancellationException ||
+    this is java.net.SocketTimeoutException ||
     this is java.net.ConnectException ||
     this is io.ktor.client.features.HttpRequestTimeoutException ||
     this is org.apache.http.conn.ConnectTimeoutException ||

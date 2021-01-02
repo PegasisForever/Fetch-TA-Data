@@ -6,21 +6,20 @@ import site.pegasis.ta.fetch.tools.jsonParser
 import site.pegasis.ta.fetch.tools.logWarn
 import site.pegasis.ta.fetch.tools.readFile
 import site.pegasis.ta.fetch.tools.toZonedDateTime
+import java.net.InetAddress
+import java.net.InetSocketAddress
+import java.net.Proxy
 import java.time.LocalTime
 import java.time.ZonedDateTime
 
 object Config {
-    interface Proxy
-    data class RemoteProxy(val host: String, val port: Int) : Proxy
-    object LocalProxy : Proxy
-
     var notificationEnabled = false
     var autoUpdateEnabled = false
     var autoUpdateIntervalMinute = 40
     var autoUpdateIntervalExceptions = HashMap<ClosedRange<LocalTime>, Int>()
     var fetchTimeoutSecond = 5L
     var disableCourseRelatedActions = ArrayList<ClosedRange<ZonedDateTime>>()
-    var remoteProxies = emptyList<RemoteProxy>()
+    var remoteProxies = emptyList<Proxy>()
     var proxies = emptyList<Proxy>()
     var useProxy = false
     var useLocalIP = false
@@ -45,9 +44,10 @@ object Config {
         remoteProxies = (configJSON["proxies"] as JSONArray)
             .filterIsInstance<JSONObject>()
             .map { json ->
-                RemoteProxy(json["host"] as String, (json["port"] as Long).toInt())
+                val addr = InetSocketAddress(InetAddress.getByName(json["host"] as String), (json["port"] as Long).toInt())
+                Proxy(Proxy.Type.SOCKS, addr)
             }
-        proxies = arrayListOf<Proxy>(LocalProxy).apply {
+        proxies = arrayListOf<Proxy>(Proxy.NO_PROXY).apply {
             addAll(remoteProxies)
         }
         useProxy = configJSON["use_proxy"] as Boolean
@@ -81,10 +81,10 @@ object Config {
         return proxies.random()
     }
 
-    fun getRandomRemoteProxy(): RemoteProxy? {
-        return if (remoteProxies.isEmpty()){
+    fun getRandomRemoteProxy(): Proxy? {
+        return if (remoteProxies.isEmpty()) {
             null
-        }else{
+        } else {
             remoteProxies.random()
         }
     }

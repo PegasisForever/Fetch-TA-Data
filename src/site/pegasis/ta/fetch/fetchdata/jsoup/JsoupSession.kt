@@ -1,8 +1,7 @@
 package site.pegasis.ta.fetch.fetchdata.jsoup
 
 import io.ktor.client.*
-import io.ktor.client.engine.*
-import io.ktor.client.engine.cio.*
+import io.ktor.client.engine.okhttp.*
 import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
@@ -11,40 +10,42 @@ import io.ktor.http.*
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.withTimeout
+import okhttp3.OkHttpClient
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import site.pegasis.ta.fetch.exceptions.RateLimitedException
 import site.pegasis.ta.fetch.modes.server.storage.Config
 import site.pegasis.ta.fetch.tools.noThrow
+import java.util.concurrent.TimeUnit
+
 
 class JsoupSession(forceUseProxy: Boolean) {
     var currentPage: Document? = null
     val cookies = hashMapOf<String, String>()
 
-    val client = HttpClient(CIO) {
-        install(HttpTimeout) {
-            connectTimeoutMillis = Config.fetchTimeoutSecond * 1000
-            requestTimeoutMillis = Config.fetchTimeoutSecond * 1000
-            socketTimeoutMillis = Config.fetchTimeoutSecond * 1000
-        }
+    private val client = HttpClient(OkHttp) {
         engine {
-            if (forceUseProxy || (Config.useProxy && !Config.useLocalIP)) {
-                // only use remote proxy
-                val proxy = Config.getRandomRemoteProxy()!!
-                this.proxy = ProxyBuilder.socks(proxy.host, proxy.port)
-            } else if (Config.useProxy && Config.useLocalIP) {
-                // use remote proxy and local ip
-                val proxy = Config.getRandomProxy()
-                if (proxy is Config.RemoteProxy) {
-                    this.proxy = ProxyBuilder.socks(proxy.host, proxy.port)
+            preconfigured = OkHttpClient.Builder()
+                .callTimeout(Config.fetchTimeoutSecond, TimeUnit.SECONDS)
+                .connectTimeout(Config.fetchTimeoutSecond, TimeUnit.SECONDS)
+                .readTimeout(Config.fetchTimeoutSecond, TimeUnit.SECONDS)
+                .writeTimeout(Config.fetchTimeoutSecond, TimeUnit.SECONDS)
+                .apply {
+                    if (forceUseProxy || (Config.useProxy && !Config.useLocalIP)) {
+                        // only use remote proxy
+                        proxy(Config.getRandomRemoteProxy()!!)
+                    } else if (Config.useProxy && Config.useLocalIP) {
+                        // use remote proxy and local ip
+                        proxy(Config.getRandomProxy())
+                    }
                 }
-            }
+                .build()
         }
     }
 
     suspend fun connect(url: String, data: Map<String, String>, method: HttpMethod): Document {
         val response = try {
-            client.request<HttpResponse> {
+            client.request {
                 this.url(url)
                 this.method = method
                 header("Accept-Encoding", "gzip,deflate,sdch")
@@ -64,6 +65,8 @@ class JsoupSession(forceUseProxy: Boolean) {
                     })
                 }
             }
+        } catch (e: RedirectResponseException) {
+            e.response
         } catch (e: Throwable) {
             close()
             throw e
@@ -79,6 +82,7 @@ class JsoupSession(forceUseProxy: Boolean) {
         return when (response.status) {
             HttpStatusCode.Found -> get(response.headers["Location"]!!)
             HttpStatusCode.Unauthorized -> throw RateLimitedException()
+            HttpStatusCode.Forbidden -> throw RateLimitedException()
             else -> {
                 currentPage = Jsoup.parse(response.readText())
                 currentPage!!
