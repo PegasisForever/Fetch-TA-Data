@@ -1,37 +1,46 @@
 package site.pegasis.ta.fetch.fetchdata.jsoup
 
 import io.ktor.client.*
-import io.ktor.client.engine.okhttp.*
+import io.ktor.client.engine.cio.*
 import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.withTimeout
-import okhttp3.OkHttpClient
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import site.pegasis.ta.fetch.exceptions.RateLimitedException
 import site.pegasis.ta.fetch.modes.server.storage.Config
 import site.pegasis.ta.fetch.tools.noThrow
-import java.util.concurrent.TimeUnit
+import java.net.Proxy
 
 
-class JsoupSession(private val forceUseProxy: Boolean) {
+class JsoupSession(forceUseProxy: Boolean) {
     var currentPage: Document? = null
     private val cookies = hashMapOf<String, String>()
+    private val client = getClient(forceUseProxy)
 
-    private val client = HttpClient(OkHttp) {
-        engine {
-            preconfigured = OkHttpClient.Builder()
-                .callTimeout(Config.fetchTimeoutSecond, TimeUnit.SECONDS)
-                .connectTimeout(Config.fetchTimeoutSecond, TimeUnit.SECONDS)
-                .readTimeout(Config.fetchTimeoutSecond, TimeUnit.SECONDS)
-                .writeTimeout(Config.fetchTimeoutSecond, TimeUnit.SECONDS)
-                .proxy(Config.getRandomProxy(forceUseProxy))
-                .build()
+    companion object {
+        private var clientsCache = hashMapOf<Proxy, HttpClient>()
+
+        private fun getClient(forceUseProxy: Boolean): HttpClient {
+            val proxy = Config.getRandomProxy(forceUseProxy)
+            return if (proxy in clientsCache) {
+                clientsCache[proxy]!!
+            } else {
+                val client = HttpClient(CIO) {
+                    install(HttpTimeout) {
+                        socketTimeoutMillis = Config.fetchTimeoutSecond * 1000
+                        connectTimeoutMillis = Config.fetchTimeoutSecond * 1000
+                        requestTimeoutMillis = Config.fetchTimeoutSecond * 1000
+                    }
+                    engine {
+                        this.proxy = proxy
+                    }
+                }
+                clientsCache[proxy] = client
+                client
+            }
         }
     }
 
@@ -90,12 +99,12 @@ class JsoupSession(private val forceUseProxy: Boolean) {
     }
 
     suspend fun close() {
-        try {
-            withTimeout(1000) {
-                client.close()
-            }
-        } catch (e: TimeoutCancellationException) {
-            client.cancel()
-        }
+//        try {
+//            withTimeout(1000) {
+//                client.close()
+//            }
+//        } catch (e: TimeoutCancellationException) {
+//            client.cancel()
+//        }
     }
 }

@@ -44,8 +44,8 @@ object Config {
         remoteProxies = (configJSON["proxies"] as JSONArray)
             .filterIsInstance<JSONObject>()
             .map { json ->
-                val addr = InetSocketAddress(InetAddress.getByName(json["host"] as String), (json["port"] as Long).toInt())
-                Proxy(Proxy.Type.SOCKS, addr)
+                val addr = InetSocketAddress(json["host"] as String, (json["port"] as Long).toInt())
+                Proxy(Proxy.Type.HTTP, addr)
             }
         proxies = arrayListOf<Proxy>(Proxy.NO_PROXY).apply {
             addAll(remoteProxies)
