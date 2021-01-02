@@ -41,7 +41,7 @@ dependencies {
 kotlin.sourceSets["main"].kotlin.srcDirs("src")
 
 group = "site.pegasis"
-version = "BN56"
+version = "BN57"
 description = "fetch-ta-data"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
