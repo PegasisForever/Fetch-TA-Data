@@ -113,10 +113,4 @@ class SummaryPage(private val session: JsoupSession, private val timing: Timing 
 
         this@SummaryPage
     }
-
-
-    suspend fun closeSession(): SummaryPage {
-        session.close()
-        return this
-    }
 }

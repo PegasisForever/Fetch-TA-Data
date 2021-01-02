@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit
 
 class JsoupSession(forceUseProxy: Boolean) {
     var currentPage: Document? = null
-    val cookies = hashMapOf<String, String>()
+    private val cookies = hashMapOf<String, String>()
 
     private val client = HttpClient(OkHttp) {
         engine {
@@ -68,7 +68,6 @@ class JsoupSession(forceUseProxy: Boolean) {
         } catch (e: RedirectResponseException) {
             e.response
         } catch (e: Throwable) {
-            close()
             throw e
         }
 
