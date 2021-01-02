@@ -35,8 +35,7 @@ The config file is `data/config.json`. If you need to send notifications, you ne
 ## Create Docker Image
 
 ```
-./build.sh
-docker build --rm -t pegasis/fetch-ta:latest .
+./build-docker.sh
 ```
 
 ## Support Me

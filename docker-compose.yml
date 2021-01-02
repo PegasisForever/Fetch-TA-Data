@@ -23,15 +23,6 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: password
-  proxy:
-    image: pegasis0/ss_local
-    restart: always
-    environment:
-      SERVER_ADDR: 138.197.129.149
-      SERVER_PORT: 8080
-      LOCAL_PORT: 1080
-      PASSWORD: password
-      METHOD: chacha20-ietf-poly1305
   backup:
     image: pegasis0/mongodb_s3_backup:latest
     restart: always
