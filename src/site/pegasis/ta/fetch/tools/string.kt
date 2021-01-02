@@ -1,11 +1,14 @@
 package site.pegasis.ta.fetch.tools
 
+import io.ktor.util.*
 import java.io.ByteArrayOutputStream
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
+import java.util.*
 import java.util.regex.Pattern
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
+import kotlin.collections.ArrayList
 
 
 fun find(str: String, regex: String): ArrayList<String>? {
@@ -61,3 +64,5 @@ operator fun String.times(time: Int): String {
 fun String.capitalizeWord() = split(" ").joinToString(" ") { it.toLowerCase().capitalize() }
 
 fun String.toUrlEncoded(): String = URLEncoder.encode(this, "UTF-8")
+
+fun String.toBase64()=Base64.getEncoder().encodeToString(this.toByteArray())

@@ -2,17 +2,42 @@ package site.pegasis.ta.fetch.modes.server.storage
 
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
-import site.pegasis.ta.fetch.tools.jsonParser
-import site.pegasis.ta.fetch.tools.logWarn
-import site.pegasis.ta.fetch.tools.readFile
-import site.pegasis.ta.fetch.tools.toZonedDateTime
-import java.net.InetAddress
+import site.pegasis.ta.fetch.tools.*
 import java.net.InetSocketAddress
-import java.net.Proxy
 import java.time.LocalTime
 import java.time.ZonedDateTime
+import java.net.Proxy as JavaProxy
 
 object Config {
+    interface Proxy {
+        fun toJavaProxy(): JavaProxy
+    }
+
+    data class HttpProxy(val host: String, val port: Int, val user: String? = null, val password: String? = null) : Proxy {
+        override fun toJavaProxy(): JavaProxy {
+            return JavaProxy(JavaProxy.Type.HTTP, InetSocketAddress(host, port))
+        }
+
+        fun hasAuth() = user != null && password != null
+
+        fun authText() = "Basic " + "$user:$password".toBase64()
+
+        companion object {
+            fun fromJson(json: JSONObject): HttpProxy {
+                return HttpProxy(
+                    json["host"] as String,
+                    (json["port"] as Long).toInt(),
+                    json["user"] as String?,
+                    json["password"] as String?,
+                )
+            }
+        }
+    }
+
+    object NoProxy : Proxy {
+        override fun toJavaProxy() = JavaProxy.NO_PROXY
+    }
+
     var notificationEnabled = false
     var autoUpdateEnabled = false
     var autoUpdateIntervalMinute = 40
@@ -44,10 +69,9 @@ object Config {
         remoteProxies = (configJSON["proxies"] as JSONArray)
             .filterIsInstance<JSONObject>()
             .map { json ->
-                val addr = InetSocketAddress(json["host"] as String, (json["port"] as Long).toInt())
-                Proxy(Proxy.Type.HTTP, addr)
+                HttpProxy.fromJson(json)
             }
-        proxies = arrayListOf<Proxy>(Proxy.NO_PROXY).apply {
+        proxies = arrayListOf<Proxy>(NoProxy).apply {
             addAll(remoteProxies)
         }
         useProxy = configJSON["use_proxy"] as Boolean
@@ -86,7 +110,7 @@ object Config {
             proxies.random()
         } else {
             // only use local ip
-            Proxy.NO_PROXY
+            NoProxy
         }
     }
 }

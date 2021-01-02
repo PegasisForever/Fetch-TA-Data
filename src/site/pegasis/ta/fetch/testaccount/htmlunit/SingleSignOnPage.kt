@@ -7,8 +7,6 @@ import com.gargoylesoftware.htmlunit.html.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import site.pegasis.ta.fetch.modes.server.storage.Config
-import java.net.InetSocketAddress
-import java.net.Proxy
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -17,9 +15,8 @@ object SingleSignOnPage {
         Logger.getLogger("com.gargoylesoftware").level = Level.OFF
         with(options) {
             val proxy = Config.getRandomProxy(forceUseProxy)
-            if (proxy.type() != Proxy.Type.DIRECT) {
-                val addr = proxy.address() as InetSocketAddress
-                proxyConfig = ProxyConfig(addr.hostString, addr.port, true)
+            if (proxy is Config.HttpProxy) {
+                proxyConfig = ProxyConfig(proxy.host, proxy.port, false)
             }
             isCssEnabled = false
             isJavaScriptEnabled = true

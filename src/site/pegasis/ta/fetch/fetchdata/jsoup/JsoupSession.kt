@@ -12,19 +12,18 @@ import org.jsoup.nodes.Document
 import site.pegasis.ta.fetch.exceptions.RateLimitedException
 import site.pegasis.ta.fetch.modes.server.storage.Config
 import site.pegasis.ta.fetch.tools.noThrow
-import java.net.Proxy
 
 
 class JsoupSession(forceUseProxy: Boolean) {
     var currentPage: Document? = null
     private val cookies = hashMapOf<String, String>()
-    private val client = getClient(forceUseProxy)
+    private val proxy = Config.getRandomProxy(forceUseProxy)
+    private val client = getClient(proxy)
 
     companion object {
-        private var clientsCache = hashMapOf<Proxy, HttpClient>()
+        private var clientsCache = hashMapOf<Config.Proxy, HttpClient>()
 
-        private fun getClient(forceUseProxy: Boolean): HttpClient {
-            val proxy = Config.getRandomProxy(forceUseProxy)
+        private fun getClient(proxy: Config.Proxy): HttpClient {
             return if (proxy in clientsCache) {
                 clientsCache[proxy]!!
             } else {
@@ -35,7 +34,7 @@ class JsoupSession(forceUseProxy: Boolean) {
                         requestTimeoutMillis = Config.fetchTimeoutSecond * 1000
                     }
                     engine {
-                        this.proxy = proxy
+                        this.proxy = proxy.toJavaProxy()
                     }
                 }
                 clientsCache[proxy] = client
@@ -49,6 +48,9 @@ class JsoupSession(forceUseProxy: Boolean) {
             client.request {
                 this.url(url)
                 this.method = method
+                if (proxy is Config.HttpProxy && proxy.hasAuth()) {
+                    header("Proxy-Authorization", proxy.authText())
+                }
                 header("Accept-Encoding", "gzip,deflate,sdch")
                 header("Connection", "keep-alive")
                 header("Cookie",
@@ -96,15 +98,5 @@ class JsoupSession(forceUseProxy: Boolean) {
 
     suspend fun get(url: String): Document {
         return connect(url, hashMapOf(), HttpMethod.Get)
-    }
-
-    suspend fun close() {
-//        try {
-//            withTimeout(1000) {
-//                client.close()
-//            }
-//        } catch (e: TimeoutCancellationException) {
-//            client.cancel()
-//        }
     }
 }
