@@ -25,8 +25,6 @@ dependencies {
     implementation("io.ktor:ktor-client-core:$ktor_version")
     implementation("io.ktor:ktor-client-core-jvm:$ktor_version")
     implementation("io.ktor:ktor-client-okhttp:$ktor_version")
-    implementation("io.ktor:ktor-network-tls:$ktor_version")
-    implementation("io.ktor:ktor-network-tls-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-core:$ktor_version")
     implementation("io.ktor:ktor-server-cio:$ktor_version")
     implementation("org.jsoup:jsoup:1.13.1")
@@ -34,7 +32,6 @@ dependencies {
     implementation("info.picocli:picocli:4.1.4")
     implementation("com.googlecode.json-simple:json-simple:1.1.1")
     implementation("com.google.firebase:firebase-admin:6.12.1")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlin_version")
     implementation("net.sourceforge.htmlunit:htmlunit:2.45.0")
 }
 
