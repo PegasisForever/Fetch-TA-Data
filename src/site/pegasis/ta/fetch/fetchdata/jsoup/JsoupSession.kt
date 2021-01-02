@@ -19,7 +19,7 @@ import site.pegasis.ta.fetch.tools.noThrow
 import java.util.concurrent.TimeUnit
 
 
-class JsoupSession(forceUseProxy: Boolean) {
+class JsoupSession(private val forceUseProxy: Boolean) {
     var currentPage: Document? = null
     private val cookies = hashMapOf<String, String>()
 
@@ -99,10 +99,10 @@ class JsoupSession(forceUseProxy: Boolean) {
 
     suspend fun close() {
         try {
-            withTimeout(3000) {
+            withTimeout(1000) {
                 client.close()
             }
-        } catch (timeout: TimeoutCancellationException) {
+        } catch (e: TimeoutCancellationException) {
             client.cancel()
         }
     }
