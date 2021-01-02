@@ -28,12 +28,13 @@ class JsoupSession(forceUseProxy: Boolean) {
                 clientsCache[proxy]!!
             } else {
                 val client = HttpClient(CIO) {
-                    install(HttpTimeout) {
-                        socketTimeoutMillis = Config.fetchTimeoutSecond * 1000
-                        connectTimeoutMillis = Config.fetchTimeoutSecond * 1000
-                        requestTimeoutMillis = Config.fetchTimeoutSecond * 1000
-                    }
                     engine {
+                        maxConnectionsCount = 10240
+                        requestTimeout = Config.fetchTimeoutSecond * 1000
+                        endpoint {
+                            connectTimeout = Config.fetchTimeoutSecond * 1000
+                            socketTimeout = Config.fetchTimeoutSecond * 1000
+                        }
                         this.proxy = proxy.toJavaProxy()
                     }
                 }
