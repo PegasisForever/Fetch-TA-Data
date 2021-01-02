@@ -23,7 +23,7 @@ import java.lang.Thread.setDefaultUncaughtExceptionHandler
 
 // inclusive
 const val MIN_API_VERSION = 4
-const val LATEST_API_VERSION = 12
+const val LATEST_API_VERSION = 13
 const val LATEST_PUBLIC_API_VERSION = 2
 const val DB_NAME = "ta"
 

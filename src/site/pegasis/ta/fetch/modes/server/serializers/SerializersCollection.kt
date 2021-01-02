@@ -35,7 +35,8 @@ private val CourseListSerializers = mapOf<Int, (CourseList) -> JSONArray>(
     9 to ::serializeCourseListV8,
     10 to ::serializeCourseListV10,
     11 to ::serializeCourseListV11,
-    12 to ::serializeCourseListV12
+    12 to ::serializeCourseListV12,
+    13 to ::serializeCourseListV12,
 )
 
 fun CourseList.serialize(version: Int = LATEST_API_VERSION): JSONObject {
@@ -64,7 +65,8 @@ private val TimeLineSerializers = mapOf<Int, (TimeLine) -> JSONArray>(
     9 to ::serializeTimeLineV9,
     10 to ::serializeTimeLineV9,
     11 to ::serializeTimeLineV9,
-    12 to ::serializeTimeLineV9
+    12 to ::serializeTimeLineV9,
+    13 to ::serializeTimeLineV9,
 )
 
 fun TimeLine.serialize(version: Int = LATEST_API_VERSION): JSONObject {

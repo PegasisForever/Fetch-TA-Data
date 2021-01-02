@@ -26,7 +26,8 @@ val CourseListParsers = mapOf<Int, (List<*>) -> CourseList>(
     9 to ::CourseListParserV8,
     10 to ::CourseListParserV10,
     11 to ::CourseListParserV11,
-    12 to ::CourseListParserV12
+    12 to ::CourseListParserV12,
+    13 to ::CourseListParserV12,
 )
 
 fun Map<*,*>.toCourseList(): CourseList {
@@ -48,7 +49,8 @@ val TimeLineParsers = mapOf<Int, (List<*>) -> TimeLine>(
     9 to ::TimeLineParserV9,
     10 to ::TimeLineParserV9,
     11 to ::TimeLineParserV9,
-    12 to ::TimeLineParserV9
+    12 to ::TimeLineParserV9,
+    13 to ::TimeLineParserV9,
 )
 
 fun Map<*,*>.toTimeLine(): TimeLine {
