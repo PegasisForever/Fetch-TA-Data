@@ -44,6 +44,7 @@ infix fun Any?.nne(b: Any?): Boolean {
 
 fun Throwable.isConnectionException() = this is TimeoutCancellationException ||
     this is java.net.SocketTimeoutException ||
+    this is java.io.InterruptedIOException ||
     this is java.net.ConnectException ||
     this is io.ktor.client.features.HttpRequestTimeoutException ||
     this is org.apache.http.conn.ConnectTimeoutException ||

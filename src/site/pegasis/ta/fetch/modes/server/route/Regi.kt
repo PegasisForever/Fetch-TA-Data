@@ -11,6 +11,7 @@ import site.pegasis.ta.fetch.modes.server.serializers.serialize
 import site.pegasis.ta.fetch.modes.server.storage.CourseListDB
 import site.pegasis.ta.fetch.modes.server.storage.UserDB
 import site.pegasis.ta.fetch.modes.server.timeline.runFollowUpUpdate
+import site.pegasis.ta.fetch.testaccount.testUserAccount
 import site.pegasis.ta.fetch.tools.*
 
 class Regi : BaseRoute() {
@@ -30,7 +31,7 @@ class Regi : BaseRoute() {
     override fun path() = "/regi"
 
     override suspend fun route(session: HttpSession, timing: Timing): Response {
-        var statusCode = 200  //200:success  400:bad request  401:pwd incorrect  500:internal error
+        var statusCode = 200  // 200:success  202:password is correct, but ta server is down  400:bad request  401:pwd incorrect  500:internal error
         var res = ""
 
         val hash = session.hashCode()
@@ -73,7 +74,11 @@ class Regi : BaseRoute() {
                 }
                 e.isConnectionException() -> {
                     logWarn("Request #$hash :: Connect timeout", e)
-                    503
+                    if (reqApiVersion >= 13) {
+                        testAccount(reqString, hash, timing)
+                    } else {
+                        503
+                    }
                 }
                 else -> {
                     logError("Request #$hash :: Unknown error: ${e.message}", e)
@@ -83,5 +88,31 @@ class Regi : BaseRoute() {
         }
 
         return Response(statusCode, res)
+    }
+
+    // return status code
+    private suspend fun testAccount(reqString: String, hash: Int, timing: Timing): Int {
+        return try {
+            val isPasswordCorrect = with(ReqData(reqString).user) {
+                testUserAccount(number, password, timing)
+            }
+            logInfo("Request #$hash :: User password is ${if (isPasswordCorrect) "correct" else "incorrect"}")
+            if (isPasswordCorrect) {
+                202
+            } else {
+                401
+            }
+        } catch (e: Throwable) {
+            when {
+                e.isConnectionException() -> {
+                    logWarn("Request #$hash :: Test user account timeout", e)
+                    503
+                }
+                else -> {
+                    logError("Request #$hash :: Unknown error: ${e.message}", e)
+                    500
+                }
+            }
+        }
     }
 }

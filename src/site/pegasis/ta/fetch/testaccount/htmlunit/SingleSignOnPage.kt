@@ -6,9 +6,7 @@ import com.gargoylesoftware.htmlunit.WebClient
 import com.gargoylesoftware.htmlunit.html.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.modes.server.storage.Config
-import site.pegasis.ta.fetch.tools.logWarn
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.util.logging.Level
@@ -58,8 +56,7 @@ object SingleSignOnPage {
             if (e is FailingHttpStatusCodeException && e.statusCode == 302) {
                 true
             } else {
-                logWarn("Failed to test account", e)
-                false
+                throw e
             }
         } finally {
             client.close()
