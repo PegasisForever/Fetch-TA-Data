@@ -50,9 +50,6 @@ class Controller : BaseRoute() {
             val commandLine = CommandLine(TAControl())
                 .addSubcommand(HealthManager(printWriter))
                 .addSubcommand(Reload(printWriter))
-                .addSubcommand(Clean(printWriter))
-                .addSubcommand(Regen(printWriter))
-                .addSubcommand(Migrate(printWriter))
             commandLine.out = printWriter
             commandLine.err = errPrintWriter
             commandLine.execute(*args)
