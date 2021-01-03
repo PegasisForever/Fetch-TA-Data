@@ -1,43 +1,92 @@
 package site.pegasis.ta.fetch.modes.server
 
+import com.sun.management.OperatingSystemMXBean
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.time.delay
 import site.pegasis.ta.fetch.tools.fileExists
+import site.pegasis.ta.fetch.tools.logInfo
 import site.pegasis.ta.fetch.tools.logWarn
 import site.pegasis.ta.fetch.tools.readFile
+import java.lang.management.ManagementFactory
 import java.time.Duration
 
 object LoadManager {
-    var maxLoad = 2
-    var load = 0.0
+    private var cores = 1.0
+    private var memoryBytes = 1024L
+
+    private var cpuPercentage = 0.0
+    private var memoryPercentage = 0.0
+
+    private const val CPU_OVERLOAD_THRESHOLD_PERCENTAGE = 0.9
+    private const val MEMORY_OVERLOAD_THRESHOLD_PERCENTAGE = 0.9
 
     suspend fun init() {
-        if (isLoadFileExist()) {
-            // update maxLoad (based on core count) every 10 min
+        if (isCgroupFileExist()) {
+            // update core count and memory every 10 min
             GlobalScope.launch {
                 while (isActive) {
-                    maxLoad = Runtime.getRuntime().availableProcessors() * 2
+                    val cfsQuota = readFile("/sys/fs/cgroup/cpu/cpu.cfs_quota_us").trim().toLong()
+                    cores = if (cfsQuota == -1L) {
+                        Runtime.getRuntime().availableProcessors().toDouble()
+                    } else {
+                        val cfsPeriod = readFile("/sys/fs/cgroup/cpu/cpu.cfs_period_us").trim().toDouble()
+                        cfsQuota / cfsPeriod
+                    }
+
+                    memoryBytes = minOf(
+                        readFile("/sys/fs/cgroup/memory/memory.limit_in_bytes").trim().toLong(),
+                        (ManagementFactory.getOperatingSystemMXBean() as OperatingSystemMXBean).totalMemorySize,
+                    )
                     delay(Duration.ofMinutes(10))
                 }
             }
 
-            // update load every 5 sec
+            // update cpu and ram percentage every 2 sec
             GlobalScope.launch {
+                var lastTime = System.nanoTime()
+                var lastUsage = readFile("/sys/fs/cgroup/cpu/cpuacct.usage").trim().toLong()
+
+                delay(Duration.ofSeconds(2))
                 while (isActive) {
-                    load = getLoad5()
-                    delay(Duration.ofMinutes(1))
+                    val time = System.nanoTime()
+                    val usage = readFile("/sys/fs/cgroup/cpu/cpuacct.usage").trim().toLong()
+                    val timeDelta = time - lastTime
+                    val usageDelta = usage - lastUsage
+                    lastTime = time
+                    lastUsage = usage
+
+                    cpuPercentage = usageDelta.toDouble() / timeDelta / cores
+                    logInfo("CPU percentage: ${cpuPercentage * 100}%")
+
+                    val memUsageBytes = getMemUsageBytes()
+                    memoryPercentage = memUsageBytes.toDouble() / memoryBytes
+                    logInfo("MEM usage: ${memoryPercentage * 100}% ${memUsageBytes / 1024 / 1024}MB/${memoryBytes / 1024 / 1024}MB")
+
+                    delay(Duration.ofSeconds(2))
                 }
             }
         } else {
-            logWarn("Can't read file /proc/loadavg, load manager disabled.")
+            logWarn("Can't read cgroup files, load manager disabled.")
         }
     }
 
-    private suspend fun isLoadFileExist() = fileExists("/proc/loadavg")
+    private suspend fun getMemUsageBytes(): Long {
+        val stats = readFile("/sys/fs/cgroup/memory/memory.stat").split("\n")
+        for (stat in stats) {
+            val (name, value) = stat.split(" ")
+            if (name == "total_rss") return value.toLong()
+        }
+        error("No rss entry")
+    }
 
-    private suspend fun getLoad5() = readFile("/proc/loadavg").split(" ")[1].toDouble()
+    private suspend fun isCgroupFileExist() = fileExists("/sys/fs/cgroup/cpu/cpu.cfs_period_us") &&
+        fileExists("/sys/fs/cgroup/cpu/cpu.cfs_quota_us") &&
+        fileExists("/sys/fs/cgroup/cpu/cpuacct.usage") &&
+        fileExists("/sys/fs/cgroup/memory/memory.limit_in_bytes") &&
+        fileExists("/sys/fs/cgroup/memory/memory.stat")
 
-    fun isOverLoad() = load > maxLoad
+    fun isOverLoad() = cpuPercentage > CPU_OVERLOAD_THRESHOLD_PERCENTAGE ||
+        memoryPercentage > MEMORY_OVERLOAD_THRESHOLD_PERCENTAGE
 }

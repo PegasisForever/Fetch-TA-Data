@@ -23,7 +23,7 @@ suspend fun String.appendToFile(path: String) = withContext(Dispatchers.IO) {
 
 suspend fun readFile(path: String) = withContext(Dispatchers.IO) {
     val file = File(path)
-    val stream=file.inputStream()
+    val stream = file.inputStream()
     val text = stream.readBytes().toString(Charsets.UTF_8)
     stream.close()
     text
