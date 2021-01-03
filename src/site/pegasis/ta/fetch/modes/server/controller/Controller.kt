@@ -21,8 +21,10 @@ class TAControl : Callable<Unit> {
     override fun call() {}
 }
 
-class Controller: BaseRoute() {
+class Controller : BaseRoute() {
     override fun path() = "/"
+
+    override fun minApiVersion() = 1
 
     override fun isController() = true
 
@@ -46,6 +48,7 @@ class Controller: BaseRoute() {
             val errPrintWriter = PrintWriter(errStringWriter)
 
             val commandLine = CommandLine(TAControl())
+                .addSubcommand(HealthManager(printWriter))
                 .addSubcommand(Reload(printWriter))
                 .addSubcommand(Clean(printWriter))
                 .addSubcommand(Regen(printWriter))

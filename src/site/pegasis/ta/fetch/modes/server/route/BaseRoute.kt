@@ -4,6 +4,7 @@ import io.ktor.routing.*
 import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.modes.server.LoadManager
 import site.pegasis.ta.fetch.modes.server.MIN_API_VERSION
+import site.pegasis.ta.fetch.modes.server.controller.HealthManager
 import site.pegasis.ta.fetch.tools.logInfo
 import site.pegasis.ta.fetch.tools.logWarn
 import site.pegasis.ta.fetch.tools.removeBlank
@@ -33,13 +34,14 @@ abstract class BaseRoute {
                 logWarn("Request #$hash -> Server overload, ignoring request")
                 return@post
             }
-            if (session.isApiVersionInsufficient(minApiVersion())) {
+            if (session.isApiVersionInsufficient(minApiVersion()) && !isController()) {
                 session.send(426)
                 logInfo("Request #$hash -> Api version insufficient")
                 return@post
             }
 
             val response = route(session, timing)
+            if (!isController()) HealthManager.addRecord(path(), response.status)
             session.send(response)
             timing("send")
             logInfo("${getLogHeader()} #$hash -> status=${response.status}", timing = timing)
