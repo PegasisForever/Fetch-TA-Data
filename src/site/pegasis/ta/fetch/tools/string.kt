@@ -1,6 +1,5 @@
 package site.pegasis.ta.fetch.tools
 
-import io.ktor.util.*
 import java.io.ByteArrayOutputStream
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -34,10 +33,6 @@ fun findFirst(str: String, regex: String): String? {
 
 fun String.matches(regex: String) = this.matches(Regex(regex))
 
-fun String.fill(str: String): String {
-    return replace("%s", str)
-}
-
 fun String.gzip(): ByteArray {
     val bos = ByteArrayOutputStream()
     GZIPOutputStream(bos).bufferedWriter(StandardCharsets.UTF_8).use { it.write(this) }
@@ -65,4 +60,6 @@ fun String.capitalizeWord() = split(" ").joinToString(" ") { it.toLowerCase().ca
 
 fun String.toUrlEncoded(): String = URLEncoder.encode(this, "UTF-8")
 
-fun String.toBase64()=Base64.getEncoder().encodeToString(this.toByteArray())
+fun String.toBase64() = Base64.getEncoder().encodeToString(this.toByteArray())
+
+fun <T> String.parseJSON(): T = jsonParser.parse(this) as T

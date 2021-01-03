@@ -2,6 +2,7 @@ package site.pegasis.ta.fetch
 
 import picocli.CommandLine
 import picocli.CommandLine.*
+import site.pegasis.ta.fetch.modes.ctl.serverControl
 import site.pegasis.ta.fetch.modes.getMark
 import site.pegasis.ta.fetch.modes.server.LATEST_API_VERSION
 import site.pegasis.ta.fetch.modes.server.MIN_API_VERSION
@@ -11,6 +12,7 @@ import site.pegasis.ta.fetch.modes.server.storage.initFiles
 import site.pegasis.ta.fetch.tools.getInput
 import site.pegasis.ta.fetch.tools.serverBuildNumber
 import java.util.concurrent.Callable
+import kotlin.system.exitProcess
 
 suspend fun main(args: Array<String>) {
     initFiles()
@@ -18,6 +20,7 @@ suspend fun main(args: Array<String>) {
     CommandLine(FetchTa())
         .addSubcommand(GetMark())
         .addSubcommand(Server())
+        .addSubcommand(ServerControl())
         .execute(*args)
 }
 
@@ -148,4 +151,23 @@ class Server : Callable<Unit> {
     private var dbPassword = "password"
 
     override fun call() = startServer(enablePrivate, privatePort, controlPort, publicPort, dbHost, dbPort, dbUser, dbPassword)
+}
+
+@Command(
+    description = ["Control a running server."],
+    name = "ctl",
+    mixinStandardHelpOptions = true,
+    version = ["BN$serverBuildNumber"],
+)
+class ServerControl : Callable<Unit> {
+    @Option(
+        names = ["--target", "-t"],
+        description = ["Control url of the private server, default to http://localhost:5006/."]
+    )
+    private var controlUrl = "http://localhost:5006/"
+
+    @Parameters(index = "0..*")
+    private var args = arrayOf<String>()
+
+    override fun call() = exitProcess(serverControl(controlUrl, args))
 }

@@ -6,7 +6,7 @@ import io.fluidsonic.mongo.MongoDatabase
 import org.bson.Document
 import org.json.simple.JSONArray
 import site.pegasis.ta.fetch.tools.VALUE
-import site.pegasis.ta.fetch.tools.toJSON
+import site.pegasis.ta.fetch.tools.BSONToJSON
 
 object StaticData {
     const val COLLECTION_NAME = "static-data"
@@ -24,7 +24,7 @@ object StaticData {
             .find(Filters.eq("_id", ANNOUNCEMENT_KEY))
             .limit(1)
             .firstOrNull()
-            ?.toJSON()
+            ?.BSONToJSON()
             ?.get(VALUE) as String?
         return data ?: ""
     }
@@ -34,7 +34,7 @@ object StaticData {
             .find(Filters.eq("_id", CALENDAR_KEY))
             .limit(1)
             .firstOrNull()
-            ?.toJSON()
+            ?.BSONToJSON()
             ?.get(VALUE) as JSONArray?
         return data?.toJSONString() ?: "[]"
     }

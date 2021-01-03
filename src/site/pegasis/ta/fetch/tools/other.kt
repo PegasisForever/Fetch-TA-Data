@@ -1,6 +1,8 @@
 package site.pegasis.ta.fetch.tools
 
 import kotlinx.coroutines.TimeoutCancellationException
+import org.json.simple.JSONArray
+import org.json.simple.JSONAware
 import org.json.simple.parser.JSONParser
 import site.pegasis.ta.fetch.exceptions.RateLimitedException
 import java.io.PrintWriter
@@ -52,3 +54,5 @@ fun Throwable.isConnectionException() = this is TimeoutCancellationException ||
     this is org.apache.http.conn.HttpHostConnectException ||
     this is RateLimitedException ||
     (message?.toLowerCase() ?: "").indexOf("timeout") != -1
+
+fun List<JSONAware>.toJSONArray() = JSONArray().apply { addAll(this@toJSONArray) }

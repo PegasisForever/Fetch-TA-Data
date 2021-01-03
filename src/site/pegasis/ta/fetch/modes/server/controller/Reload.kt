@@ -14,13 +14,13 @@ import java.util.concurrent.Callable
     mixinStandardHelpOptions = true,
     version = ["BN$serverBuildNumber"]
 )
-class Reload(private val printWriter: PrintWriter): Callable<Unit> {
+class Reload(private val controllerResponse: ControllerResponse): Callable<Unit> {
     override fun call() {
         runBlocking {
             Config.load()
             updateAutoUpdateThread()
         }
 
-        printWriter.println("Server config and cached file reloaded.")
+        controllerResponse.writeStdLine("Server config and cached file reloaded.")
     }
 }

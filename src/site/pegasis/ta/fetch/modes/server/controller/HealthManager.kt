@@ -2,7 +2,6 @@ package site.pegasis.ta.fetch.modes.server.controller
 
 import picocli.CommandLine
 import site.pegasis.ta.fetch.tools.serverBuildNumber
-import java.io.PrintWriter
 import java.util.*
 import java.util.concurrent.Callable
 
@@ -12,16 +11,23 @@ import java.util.concurrent.Callable
     mixinStandardHelpOptions = true,
     version = ["BN$serverBuildNumber"]
 )
-class HealthManager(private val printWriter: PrintWriter) : Callable<Unit> {
+class HealthManager(private val controllerResponse: ControllerResponse) : Callable<Unit> {
     override fun call() {
-        var hasError = false
-        records.forEach { (path, record) ->
-            val errorCount = record.count { (it < 200 || it >= 500) }
-            if (errorCount > 0) hasError = true
-            printWriter.println("$path: error $errorCount/${record.size}")
+        with(controllerResponse) {
+            var hasError = false
+            records.forEach { (path, record) ->
+                val errorCount = record.count { (it < 200 || it >= 500) }
+                if (errorCount > 0) {
+                    hasError = true
+                    writeErrLine("$path: error $errorCount/${record.size}")
+                } else {
+                    writeStdLine("$path: error $errorCount/${record.size}")
+                }
+            }
+
+            exitCode = if (hasError) 1 else 0
         }
 
-        printWriter.println(if (hasError) "Unhealthy" else "Healthy")
     }
 
     companion object {

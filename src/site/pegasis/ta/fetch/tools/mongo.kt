@@ -41,24 +41,24 @@ fun JSONArray.toBSON(): List<Any?> {
     }
 }
 
-fun Document.toJSON(): JSONObject {
+fun Document.BSONToJSON(): JSONObject {
     val obj = JSONObject()
     forEach { key: String, value: Any? ->
         obj[key] = when (value) {
-            is List<*> -> value.toJSON()
-            is Document -> value.toJSON()
+            is List<*> -> value.BSONToJSON()
+            is Document -> value.BSONToJSON()
             else -> value
         }
     }
     return obj
 }
 
-fun List<*>.toJSON(): JSONArray {
+fun List<*>.BSONToJSON(): JSONArray {
     val array = JSONArray()
     forEach { item ->
         array += when (item) {
-            is List<*> -> item.toJSON()
-            is Document -> item.toJSON()
+            is List<*> -> item.BSONToJSON()
+            is Document -> item.BSONToJSON()
             else -> item
         }
     }

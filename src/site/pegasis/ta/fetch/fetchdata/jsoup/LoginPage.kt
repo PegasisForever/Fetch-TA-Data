@@ -12,7 +12,6 @@ class LoginPage(private val session: JsoupSession, private val timing: Timing = 
         }
 
         if (session.currentPage!!.title() != "Student Reports") {
-            println(session.currentPage!!.title())
             val errorCode = findFirst(session.currentPage!!.location(), "\\d")?.toInt()
             throw LoginException(errorCode)
         }
