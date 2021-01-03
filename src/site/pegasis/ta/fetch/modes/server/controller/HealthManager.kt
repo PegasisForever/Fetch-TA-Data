@@ -16,7 +16,7 @@ class HealthManager(private val controllerResponse: ControllerResponse) : Callab
         with(controllerResponse) {
             var hasError = false
             records.forEach { (path, record) ->
-                val errorCount = record.count { (it < 200 || it >= 500) }
+                val errorCount = record.count { it >= 500 }
                 if (errorCount > 0) {
                     hasError = true
                     writeErrLine("$path: error $errorCount/${record.size}")
@@ -27,7 +27,6 @@ class HealthManager(private val controllerResponse: ControllerResponse) : Callab
 
             exitCode = if (hasError) 1 else 0
         }
-
     }
 
     companion object {

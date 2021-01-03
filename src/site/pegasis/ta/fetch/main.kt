@@ -169,5 +169,10 @@ class ServerControl : Callable<Unit> {
     @Parameters(index = "0..*")
     private var args = arrayOf<String>()
 
-    override fun call() = exitProcess(serverControl(controlUrl, args))
+    override fun call() = try {
+        exitProcess(serverControl(controlUrl, args))
+    } catch (e: Throwable) {
+        e.printStackTrace(System.err)
+        exitProcess(1)
+    }
 }
