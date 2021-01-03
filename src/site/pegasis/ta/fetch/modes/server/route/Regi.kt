@@ -1,6 +1,7 @@
 package site.pegasis.ta.fetch.modes.server.route
 
 import org.json.simple.JSONObject
+import org.json.simple.parser.JSONParser
 import site.pegasis.ta.fetch.exceptions.LoginException
 import site.pegasis.ta.fetch.exceptions.ParseRequestException
 import site.pegasis.ta.fetch.exceptions.UserParseException
@@ -20,10 +21,10 @@ class Regi : BaseRoute() {
 
         init {
             try {
-                val json = jsonParser.parse(req) as JSONObject
+                val json = JSONParser().parse(req) as JSONObject
                 user = User.fromClient(json)
             } catch (e: Exception) {
-                throw ParseRequestException()
+                throw ParseRequestException(e)
             }
         }
     }
@@ -65,7 +66,7 @@ class Regi : BaseRoute() {
                     401
                 }
                 e is ParseRequestException -> {
-                    logWarn("Request #$hash :: Can't parse request: $reqString")
+                    logInfo("Request #$hash :: Can't parse request: $reqString", e)
                     400
                 }
                 e is UserParseException -> {

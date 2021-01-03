@@ -1,3 +1,3 @@
 package site.pegasis.ta.fetch.exceptions
 
-class ParseRequestException : Exception()
+class ParseRequestException(cause: Throwable? = null) : Exception(cause)

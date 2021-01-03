@@ -1,6 +1,7 @@
 package site.pegasis.ta.fetch.modes.server.route
 
 import org.json.simple.JSONObject
+import org.json.simple.parser.JSONParser
 import site.pegasis.ta.fetch.exceptions.LoginException
 import site.pegasis.ta.fetch.exceptions.ParseRequestException
 import site.pegasis.ta.fetch.models.CourseList
@@ -8,7 +9,6 @@ import site.pegasis.ta.fetch.models.Timing
 import site.pegasis.ta.fetch.modes.server.serializers.serialize
 import site.pegasis.ta.fetch.modes.server.storage.CourseListDB
 import site.pegasis.ta.fetch.modes.server.storage.UserDB
-import site.pegasis.ta.fetch.tools.jsonParser
 import site.pegasis.ta.fetch.tools.logError
 import site.pegasis.ta.fetch.tools.logInfo
 
@@ -19,11 +19,11 @@ class GetArchived : BaseRoute() {
 
         init {
             try {
-                val json = jsonParser.parse(req) as JSONObject
+                val json = JSONParser().parse(req) as JSONObject
                 number = json["number"] as String
                 password = json["password"] as String
             } catch (e: Exception) {
-                throw ParseRequestException()
+                throw ParseRequestException(e)
             }
         }
     }

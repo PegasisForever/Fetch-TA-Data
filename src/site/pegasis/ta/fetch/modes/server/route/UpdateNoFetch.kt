@@ -1,6 +1,7 @@
 package site.pegasis.ta.fetch.modes.server.route
 
 import org.json.simple.JSONObject
+import org.json.simple.parser.JSONParser
 import site.pegasis.ta.fetch.exceptions.LoginException
 import site.pegasis.ta.fetch.exceptions.ParseRequestException
 import site.pegasis.ta.fetch.models.Timing
@@ -17,10 +18,10 @@ class UpdateNoFetch : BaseRoute() {
 
         init {
             try {
-                val json = jsonParser.parse(req) as JSONObject
+                val json = JSONParser().parse(req) as JSONObject
                 user = User.fromClient(json)
             } catch (e: Exception) {
-                throw ParseRequestException()
+                throw ParseRequestException(e)
             }
         }
     }

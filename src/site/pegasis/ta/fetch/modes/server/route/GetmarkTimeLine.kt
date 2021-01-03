@@ -1,6 +1,7 @@
 package site.pegasis.ta.fetch.modes.server.route
 
 import org.json.simple.JSONObject
+import org.json.simple.parser.JSONParser
 import site.pegasis.ta.fetch.exceptions.LoginException
 import site.pegasis.ta.fetch.exceptions.ParseRequestException
 import site.pegasis.ta.fetch.fetchdata.fetchUserCourseList
@@ -20,7 +21,7 @@ class GetmarkTimeLine : BaseRoute() {
 
         init {
             try {
-                val json = jsonParser.parse(req) as JSONObject
+                val json = JSONParser().parse(req) as JSONObject
                 if (version < 7) {
                     number = json["number"] as String
                     password = json["password"] as String
@@ -30,7 +31,7 @@ class GetmarkTimeLine : BaseRoute() {
                     password = user!!.password
                 }
             } catch (e: Exception) {
-                throw ParseRequestException()
+                throw ParseRequestException(e)
             }
         }
     }

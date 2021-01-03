@@ -2,6 +2,7 @@ package site.pegasis.ta.fetch.modes.server.storage
 
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
+import org.json.simple.parser.JSONParser
 import site.pegasis.ta.fetch.tools.*
 import java.net.InetSocketAddress
 import java.time.LocalTime
@@ -50,7 +51,7 @@ object Config {
     var useLocalIP = false
 
     suspend fun load() {
-        val configJSON = jsonParser.parse(readFile("data/config.json")) as JSONObject
+        val configJSON = JSONParser().parse(readFile("data/config.json")) as JSONObject
         notificationEnabled = configJSON["notification"] as Boolean
         autoUpdateEnabled = configJSON["auto_update"] as Boolean
         autoUpdateIntervalMinute = (configJSON["auto_update_interval_minute"] as Long).toInt()

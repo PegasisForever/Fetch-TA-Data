@@ -1,6 +1,7 @@
 package site.pegasis.ta.fetch.modes.server.route
 
 import org.json.simple.JSONObject
+import org.json.simple.parser.JSONParser
 import site.pegasis.ta.fetch.exceptions.LoginException
 import site.pegasis.ta.fetch.exceptions.ParseRequestException
 import site.pegasis.ta.fetch.fetchdata.fetchUserCourseList
@@ -22,11 +23,11 @@ class PublicGetMark(private val publicApiVersion: Int) : BaseRoute() {
 
         init {
             try {
-                val json = jsonParser.parse(req) as JSONObject
+                val json = JSONParser().parse(req) as JSONObject
                 number = json["number"] as String
                 password = json["password"] as String
             } catch (e: Exception) {
-                throw ParseRequestException()
+                throw ParseRequestException(e)
             }
         }
     }

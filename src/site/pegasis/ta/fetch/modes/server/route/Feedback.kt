@@ -2,9 +2,9 @@ package site.pegasis.ta.fetch.modes.server.route
 
 import FeedbackDB
 import org.json.simple.JSONObject
+import org.json.simple.parser.JSONParser
 import site.pegasis.ta.fetch.exceptions.ParseRequestException
 import site.pegasis.ta.fetch.models.Timing
-import site.pegasis.ta.fetch.tools.jsonParser
 import site.pegasis.ta.fetch.tools.logError
 import site.pegasis.ta.fetch.tools.logWarn
 
@@ -17,13 +17,13 @@ class Feedback : BaseRoute() {
 
         init {
             try {
-                val json = jsonParser.parse(req) as JSONObject
+                val json = JSONParser().parse(req) as JSONObject
                 contactInfo = json["contact_info"] as String
                 feedback = json["feedback"] as String
                 platform = (json["platform"] ?: "") as String
                 version = (json["version"] ?: "") as String
             } catch (e: Exception) {
-                throw ParseRequestException()
+                throw ParseRequestException(e)
             }
         }
     }

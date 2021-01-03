@@ -4,6 +4,7 @@ import io.fluidsonic.mongo.MongoDatabase
 import kotlinx.coroutines.flow.toList
 import org.bson.Document
 import org.json.simple.JSONArray
+import org.json.simple.parser.JSONParser
 import site.pegasis.ta.fetch.tools.*
 
 suspend fun initFiles() {
@@ -47,7 +48,7 @@ suspend fun initMongoDB(db: MongoDatabase) {
         logInfo("Creating database.....")
         with(db.getCollection(StaticData.COLLECTION_NAME)) {
             insertOne(Document("_id", StaticData.ANNOUNCEMENT_KEY).append(VALUE, ""))
-            val calendarData = (jsonParser.parse("""[
+            val calendarData = (JSONParser().parse("""[
     {
         "end_date": null,
         "name": {

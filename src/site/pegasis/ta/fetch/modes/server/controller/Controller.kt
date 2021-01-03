@@ -2,6 +2,7 @@ package site.pegasis.ta.fetch.modes.server.controller
 
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
+import org.json.simple.parser.JSONParser
 import picocli.CommandLine
 import picocli.CommandLine.Command
 import site.pegasis.ta.fetch.models.Timing
@@ -88,7 +89,7 @@ class Controller : BaseRoute() {
         val reqString = session.getReqString()
 
         try {
-            val args = (jsonParser.parse(reqString) as JSONArray)
+            val args = (JSONParser().parse(reqString) as JSONArray)
                 .map { it as String }
                 .toTypedArray()
 

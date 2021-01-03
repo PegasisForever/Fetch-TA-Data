@@ -1,5 +1,6 @@
 package site.pegasis.ta.fetch.tools
 
+import org.json.simple.parser.JSONParser
 import java.io.ByteArrayOutputStream
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -62,4 +63,4 @@ fun String.toUrlEncoded(): String = URLEncoder.encode(this, "UTF-8")
 
 fun String.toBase64() = Base64.getEncoder().encodeToString(this.toByteArray())
 
-fun <T> String.parseJSON(): T = jsonParser.parse(this) as T
+fun <T> String.parseJSON(): T = JSONParser().parse(this) as T
