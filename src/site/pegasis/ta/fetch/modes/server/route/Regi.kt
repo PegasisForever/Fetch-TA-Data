@@ -94,7 +94,7 @@ class Regi : BaseRoute() {
     private suspend fun testAccount(reqString: String, hash: Int, timing: Timing): Int {
         return try {
             val isPasswordCorrect = with(ReqData(reqString).user) {
-                testUserAccount(number, password, timing)
+                UserDB.validate(number, password) || testUserAccount(number, password, timing)
             }
             logInfo("Request #$hash :: User password is ${if (isPasswordCorrect) "correct" else "incorrect"}")
             if (isPasswordCorrect) {
