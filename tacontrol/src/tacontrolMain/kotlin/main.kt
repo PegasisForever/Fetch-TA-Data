@@ -18,9 +18,20 @@ data class Line(val type: String, val text: String)
 data class ControlResponse(val version: Int, @SerialName("exit_code") val exitCode: Int, val lines: List<Line>)
 
 const val CONTROL_API_VERSION = 1
+const val DEFAULT_CONTROL_URL = "http://localhost:5006/"
 
 fun main(args: Array<String>) {
-    val controlUrl = "http://localhost:5006/"
+    val args = args.asList().toMutableList()
+    var controlUrl = DEFAULT_CONTROL_URL
+    if (args[0] == "-t" && args.size >= 2) {
+        controlUrl = args[1]
+        args.removeAt(0)
+        args.removeAt(0)
+    }
+    if (args.isEmpty()) {
+        args.add("-h")
+    }
+
     val response = runBlocking {
         val httpResponse: HttpResponse = try {
             HttpClient(Curl) {
