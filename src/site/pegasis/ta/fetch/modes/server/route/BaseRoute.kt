@@ -29,6 +29,9 @@ abstract class BaseRoute {
 
             logInfo("${getLogHeader()} #$hash ${path()} <- ${session.getIP()}, api version=${session.getApiVersion()}, data=${session.getReqString().removeBlank()}")
 
+            if(isPublic()){
+                session.makePublic()
+            }
             if (LoadManager.isOverLoad() && !isController()) {
                 session.send(503)
                 logWarn("Request #$hash -> Server overload, CPU: ${(LoadManager.cpuPercentage * 100).toInt()}% MEM: ${(LoadManager.memoryPercentage * 100).toInt()}%, ignoring request")
