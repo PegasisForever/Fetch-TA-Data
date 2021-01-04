@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val ktor_version: String by project
 val kotlin_version: String by project
@@ -44,7 +45,20 @@ kotlin.sourceSets["main"].kotlin.srcDirs("src")
 group = "site.pegasis"
 version = "BN58"
 description = "fetch-ta-data"
-java.sourceCompatibility = JavaVersion.VERSION_11
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(14))
+    }
+}
+
+tasks.withType<KotlinCompile>().configureEach {
+    kotlinOptions {
+        languageVersion = "1.4"
+        jvmTarget = "14"
+        jdkHome="/usr/lib/jvm/java-14-openjdk"
+    }
+}
 
 tasks {
     named<ShadowJar>("shadowJar") {
