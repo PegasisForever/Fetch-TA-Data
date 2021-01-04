@@ -43,7 +43,7 @@ dependencies {
 kotlin.sourceSets["main"].kotlin.srcDirs("src")
 
 group = "site.pegasis"
-version = "BN58"
+version = "BN59"
 description = "fetch-ta-data"
 
 java {
