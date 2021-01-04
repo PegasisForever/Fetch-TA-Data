@@ -60,11 +60,8 @@ object LoadManager {
                     lastUsage = usage
 
                     cpuPercentage = usageDelta.toDouble() / timeDelta / cores
-                    logInfo("CPU percentage: ${cpuPercentage * 100}%")
-
                     val memUsageBytes = getMemUsageBytes()
                     memoryPercentage = memUsageBytes.toDouble() / memoryBytes
-                    logInfo("MEM usage: ${memoryPercentage * 100}% ${memUsageBytes / 1024 / 1024}MB/${memoryBytes / 1024 / 1024}MB")
 
                     delay(Duration.ofSeconds(2))
                 }
