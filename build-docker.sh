@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 cd tacontrol
-./build-binary.sh
+./build-in-docker.sh
 
 cd ..
 ./gradlew build
