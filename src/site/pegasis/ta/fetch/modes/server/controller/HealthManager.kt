@@ -1,5 +1,8 @@
 package site.pegasis.ta.fetch.modes.server.controller
 
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import picocli.CommandLine
 import site.pegasis.ta.fetch.tools.serverBuildNumber
 import java.util.*
@@ -21,13 +24,19 @@ class HealthManager(private val controllerResponse: ControllerResponse) : Callab
     override fun call() {
         with(controllerResponse) {
             var hasError = false
-            recordsMap.forEach { (path, record) ->
-                val errorCount = errorCountMap[path] ?: 0
-                if (errorCount > 0) {
-                    hasError = true
-                    writeErrLine("$path: error $errorCount/${record.size}")
-                } else {
-                    writeStdLine("$path: error $errorCount/${record.size}")
+
+            // todo maybe some ways to remove runBlocking
+            runBlocking {
+                addRequestMutex.withLock {
+                    recordsMap.forEach { (path, record) ->
+                        val errorCount = errorCountMap[path] ?: 0
+                        if (errorCount > 0) {
+                            hasError = true
+                            writeErrLine("$path: error $errorCount/${record.size}")
+                        } else {
+                            writeStdLine("$path: error $errorCount/${record.size}")
+                        }
+                    }
                 }
             }
 
@@ -38,9 +47,10 @@ class HealthManager(private val controllerResponse: ControllerResponse) : Callab
     companion object {
         private val recordsMap = hashMapOf<String, Queue<Record>>()
         private val errorCountMap = hashMapOf<String, Int>()
+        private val addRequestMutex = Mutex()
         private const val maxRecordCount = 30
 
-        fun addRecord(path: String, status: Int) {
+        suspend fun addRecord(path: String, status: Int) = addRequestMutex.withLock {
             val records = if (path in recordsMap.keys) {
                 recordsMap[path]!!
             } else {
