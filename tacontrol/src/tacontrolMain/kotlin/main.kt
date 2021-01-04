@@ -23,7 +23,7 @@ const val DEFAULT_CONTROL_URL = "http://localhost:5006/"
 fun main(args: Array<String>) {
     val args = args.asList().toMutableList()
     var controlUrl = DEFAULT_CONTROL_URL
-    if (args[0] == "-t" && args.size >= 2) {
+    if (args.size >= 2 && args[0] == "-t") {
         controlUrl = args[1]
         args.removeAt(0)
         args.removeAt(0)
@@ -53,7 +53,7 @@ fun main(args: Array<String>) {
 
 
     if (response.version != CONTROL_API_VERSION) {
-        error("Expect control api version $CONTROL_API_VERSION, got ${response.version}")
+        error("Expect control api version $CONTROL_API_VERSION, got ${response.version}.")
     }
     response.lines.forEach { (type, text) ->
         when (type) {
