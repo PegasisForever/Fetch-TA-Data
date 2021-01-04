@@ -16,8 +16,10 @@ object LoadManager {
     private var cores = 1.0
     private var memoryBytes = 1024L
 
-    private var cpuPercentage = 0.0
-    private var memoryPercentage = 0.0
+    var cpuPercentage = 0.0
+        private set
+    var memoryPercentage = 0.0
+        private set
 
     private const val CPU_OVERLOAD_THRESHOLD_PERCENTAGE = 0.9
     private const val MEMORY_OVERLOAD_THRESHOLD_PERCENTAGE = 0.9

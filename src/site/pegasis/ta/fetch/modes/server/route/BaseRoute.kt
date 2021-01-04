@@ -31,7 +31,7 @@ abstract class BaseRoute {
 
             if (LoadManager.isOverLoad() && !isController()) {
                 session.send(503)
-                logWarn("Request #$hash -> Server overload, ignoring request")
+                logWarn("Request #$hash -> Server overload, CPU: ${(LoadManager.cpuPercentage * 100).toInt()}% MEM: ${(LoadManager.memoryPercentage * 100).toInt()}%, ignoring request")
                 return@post
             }
             if (session.isApiVersionInsufficient(minApiVersion()) && !isController()) {
