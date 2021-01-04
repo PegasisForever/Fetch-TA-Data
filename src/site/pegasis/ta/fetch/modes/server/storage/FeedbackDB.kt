@@ -1,3 +1,5 @@
+package site.pegasis.ta.fetch.modes.server.storage
+
 import io.fluidsonic.mongo.MongoCollection
 import io.fluidsonic.mongo.MongoDatabase
 import org.bson.Document

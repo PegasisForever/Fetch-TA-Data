@@ -1,10 +1,10 @@
 package site.pegasis.ta.fetch.modes.server.route
 
-import FeedbackDB
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
 import site.pegasis.ta.fetch.exceptions.ParseRequestException
 import site.pegasis.ta.fetch.models.Timing
+import site.pegasis.ta.fetch.modes.server.storage.FeedbackDB
 import site.pegasis.ta.fetch.tools.logError
 import site.pegasis.ta.fetch.tools.logWarn
 

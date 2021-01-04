@@ -1,6 +1,5 @@
 package site.pegasis.ta.fetch.modes.server
 
-import FeedbackDB
 import io.fluidsonic.mongo.MongoDatabase
 import io.ktor.routing.*
 import io.ktor.server.cio.*
