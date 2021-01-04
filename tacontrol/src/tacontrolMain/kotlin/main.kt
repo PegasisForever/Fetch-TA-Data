@@ -20,28 +20,37 @@ data class ControlResponse(val version: Int, @SerialName("exit_code") val exitCo
 const val CONTROL_API_VERSION = 1
 
 fun main(args: Array<String>) {
-    val exitCode = runBlocking {
-        val controlUrl = "http://localhost:5006/"
-
-        val httpResponse: HttpResponse = HttpClient(Curl).request {
-            url(controlUrl)
-            method = HttpMethod.Post
-            body = Json.encodeToString(args)
-        }
-
-        val response = Json.decodeFromString<ControlResponse>(httpResponse.readText())
-        if (response.version != CONTROL_API_VERSION) {
-            error("Expect control api version $CONTROL_API_VERSION, got ${response.version}")
-        }
-        response.lines.forEach { (type, text) ->
-            when (type) {
-                "std" -> println(text)
-                "err" -> printlnErr(text)
-                else -> error("Unknown line type: $type")
+    val controlUrl = "http://localhost:5006/"
+    val response = runBlocking {
+        val httpResponse: HttpResponse = try {
+            HttpClient(Curl) {
+                expectSuccess = true
+            }.request {
+                url(controlUrl)
+                method = HttpMethod.Post
+                body = Json.encodeToString(args)
             }
+        } catch (e: Throwable) {
+            printlnErr("Error sending request to $controlUrl.")
+            printlnErr("You can change control url using -t <url> before all the arguments.")
+            printlnErr(e.stackTraceToString())
+            exitProcess(1)
         }
 
-        response.exitCode
+        Json.decodeFromString<ControlResponse>(httpResponse.readText())
     }
-    exitProcess(exitCode)
+
+
+    if (response.version != CONTROL_API_VERSION) {
+        error("Expect control api version $CONTROL_API_VERSION, got ${response.version}")
+    }
+    response.lines.forEach { (type, text) ->
+        when (type) {
+            "std" -> println(text)
+            "err" -> printlnErr(text)
+            else -> error("Unknown line type: $type")
+        }
+    }
+
+    exitProcess(response.exitCode)
 }
