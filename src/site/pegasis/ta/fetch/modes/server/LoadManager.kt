@@ -6,7 +6,6 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.time.delay
 import site.pegasis.ta.fetch.tools.fileExists
-import site.pegasis.ta.fetch.tools.logInfo
 import site.pegasis.ta.fetch.tools.logWarn
 import site.pegasis.ta.fetch.tools.readFile
 import java.lang.management.ManagementFactory

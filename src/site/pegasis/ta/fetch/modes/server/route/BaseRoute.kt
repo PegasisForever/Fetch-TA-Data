@@ -34,7 +34,7 @@ abstract class BaseRoute {
                 logWarn("Request #$hash -> Server overload, CPU: ${(LoadManager.cpuPercentage * 100).toInt()}% MEM: ${(LoadManager.memoryPercentage * 100).toInt()}%, ignoring request")
                 return@post
             }
-            if (session.isApiVersionInsufficient(minApiVersion()) && !isController()) {
+            if (session.isApiVersionInsufficient(minApiVersion()) && !isController() && !isPublic()) {
                 session.send(426)
                 logInfo("Request #$hash -> Api version insufficient")
                 return@post
