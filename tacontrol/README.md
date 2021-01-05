@@ -14,7 +14,7 @@ tacontrol [-t <control url>] [args]...
 ./build-in-docker.sh
 ```
 
-Will build a dynamically linked executable in a debian 10 docker and put it in `build/release/tacontrol`
+Will build a dynamically linked executable in a Debian 10 docker and put it in `build/release/tacontrol`.
 
 ## Create the Builder Docker Image
 
