@@ -23,15 +23,16 @@ class HealthManager(private val controllerResponse: ControllerResponse) : Callab
 
     override fun call() {
         with(controllerResponse) {
-            var hasError = false
+            var maxErrorRate = 0.0
 
             // todo maybe some ways to remove runBlocking
             runBlocking {
                 addRequestMutex.withLock {
                     recordsMap.forEach { (path, record) ->
                         val errorCount = errorCountMap[path] ?: 0
+                        val errorRate = errorCount.toDouble() / record.size
+                        maxErrorRate = maxOf(maxErrorRate, errorRate)
                         if (errorCount > 0) {
-                            hasError = true
                             writeErrLine("$path: error $errorCount/${record.size}")
                         } else {
                             writeStdLine("$path: error $errorCount/${record.size}")
@@ -40,7 +41,7 @@ class HealthManager(private val controllerResponse: ControllerResponse) : Callab
                 }
             }
 
-            exitCode = if (hasError) 1 else 0
+            exitCode = if (maxErrorRate > warningErrorRate) 1 else 0
         }
     }
 
@@ -48,7 +49,7 @@ class HealthManager(private val controllerResponse: ControllerResponse) : Callab
         private val recordsMap = hashMapOf<String, Queue<Record>>()
         private val errorCountMap = hashMapOf<String, Int>()
         private val addRequestMutex = Mutex()
-        private const val maxRecordCount = 30
+        private const val warningErrorRate = 0.1
 
         suspend fun addRecord(path: String, status: Int) = addRequestMutex.withLock {
             val records = if (path in recordsMap.keys) {
@@ -64,7 +65,7 @@ class HealthManager(private val controllerResponse: ControllerResponse) : Callab
             if (record.isError()) errorCountMap[path] = (errorCountMap[path] ?: 0) + 1
 
             val currTime = System.currentTimeMillis()
-            while (records.size > maxRecordCount && records.peek().time < currTime - 5 * 60 * 1000) {
+            while (records.peek().time < currTime - 5 * 60 * 1000) {
                 val removedRecord = records.poll()
                 if (removedRecord.isError()) errorCountMap[removedRecord.path] = errorCountMap[removedRecord.path]!! - 1
             }
