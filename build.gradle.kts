@@ -56,7 +56,7 @@ tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions {
         languageVersion = "1.4"
         jvmTarget = "14"
-        jdkHome="/usr/lib/jvm/java-14-openjdk"
+        jdkHome = "/usr/lib/jvm/java-14-j9"
     }
 }
 
