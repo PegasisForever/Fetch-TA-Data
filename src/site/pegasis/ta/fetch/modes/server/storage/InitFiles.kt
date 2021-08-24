@@ -306,7 +306,7 @@ suspend fun initMongoDB(db: MongoDatabase) {
         "start_date": "2021-6-29"
     }
 ]""") as JSONArray).toBSON()
-            insertOne(Document("_id", StaticData.CALENDAR_KEY).append(VALUE, calendarData))
+            insertOne(Document("_id", StaticData.CALENDAR_V1_KEY).append(VALUE, calendarData))
         }
         db.createCollection(CourseListDB.ARCHIVED_COURSE_LIST_COLLECTION_NAME)
         db.createCollection(CourseListDB.COURSE_LIST_COLLECTION_NAME)

@@ -38,7 +38,7 @@ object LoadManager {
 
                     memoryBytes = minOf(
                         readFile("/sys/fs/cgroup/memory/memory.limit_in_bytes").trim().toLong(),
-                        (ManagementFactory.getOperatingSystemMXBean() as OperatingSystemMXBean).totalMemorySize,
+                        (ManagementFactory.getOperatingSystemMXBean() as OperatingSystemMXBean).totalPhysicalMemorySize,
                     )
                     delay(Duration.ofMinutes(10))
                 }

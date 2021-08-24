@@ -8,8 +8,12 @@ class GetCalendar : BaseRoute() {
 
     override suspend fun route(session: HttpSession, timing: Timing): Response {
         val calendar = timing("get calendar") {
-            StaticData.getCalendar()
+            if (session.getApiVersion() >= 13) {
+                StaticData.getCalendarV2()
+            } else {
+                StaticData.getCalendarV1()
+            }
         }
-        return Response(200, calendar)
+        return Response(200, calendar, true)
     }
 }
