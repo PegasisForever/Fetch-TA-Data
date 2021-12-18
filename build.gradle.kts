@@ -47,15 +47,14 @@ description = "fetch-ta-data"
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(14))
+        languageVersion.set(JavaLanguageVersion.of(11))
     }
 }
 
 tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions {
         languageVersion = "1.4"
-        jvmTarget = "14"
-        jdkHome = "/usr/lib/jvm/java-14-j9"
+        jvmTarget = "11"
     }
 }
 
