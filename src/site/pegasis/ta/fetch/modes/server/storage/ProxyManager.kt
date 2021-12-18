@@ -96,7 +96,7 @@ object ProxyManager {
                 client.post("${Config.proxyManagerBaseUrl}/replace_proxy") {
                     auth()
                     header(HttpHeaders.ContentType, "application/json")
-                    body = """{"label":"${proxy.id}"}"""
+                    body = """{"proxyID":"${proxy.id}"}"""
                 }
             }
         }
