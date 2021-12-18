@@ -11,19 +11,20 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import site.pegasis.ta.fetch.exceptions.RateLimitedException
 import site.pegasis.ta.fetch.modes.server.storage.Config
+import site.pegasis.ta.fetch.modes.server.storage.ProxyManager
 import site.pegasis.ta.fetch.tools.noThrow
 
 
-class JsoupSession(forceUseProxy: Boolean) {
+class JsoupSession {
     var currentPage: Document? = null
     private val cookies = hashMapOf<String, String>()
-    private val proxy = Config.getRandomProxy(forceUseProxy)
+    private val proxy = ProxyManager.getRandomProxy()
     private val client = getClient(proxy)
 
     companion object {
-        private var clientsCache = hashMapOf<Config.Proxy, HttpClient>()
+        private var clientsCache = hashMapOf<ProxyManager.Proxy?, HttpClient>()
 
-        private fun getClient(proxy: Config.Proxy): HttpClient {
+        private fun getClient(proxy: ProxyManager.Proxy?): HttpClient {
             return if (proxy in clientsCache) {
                 clientsCache[proxy]!!
             } else {
@@ -35,7 +36,7 @@ class JsoupSession(forceUseProxy: Boolean) {
                             connectTimeout = Config.fetchTimeoutSecond * 1000
                             socketTimeout = Config.fetchTimeoutSecond * 1000
                         }
-                        this.proxy = proxy.toJavaProxy()
+                        this.proxy = proxy?.toJavaProxy()
                     }
                 }
                 clientsCache[proxy] = client
@@ -49,7 +50,7 @@ class JsoupSession(forceUseProxy: Boolean) {
             client.request {
                 this.url(url)
                 this.method = method
-                if (proxy is Config.HttpProxy && proxy.hasAuth()) {
+                if (proxy != null) {
                     header("Proxy-Authorization", proxy.authText())
                 }
                 header("Accept-Encoding", "gzip,deflate,sdch")
@@ -72,6 +73,7 @@ class JsoupSession(forceUseProxy: Boolean) {
         } catch (e: RedirectResponseException) {
             e.response
         } catch (e: Throwable) {
+            proxy?.let { ProxyManager.reportProxy(it) }
             throw e
         }
 
@@ -84,8 +86,10 @@ class JsoupSession(forceUseProxy: Boolean) {
         }
         return when (response.status) {
             HttpStatusCode.Found -> get(response.headers["Location"]!!)
-            HttpStatusCode.Unauthorized -> throw RateLimitedException()
-            HttpStatusCode.Forbidden -> throw RateLimitedException()
+            HttpStatusCode.Unauthorized, HttpStatusCode.Forbidden -> {
+                proxy?.let { ProxyManager.reportProxy(it) }
+                throw RateLimitedException()
+            }
             else -> {
                 currentPage = Jsoup.parse(response.readText())
                 currentPage!!

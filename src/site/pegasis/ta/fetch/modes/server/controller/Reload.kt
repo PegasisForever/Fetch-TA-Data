@@ -3,6 +3,7 @@ package site.pegasis.ta.fetch.modes.server.controller
 import kotlinx.coroutines.runBlocking
 import picocli.CommandLine.Command
 import site.pegasis.ta.fetch.modes.server.storage.Config
+import site.pegasis.ta.fetch.modes.server.storage.ProxyManager
 import site.pegasis.ta.fetch.modes.server.timeline.updateAutoUpdateThread
 import site.pegasis.ta.fetch.tools.serverBuildNumber
 import java.io.PrintWriter
@@ -19,6 +20,7 @@ class Reload(private val controllerResponse: ControllerResponse): Callable<Unit>
         runBlocking {
             Config.load()
             updateAutoUpdateThread()
+            ProxyManager.updateConfig()
         }
 
         controllerResponse.writeStdLine("Server config and cached file reloaded.")

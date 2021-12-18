@@ -34,10 +34,9 @@ suspend fun initFiles() {
       "end": "2020-02-28T16:00:00-05:00"
     }
   ],
-  "proxies": [
-  ],
   "use_proxy": false,
-  "use_local_ip": true
+  "proxy_manager_url": "",
+  "proxy_manager_password": "",
 }
 """.writeToFile("data/config.json")
     }

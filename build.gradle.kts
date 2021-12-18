@@ -7,7 +7,7 @@ val kotlin_coroutines_version: String by project
 
 plugins {
     kotlin("jvm") version "1.4.21"
-    id("com.github.johnrengelman.shadow") version "5.2.0"
+    id("com.github.johnrengelman.shadow") version "7.1.1"
 }
 
 repositories {

@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk14-openj9:debianslim-jre
+FROM adoptopenjdk/openjdk11-openj9:debianslim-jre
 WORKDIR /server
 COPY build/libs/fetch_ta_data.jar tacontrol/build/release/tacontrol /server/
 

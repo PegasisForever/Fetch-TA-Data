@@ -7,16 +7,17 @@ import com.gargoylesoftware.htmlunit.html.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import site.pegasis.ta.fetch.modes.server.storage.Config
+import site.pegasis.ta.fetch.modes.server.storage.ProxyManager
 import java.util.logging.Level
 import java.util.logging.Logger
 
 object SingleSignOnPage {
-    private fun getHtmlUnitWebClient(forceUseProxy: Boolean) = WebClient().apply {
+    private fun getHtmlUnitWebClient() = WebClient().apply {
         Logger.getLogger("com.gargoylesoftware").level = Level.OFF
         with(options) {
-            val proxy = Config.getRandomProxy(forceUseProxy)
-            if (proxy is Config.HttpProxy) {
-                proxyConfig = ProxyConfig(proxy.host, proxy.port, false)
+            val proxy = ProxyManager.getRandomProxy()
+            if (proxy != null) {
+                proxyConfig = ProxyConfig(proxy.ip, 81, false)
             }
             isCssEnabled = false
             isJavaScriptEnabled = true
@@ -31,7 +32,7 @@ object SingleSignOnPage {
     }
 
     suspend fun testAccount(studentNumber: String, password: String, forceUseProxy: Boolean): Boolean {
-        val client = getHtmlUnitWebClient(forceUseProxy)
+        val client = getHtmlUnitWebClient()
         return try {
             val page = withContext(Dispatchers.IO) {
                 client.getPage<HtmlPage>("https://google.yrdsb.ca/LoginFormIdentityProvider/Login.aspx?ReturnUrl=%2fLoginFormIdentityProvider%2fDefault.aspx")
