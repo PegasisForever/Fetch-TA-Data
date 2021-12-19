@@ -9,6 +9,7 @@ import kotlinx.coroutines.*
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
+import site.pegasis.ta.fetch.tools.logError
 import site.pegasis.ta.fetch.tools.logInfo
 import site.pegasis.ta.fetch.tools.toBase64
 import java.net.InetSocketAddress
@@ -42,23 +43,26 @@ object ProxyManager {
         if (job != null) return
         job = GlobalScope.launch {
             while (isActive) {
-                val res: HttpResponse = client.post("${Config.proxyManagerBaseUrl}/get_proxies") {
-                    auth()
-                    header(HttpHeaders.ContentType, "application/json")
-                    body = """{"expectedMinimum":3}"""
-                }
-                val resJSON = JSONParser().parse(res.readText()) as JSONArray
+                try {
+                    val res: HttpResponse = client.post("${Config.proxyManagerBaseUrl}/get_proxies") {
+                        auth()
+                        header(HttpHeaders.ContentType, "application/json")
+                        body = """{"expectedMinimum":3}"""
+                    }
+                    val resJSON = JSONParser().parse(res.readText()) as JSONArray
 
-                proxies = resJSON.map {
-                    val proxyJSON = it as JSONObject
-                    Proxy(
-                        proxyJSON["id"] as String,
-                        (proxyJSON["vm"] as JSONObject)["main_ip"] as String,
-                        proxyJSON["proxyPassword"] as String,
-                    )
+                    proxies = resJSON.map {
+                        val proxyJSON = it as JSONObject
+                        Proxy(
+                            proxyJSON["id"] as String,
+                            (proxyJSON["vm"] as JSONObject)["main_ip"] as String,
+                            proxyJSON["proxyPassword"] as String,
+                        )
+                    }
+                    logInfo("Available proxies: ${proxies.filter { !bannedProxies.contains(it) }.size}")
+                } catch (e: Throwable) {
+                    logError("Failed to get proxies", e)
                 }
-                logInfo("available proxies: ${proxies.filter { !bannedProxies.contains(it) }.size}")
-
                 delay(10000)
             }
         }

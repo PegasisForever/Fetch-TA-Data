@@ -9,27 +9,6 @@ import java.time.LocalTime
 import java.time.ZonedDateTime
 
 object Config {
-//    data class HttpProxy(val host: String, val port: Int, val user: String? = null, val password: String? = null) : Proxy {
-//        override fun toJavaProxy(): JavaProxy {
-//            return JavaProxy(JavaProxy.Type.HTTP, InetSocketAddress(host, port))
-//        }
-//
-//        fun hasAuth() = user != null && password != null
-//
-//        fun authText() = "Basic " + "$user:$password".toBase64()
-//
-//        companion object {
-//            fun fromJson(json: JSONObject): HttpProxy {
-//                return HttpProxy(
-//                    json["host"] as String,
-//                    (json["port"] as Long).toInt(),
-//                    json["user"] as String?,
-//                    json["password"] as String?,
-//                )
-//            }
-//        }
-//    }
-
     var notificationEnabled = false
     var autoUpdateEnabled = false
     var autoUpdateIntervalMinute = 40
